@@ -1,3 +1,5 @@
 welcome all!
 
 yotam: started working on IC lexer.
+
+yotam: please setup your environment according to EnvSet.
