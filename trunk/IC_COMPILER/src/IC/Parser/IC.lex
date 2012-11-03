@@ -9,6 +9,27 @@ package IC.Parser;
 %line
 %scanerror LexicalError
 
+
+NEWLINE = \n
+WHITESPACE = [ \t\n]
+LCBR = \{
+RCBR = \}
+LBR = \[
+RBR = \]
+LPAREN = \(
+RPAREN = \)
+USCORE = _
+COMMENT = \\*
+UNCOMMENT = *\\
+DIGIT = [0-9]
+ULETTER = [A-Z]
+LLETTER = [a-z]
+LETTER = {LLETTER} | {ULETTER}
+ALPHA = {LETTER} | {USCORE}
+ALPHA_NUM = {ALPHA} | {DIGIT}
+CLASS_IDENT ={ULETTER}({ALPHA_NUM})+
+IDENT = {LLETTER}({ALPHA_NUM})+
+NUMBER = ({DIGIT})+
 %%
 
 "(" { return new Token(sym.LP,yyline); }
