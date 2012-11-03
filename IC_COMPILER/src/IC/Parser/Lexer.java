@@ -554,11 +554,11 @@ public @SuppressWarnings(value={"all"}) class Lexer {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 2: 
-          { return new Token(sym.RP,yyline);
+          { return new Token(sym.RP,yyline,yycolumn);
           }
         case 3: break;
         case 1: 
-          { return new Token(sym.LP,yyline);
+          { return new Token(sym.LP,yyline,yycolumn);
           }
         case 4: break;
         default: 
