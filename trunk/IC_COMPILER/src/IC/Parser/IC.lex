@@ -60,7 +60,8 @@ ID 			= 		{LLETTER}({ALPHA_NUM})+
 
 
 <YYINITIAL> {
-	"boolean" { return token(sym.BOOLEAN); }
+	"boolean" 	{ return token(sym.BOOLEAN); }
+	"int" 		{ return token(sym.INT); }
 	/*TODO complete keywords*/
 	
 	"+" { return token(sym.PLUS); }
