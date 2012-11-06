@@ -11,7 +11,6 @@ public class Compiler
     public static void main(String[] args)
     {
         Symbol currToken;
-
         try {
             FileReader txtFile = new FileReader(args[0]);
             Lexer scanner = new Lexer(txtFile);
