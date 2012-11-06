@@ -51,28 +51,109 @@ public class sym {
 	public static final int NULL = 48;
 	public static final int EOF = 49;
 
-	/*
-	 * public String idToString(int id) { switch (id) { case ASSIGN: return
-	 * "ASSIGN"; case LP: return "LP"; case RP: return "RP"; case BOOLEAN:
-	 * return "BOOLEAN"; case BREAK: return "BREAK"; case CLASS: return "CLASS";
-	 * case COMMA: return "COMMA"; case CLASS_ID: return "CLASS_ID"; case
-	 * CONTINUE: return "CONTINUE"; case DOT: return "DOT"; case EQUAL: return
-	 * "EQUAL"; case ELSE: return "ELSE"; case EXTENDS: return "EXTENDS"; case
-	 * FALSE: return "FALSE"; case TRUE: return "TRUE"; case GT: return "GT";
-	 * case GTE: return "GTE"; case LT: return "LT"; case LTE: return "LTE";
-	 * case NEQUAL: return "NEQUAL"; case IF: return "IF"; case ID: return "ID";
-	 * case PLUS: return "PLUS"; case MINUS: return "MINUS"; case MULTIPLY:
-	 * return "MULTIPLY"; case DIVIDE: return "DIVIDE"; case INT: return "INT";
-	 * case INTEGER: return "INTEGER"; case RETURN: return "RETURN"; case RCBR:
-	 * return "RCBR"; case LCBR: return "LCBR"; case STATIC: return "STATIC";
-	 * case FOR: return "FOR"; case LB: return "LB"; case RB: return "RB"; case
-	 * SEMI: return "SEMI"; case LENGTH: return "LENGTH"; case QUOTE: return
-	 * "QUOTE"; case LOR: return "LOR"; case NEW: return "NEW"; case WHILE:
-	 * return "WHILE"; case THIS: return "THIS"; case VOID: return "VOID"; case
-	 * LNEG: return "LNEG"; case MOD: return "MOD"; case STRING: return
-	 * "STRING"; case LAND: return "LAND"; case NULL: return "NULL"; case EOF:
-	 * return "EOF";
-	 * 
-	 * default: return null; } }
-	 */
+	public static String idToString(int id) {
+		switch (id) {
+		case ASSIGN:
+			return "ASSIGN";
+		case LP:
+			return "LP";
+		case RP:
+			return "RP";
+		case BOOLEAN:
+			return "BOOLEAN";
+		case BREAK:
+			return "BREAK";
+		case CLASS:
+			return "CLASS";
+		case COMMA:
+			return "COMMA";
+		case CLASS_ID:
+			return "CLASS_ID";
+		case CONTINUE:
+			return "CONTINUE";
+		case DOT:
+			return "DOT";
+		case EQUAL:
+			return "EQUAL";
+		case ELSE:
+			return "ELSE";
+		case EXTENDS:
+			return "EXTENDS";
+		case FALSE:
+			return "FALSE";
+		case TRUE:
+			return "TRUE";
+		case GT:
+			return "GT";
+		case GTE:
+			return "GTE";
+		case LT:
+			return "LT";
+		case LTE:
+			return "LTE";
+		case NEQUAL:
+			return "NEQUAL";
+		case IF:
+			return "IF";
+		case ID:
+			return "ID";
+		case PLUS:
+			return "PLUS";
+		case MINUS:
+			return "MINUS";
+		case MULTIPLY:
+			return "MULTIPLY";
+		case DIVIDE:
+			return "DIVIDE";
+		case INT:
+			return "INT";
+		case INTEGER:
+			return "INTEGER";
+		case RETURN:
+			return "RETURN";
+		case RCBR:
+			return "RCBR";
+		case LCBR:
+			return "LCBR";
+		case STATIC:
+			return "STATIC";
+		case FOR:
+			return "FOR";
+		case LB:
+			return "LB";
+		case RB:
+			return "RB";
+		case SEMI:
+			return "SEMI";
+		case LENGTH:
+			return "LENGTH";
+		case QUOTE:
+			return "QUOTE";
+		case LOR:
+			return "LOR";
+		case NEW:
+			return "NEW";
+		case WHILE:
+			return "WHILE";
+		case THIS:
+			return "THIS";
+		case VOID:
+			return "VOID";
+		case LNEG:
+			return "LNEG";
+		case MOD:
+			return "MOD";
+		case STRING:
+			return "STRING";
+		case LAND:
+			return "LAND";
+		case NULL:
+			return "NULL";
+		case EOF:
+			return "EOF";
+
+		default:
+			return null;
+		}
+	}
 }
