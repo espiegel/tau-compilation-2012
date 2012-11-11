@@ -49,7 +49,7 @@ USCORE = "_"
 INLINE_COMMENT = "//" ({INPUT_CHAR})* {END_LINE}
 
 DIGIT		= 		[0-9]
-NUMBER	 	= 		-?(0+|[1-9]{DIGIT}*)
+NUMBER	 	= 		(0+|[1-9]{DIGIT}*)
 
 ULETTER 	= 		[A-Z]
 LLETTER 	= 		[a-z]
@@ -58,8 +58,8 @@ LETTER 		= 		{LLETTER} | {ULETTER}
 ALPHA 		= 		{LETTER} | {USCORE}
 ALPHA_NUM 	= 		{ALPHA} | {DIGIT}
 
-CLASS_ID 	=		{ALPHA}({ALPHA_NUM})*
-ID 			= 		{ALPHA}({ALPHA_NUM})*
+CLASS_ID 	=		{ULETTER}({ALPHA_NUM})*
+ID 			= 		{LLETTER}({ALPHA_NUM})*
 
 %%
 
