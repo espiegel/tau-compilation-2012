@@ -96,12 +96,12 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	"/" 		{ return token(sym.DIVIDE); }
 	"%" 		{ return token(sym.MOD); }
 	
-	">" { return token(sym.GT); }
+	">"  { return token(sym.GT); }
 	">=" { return token(sym.GTE); }
-	"<" { return token(sym.LT); }
+	"<"  { return token(sym.LT); }
 	"<=" { return token(sym.LTE); }	
 	"&&" { return token(sym.LAND); }
-	"!" { return token(sym.LNEG); }
+	"!"  { return token(sym.LNEG); }
 	"||" { return token(sym.LOR); }	
 	"==" { return token(sym.EQUAL); }
 	"!=" { return token(sym.NEQUAL); }
@@ -113,13 +113,14 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	{LCBR} { return token(sym.LCBR); }
 	{RCBR} { return token(sym.RCBR); }
 	
-	{ID}              { return token(sym.ID); }
-	{WHITESPACE} 	{ /* ignore */ }
-	
+	{CLASS_ID}        { return token(sym.CLASS_ID, yytext()); }
+	{ID}              { return token(sym.ID, yytext()); }
+	{WHITESPACE} 	  { /* ignore */ }
+	 
 	{INLINE_COMMENT}  { yybegin(STATE_INLINE_COMMENT); }
-	"/*"			{ yybegin(STATE_COMMENT);}
+	"/*"			  { yybegin(STATE_COMMENT);}
 	
-	"\"" 			{string.setLength(0); yybegin(STATE_STRING);}
+	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);}
 	
 	{NUMBER}  { return token(sym.INTEGER, Integer.parseInt(yytext())); }
 		
@@ -143,11 +144,11 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 
 <STATE_STRING>{
 
-	"\"" 				{yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
+	"\"" 				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
 	[^\n\t\"\\]+		{string.append(yytext());}
 	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline); }
 	"\\t"				{string.append('\t');}
-	"\\n"				{string.append('\n');}
+	"\\n"				{string.append("\\n");}
 	"\\\""				{string.append('\"');}
 	"\\\\"				{string.append('\\');}
 	

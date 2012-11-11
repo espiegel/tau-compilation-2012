@@ -12,7 +12,7 @@ public class Token extends Symbol {
 
 	public Token(int id, int line, int column, Object val) {
 		super(id, null);
-		this.line = line;
+		this.line = line + 1; // Added +1 because Jflex begins to count from 0. //Eidan 11/11/12
 		this.column = column;
 		super.value = val;
 	}
