@@ -129,7 +129,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 <STATE_COMMENT>{
 	
 	"*/"	{yybegin(YYINITIAL);}
-	[^*]	{ /* ignore */ }
+	[^*]|"*"[^/] { /* ignore */ }
 
 	}
 
