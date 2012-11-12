@@ -16,17 +16,17 @@ import IC.Parser.LexicalError;
 	StringBuffer string = new StringBuffer();
 	
 	private Token token(int type){
-		return new Token(type,yyline,yycolumn);
+		return new Token(type,yyline+1,yycolumn);
 	}
 
 	private Token token(int type, Object value){
-		return new Token(type,yyline,yycolumn,value);
+		return new Token(type,yyline+1,yycolumn,value);
 	}
 %}
 
 %eofval{ 
 	
-	return new Token(sym.EOF,yyline,yycolumn);
+	return new Token(sym.EOF,yyline+1,yycolumn);
 
 %eofval}
 
@@ -52,7 +52,7 @@ INLINE_COMMENT = "//" ({INPUT_CHAR})* {END_LINE}
 
 DIGIT		= 		[0-9]
 NUMBER	 	= 		(0+|[1-9]{DIGIT}*)
-
+PREFIX_ZERO =       (0+[1-9]([0-9]*))
 ULETTER 	= 		[A-Z]
 LLETTER 	= 		[a-z]
 LETTER 		= 		{LLETTER} | {ULETTER}
@@ -124,9 +124,16 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	
 	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);}
 	
-	{NUMBER}  { return token(sym.INTEGER, Integer.parseInt(yytext())); }
-		
+	{PREFIX_ZERO} { throw new LexicalError("A number must not begin with zeros.", yyline); }
+	
+	{NUMBER}
+	{
+	 int a;
+	 try { a = Integer.parseInt(yytext()); }
+	 catch (Exception e) { throw new LexicalError("Number is too long", yyline); }
+		return token(sym.INTEGER, a);
 	}
+}
 	
 <STATE_COMMENT1>{
 	
