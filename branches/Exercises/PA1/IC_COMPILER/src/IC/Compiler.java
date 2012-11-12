@@ -19,7 +19,7 @@ public class Compiler
             Lexer scanner = new Lexer(txtFile);
             do {
                 currToken = scanner.next_token();
-                System.out.println(currToken);
+                System.out.print(currToken+((currToken.sym != IC.Parser.sym.EOF)?"\n":""));
             } while (currToken.sym != IC.Parser.sym.EOF);
             
 
@@ -28,7 +28,7 @@ public class Compiler
         	e.printStackTrace();
             throw new RuntimeException("IO Error (brutal exit)" + e.toString());
             */
-        	System.out.println(e);
+        	System.out.print(e);
         }
 
     }
