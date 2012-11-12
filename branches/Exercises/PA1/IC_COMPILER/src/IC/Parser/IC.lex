@@ -1,5 +1,6 @@
 package IC.Parser;
 import java_cup.runtime.Symbol;
+import IC.Parser.LexicalError;
 
 %%
 
@@ -30,12 +31,13 @@ import java_cup.runtime.Symbol;
 %eofval}
 
 %state STATE_STRING
-%state STATE_COMMENT
+%state STATE_COMMENT1
+%state STATE_COMMENT2
 %state STATE_INLINE_COMMENT
 
 END_LINE	 	=		\n|\r
 INPUT_CHAR 		= 		[^\r\n]
-WHITESPACE 		= 		[ \t\f] | {END_LINE}
+WHITESPACE 		= 		[ \t\f\r\n] | {END_LINE}
 
 LCBR 	= 		"{"
 RCBR 	= 		"}"
@@ -118,7 +120,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	{WHITESPACE} 	  { /* ignore */ }
 	 
 	{INLINE_COMMENT}  { yybegin(STATE_INLINE_COMMENT); }
-	"/*"			  { yybegin(STATE_COMMENT);}
+	"/*"			  { yybegin(STATE_COMMENT1);}
 	
 	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);}
 	
@@ -126,12 +128,20 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 		
 	}
 	
-<STATE_COMMENT>{
+<STATE_COMMENT1>{
 	
-	"*/"	{yybegin(YYINITIAL);}
-	[^*]|"*"[^/] { /* ignore */ }
+	"*"		{yybegin(STATE_COMMENT2); }
+	[^*] 	{ /* ignore */ }
 
 	}
+
+<STATE_COMMENT2>{
+
+	"/" 	{yybegin(YYINITIAL); }
+	"*"		{ /* ignore */ }
+	[^/*]	{yybegin(STATE_COMMENT1) ;}
+		
+}
 
 
 <STATE_INLINE_COMMENT>{
@@ -153,3 +163,9 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	"\\\\"				{string.append('\\');}
 	
 	}
+	
+	
+/* error reporting */
+
+
+	.|\n				{ throw new LexicalError("Lexical error: illegal character "+"\'"+yytext()+"\'"); }
