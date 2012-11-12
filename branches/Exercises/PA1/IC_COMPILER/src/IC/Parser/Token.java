@@ -2,6 +2,13 @@ package IC.Parser;
 
 import java_cup.runtime.Symbol;
 
+/**
+ * Token class. This is returned by the Lexer for
+ * each token found in a given IC file.
+ * 
+ * @author Eidan
+ *
+ */
 public class Token extends Symbol {
 	private int line;
 	private int column;

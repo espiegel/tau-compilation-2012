@@ -7,6 +7,16 @@ import IC.Parser.LexicalError;
 
 import java_cup.runtime.Symbol;
 
+/**
+ * Compiler class. Reads an IC file and runs the Lexer on it.
+ * Prints all the IC tokens in the file.
+ * 
+ * If any error is encountered during the Lexing proccess the 
+ * error is printed along with the line number.
+ * 
+ * @author Eidan
+ *
+ */
 public class Compiler
 {
     public static void main(String[] args) throws IOException

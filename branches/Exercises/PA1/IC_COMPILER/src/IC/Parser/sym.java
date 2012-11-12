@@ -1,5 +1,11 @@
 package IC.Parser;
 
+/**
+ * sym class. Holds all the constant tokens.
+ * 
+ * @author Eidan
+ *
+ */
 public class sym {
 	public static final int LP = 1;
 	public static final int RP = 2;

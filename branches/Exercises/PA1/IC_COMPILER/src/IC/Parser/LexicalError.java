@@ -1,5 +1,12 @@
 package IC.Parser;
 
+/**
+ * This is the LexicalError class. This exception is thrown
+ * every time we get an error from the Lexer.
+ * 
+ * @author Eidan
+ *
+ */
 public class LexicalError extends Exception
 {
 	private int linen;
