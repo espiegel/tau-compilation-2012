@@ -58,13 +58,17 @@ class Sieve {
    "this is a string! \\n newline \\t tab \\ "
    
   
-  886 268
+   886 268
 
-  0099
+   000abc // zero followed by identifier
   
-  00
+  
+  
+    000
+  
+    0099 /* need to return an error */
  
-  %^
+    $
 
 
   
