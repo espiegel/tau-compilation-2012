@@ -11,7 +11,7 @@ public class LexicalError extends Exception
 
 	public LexicalError(String message)
 	{
-		
+		msg = message;
 	}
 	
 	public LexicalError(String message, int linen) {
@@ -22,5 +22,10 @@ public class LexicalError extends Exception
 	
 	public int getLine() { return linen; }
 	public String getMsg() { return msg; }
+	
+	@ Override
+	public String toString(){
+		return msg;
+	}
 }
 
