@@ -8,15 +8,12 @@ public class LexicalError extends Exception
 	 * 
 	 */
 	private static final long serialVersionUID = 6212043046195094107L;
-
-	public LexicalError(String message)
-	{
-		msg = message;
-	}
+	
+	public LexicalError(String message) {} // to avoid compilation errors. do not remove!
 	
 	public LexicalError(String message, int linen) {
-		super("Line: "+linen+". "+message);
-		msg = message;
+		super(linen+": "+"Lexical error: "+message);
+		this.msg = message;
 		this.linen = linen;
     }
 	
@@ -25,7 +22,7 @@ public class LexicalError extends Exception
 	
 	@ Override
 	public String toString(){
-		return msg;
+		return super.getMessage();
 	}
 }
 

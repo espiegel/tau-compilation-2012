@@ -168,4 +168,5 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 /* error reporting */
 
 
-	.|\n				{ throw new LexicalError("Lexical error: illegal character "+"\'"+yytext()+"\'"); }
+	.|\n				{throw new LexicalError("illegal character "+"\'"+yytext()+"\'", yyline); }
+	
