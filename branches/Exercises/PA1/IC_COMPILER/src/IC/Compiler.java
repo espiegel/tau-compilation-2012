@@ -11,6 +11,7 @@ public class Compiler
 {
     public static void main(String[] args) throws IOException
     {
+
         Symbol currToken;
         FileReader txtFile = new FileReader(args[0]);
         try {
@@ -21,7 +22,7 @@ public class Compiler
                 System.out.println(currToken);
             } while (currToken.sym != IC.Parser.sym.EOF);
             
-        
+
         } catch (LexicalError e) {
         	/*
         	e.printStackTrace();
@@ -29,7 +30,6 @@ public class Compiler
             */
         	System.out.println(e);
         }
-  
 
     }
 }
