@@ -26,6 +26,14 @@ import IC.Parser.LexicalError;
 
 %eofval{ 
 	
+	/* EOF inside a string */
+	if(yystate() == STATE_STRING)   
+		throw new LexicalError("Lexical error: Unterminated string at end of file.",yyline+1);
+	
+	/* EOF inside comment */	
+	if(yystate() == STATE_COMMENT1 || yystate() == STATE_COMMENT2)   
+		throw new LexicalError("Lexical error: Unclosed comment at end of file.",yyline+1);
+		 
 	return new Token(sym.EOF,yyline+1,yycolumn);
 
 %eofval}
@@ -33,11 +41,10 @@ import IC.Parser.LexicalError;
 %state STATE_STRING
 %state STATE_COMMENT1
 %state STATE_COMMENT2
-%state STATE_INLINE_COMMENT
 
-END_LINE	 	=		\n|\r
+END_LINE	 	=		\n|\r|\r\n
 INPUT_CHAR 		= 		[^\r\n]
-WHITESPACE 		= 		[ \t\f\r\n] | {END_LINE}
+WHITESPACE 		= 		[ \t\f] | {END_LINE}
 
 LCBR 	= 		"{"
 RCBR 	= 		"}"
@@ -51,8 +58,8 @@ USCORE = "_"
 INLINE_COMMENT = "//" ({INPUT_CHAR})* {END_LINE}
 
 DIGIT		= 		[0-9]
-NUMBER	 	= 		(0+|[1-9]{DIGIT}*)
-PREFIX_ZERO =       (0+[1-9]([0-9]*))
+NUMBER	 	= 		(0+|[1-9]({DIGIT})*)
+PREFIX_ZERO =       (0+[1-9]({DIGIT}*))
 ULETTER 	= 		[A-Z]
 LLETTER 	= 		[a-z]
 LETTER 		= 		{LLETTER} | {ULETTER}
@@ -119,18 +126,18 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	{ID}              { return token(sym.ID, yytext()); }
 	{WHITESPACE} 	  { /* ignore */ }
 	 
-	{INLINE_COMMENT}  { yybegin(STATE_INLINE_COMMENT); }
+	{INLINE_COMMENT}  { /* ignore */ }
 	"/*"			  { yybegin(STATE_COMMENT1);}
 	
 	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);}
 	
-	{PREFIX_ZERO} { throw new LexicalError("A number must not begin with zeros.", yyline); }
+	{PREFIX_ZERO} { throw new LexicalError("A number must not begin with zeros.", yyline+1); }
 	
 	{NUMBER}
 	{
 	 int a;
 	 try { a = Integer.parseInt(yytext()); }
-	 catch (Exception e) { throw new LexicalError("Number is too long", yyline); }
+	 catch (Exception e) { throw new LexicalError("Number is too long.", yyline+1); }
 		return token(sym.INTEGER, a);
 	}
 }
@@ -151,29 +158,18 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 }
 
 
-<STATE_INLINE_COMMENT>{
-	
-	"\n"	{ yybegin(YYINITIAL); }	
-	[^\n] 	{ /* ignore */ }
-
-	}
-
-
 <STATE_STRING>{
 
 	"\"" 				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
 	[^\n\t\"\\]+		{string.append(yytext());}
-	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline); }
-	"\\t"				{string.append('\t');}
+	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
+	"\\t"				{string.append("\\t");}
 	"\\n"				{string.append("\\n");}
 	"\\\""				{string.append('\"');}
 	"\\\\"				{string.append('\\');}
 	
 	}
 	
-	
-/* error reporting */
-
-
-	.|\n				{throw new LexicalError("illegal character "+"\'"+yytext()+"\'", yyline); }
+/* Error fallback */
+. { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
 	
