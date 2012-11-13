@@ -4,6 +4,7 @@ import IC.Parser.LexicalError;
 
 %%
 
+%8bit
 %class Lexer
 %public
 %function next_token
@@ -145,7 +146,8 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	. { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
 
 }
-	
+
+/* We are inside a comment. Continue to ignore tokens until we see a '*' */	
 <STATE_COMMENT1>{
 	
 	"*"		{yybegin(STATE_COMMENT2); }
@@ -153,6 +155,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 
 	}
 
+/* We are still inside a comment and we encountered a '*', continue ignoring until you see a '/' */
 <STATE_COMMENT2>{
 
 	"/" 	{yybegin(YYINITIAL); }
@@ -161,16 +164,18 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 		
 }
 
-
+/* We are inside a string. Append every chracter in ASCII range 32-126, otherwise throw an error.
+   Exit this state once you encounter a closing '"'
+*/
 <STATE_STRING>{
 
 	"\"" 				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
-	[ !#-\[\]-~]+		{string.append(yytext());}
+	[ !#-\[\]-~]+		{string.append(yytext());} /* Characters with ASCII Value 32-126 */
 	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
 	"\\t"				{string.append("\\t");}
 	"\\n"				{string.append("\\n");}
 	"\\\""				{string.append('\"');}
 	"\\\\"				{string.append('\\');}
-	[^ !#-~]				{throw new LexicalError("Illegal character inside the string'"+yytext()+"'.", yyline+1);}
+	[^ !#-~]			{throw new LexicalError("Illegal character inside the string: '"+yytext()+"'.", yyline+1);}
 	
 	}

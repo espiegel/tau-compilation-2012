@@ -43,8 +43,9 @@ class Sieve {
     }
   }
   
-  int weird_identifier2_kYYk; // ignore me
-  c Class2_Weird;  
+  int weird_identifier2_kYYk;
+  c Class2_Weird;
+  // ignore me
   
  /****
   comment 
@@ -60,14 +61,56 @@ class Sieve {
    886 268
 
    000abc // zero followed by identifier
+   !
   
-  
-  
+  !
     000
   
-    0099 /* need to return an error */
- 
-    $
+    //0099  need to return an error 
+!0abc35
 
+// Testing many different characters...
+//@
+//#
+//$
+%
+//^
+//&
+*
+(
+)
+//_
++
+//~
+//`
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+-
+=
+[
+]
+//'
+//\
+/
+//?
+//|
+//"
+}
+[
+>
+,
+;
+//"
+//    $
 
-  
+////////////"asdfadsf 
+////
+"{|}~ ??????????)-ыт"
