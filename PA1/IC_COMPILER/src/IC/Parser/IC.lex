@@ -28,11 +28,11 @@ import IC.Parser.LexicalError;
 	
 	/* EOF inside a string */
 	if(yystate() == STATE_STRING)   
-		throw new LexicalError("Lexical error: Unterminated string at end of file.",yyline+1);
+		throw new LexicalError("Unterminated string at end of file.",yyline+1);
 	
 	/* EOF inside comment */	
 	if(yystate() == STATE_COMMENT1 || yystate() == STATE_COMMENT2)   
-		throw new LexicalError("Lexical error: Unclosed comment at end of file.",yyline+1);
+		throw new LexicalError("Unclosed comment at end of file.",yyline+1);
 		 
 	return new Token(sym.EOF,yyline+1,yycolumn);
 
@@ -42,9 +42,9 @@ import IC.Parser.LexicalError;
 %state STATE_COMMENT1
 %state STATE_COMMENT2
 
-END_LINE	 	=		\n|\r|\r\n
-INPUT_CHAR 		= 		[^\r\n]
-WHITESPACE 		= 		[ \t\f] | {END_LINE}
+END_LINE	 	=		\n
+INPUT_CHAR 		= 		[^\n]
+WHITESPACE 		= 		[ \t] | {END_LINE}
 
 LCBR 	= 		"{"
 RCBR 	= 		"}"
@@ -55,11 +55,11 @@ RP 		= 		")"
 
 USCORE = "_"
 
-INLINE_COMMENT = "//" ({INPUT_CHAR})* {END_LINE}
+INLINE_COMMENT = "//" ({INPUT_CHAR})*
 
 DIGIT		= 		[0-9]
 NUMBER	 	= 		(0+|[1-9]({DIGIT})*)
-PREFIX_ZERO =       (0+[1-9]({DIGIT}*))
+PREFIX_ZERO =       0+[1-9]
 ULETTER 	= 		[A-Z]
 LLETTER 	= 		[a-z]
 LETTER 		= 		{LLETTER} | {ULETTER}
@@ -172,4 +172,3 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	
 /* Error fallback */
 . { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
-	
