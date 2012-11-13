@@ -34,10 +34,6 @@ public class Compiler
             
 
         } catch (LexicalError e) {
-        	/*
-        	e.printStackTrace();
-            throw new RuntimeException("IO Error (brutal exit)" + e.toString());
-            */
         	System.out.print(e);
         }
 
