@@ -140,6 +140,10 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	 catch (Exception e) { throw new LexicalError("Number is too long.", yyline+1); }
 		return token(sym.INTEGER, a);
 	}
+
+	/* Error fallback */
+	. { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
+
 }
 	
 <STATE_COMMENT1>{
@@ -161,14 +165,12 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 <STATE_STRING>{
 
 	"\"" 				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
-	[^\n\t\"\\]+		{string.append(yytext());}
+	[ !#-\[\]-~]+		{string.append(yytext());}
 	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
 	"\\t"				{string.append("\\t");}
 	"\\n"				{string.append("\\n");}
 	"\\\""				{string.append('\"');}
 	"\\\\"				{string.append('\\');}
+	[^ !#-~]				{throw new LexicalError("Illegal character inside the string'"+yytext()+"'.", yyline+1);}
 	
 	}
-	
-/* Error fallback */
-. { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
