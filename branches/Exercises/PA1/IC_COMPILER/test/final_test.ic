@@ -1,4 +1,4 @@
-
+"first string"
 /*** some normal code ***/
 
 class Sieve {
@@ -26,6 +26,7 @@ class Sieve {
     while (i < num.length) {
       num[i] = 0;
       i=i+n;
+	  "second"
     }
   }
 
@@ -41,6 +42,7 @@ class Sieve {
       }
       i=i+1;
     }
+	"third"
   }
   
   int weird_identifier2_kYYk;
@@ -54,10 +56,20 @@ class Sieve {
   bla bla
   ****/
   
-  
-   "this is a string! \\n newline \\t tab \\ "
+
+   "this is a string! \n newline \t tab \\ \" \'"
    
-  
+    "this is also a string"
+	
+	"oops! another one"
+	
+	"oops! another one"
+	"oops! another one"
+	"oops! another one"
+	"oops! another one"
+	"oops! another one"
+   
+  99999999999999994444444444444  
    886 268
 
    000abc // zero followed by identifier

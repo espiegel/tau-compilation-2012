@@ -13,15 +13,28 @@ public class Token extends Symbol {
 	private int line;
 	private int column;
 
-	public Token(int id, int line, int column) {
+	public Token(int id, int line, int column) /*throws LexicalError*/ {
 		this(id, line, column, null);
 	}
 
-	public Token(int id, int line, int column, Object val) {
+	public Token(int id, int line, int column, Object val) /*throws LexicalError*/ {
 		super(id, null);
+		
 		this.line = line; 
 		this.column = column;
 		super.value = val;
+		
+		/***
+		if (id == IC.Parser.sym.INTEGER){
+		try { 
+			int a = Integer.parseInt(val.toString()); 
+			}
+		 catch (Exception e) { 
+			throw new LexicalError("Number is too long.", line);
+			}
+		}
+		***/
+		
 	}
 
 	@Override
