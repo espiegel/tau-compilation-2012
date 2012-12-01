@@ -169,13 +169,14 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 */
 <STATE_STRING>{
 
-	"\"" 				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
+	\"					{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
 	[ !#-\[\]-~]+		{string.append(yytext());} /* Characters with ASCII Value 32-126 */
-	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
-	"\\t"				{string.append("\\t");}
-	"\\n"				{string.append("\\n");}
-	"\\\""				{string.append('\"');}
-	"\\\\"				{string.append('\\');}
+	\n					{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
+	\\t					{string.append('\t');}
+	\\n					{string.append('\n');}
+	\\\"				{string.append('\"');}
+	\\\'				{string.append('\'');}
+	\\					{string.append('\\');}
 	[^ !#-~]			{throw new LexicalError("Illegal character inside the string: '"+yytext()+"'.", yyline+1);}
 	
 	}
