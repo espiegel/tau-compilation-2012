@@ -1,0 +1,18 @@
+package IC.Parser;
+
+import IC.AST.*;
+
+terminal RB, LB, COMMA, RPAREN, LPAREN, SEMI;
+terminal CLASS, CLASS_ID, ID;
+terminal STATIC, VOID, INT, STRING, BOOLEAN;
+
+/* Non-Terminals */
+non terminal libic, libmethod, formals;
+non terminal type;
+
+type ::= VOID | STRING | INT | BOOLEAN;
+formals ::= type ID | formals COMMA formals;
+
+libic ::= CLASS CLASS_ID LPAREN libmethod RPAREN;
+libmethod ::= STATIC type ID LPAREN formals RPAREN SEMI 
+            | STATIC type ID LPAREN formals RPAREN SEMI libmethod;

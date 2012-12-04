@@ -1,0 +1,57 @@
+/* all * tokens */
+
+
+class Gelfand extends Ivanchuk {
+
+ int sum;
+
+  int fun(string[] args, int g) {
+  
+	int a = 8;  //integer variable.
+	int i=20;
+	string b = null;
+	b="aaa\n";
+	boolean c = true;
+	boolean d = false;
+	
+	Ivanchuk hhh = new Ivanchuk();
+	int w=a+i;
+	int k=w%a;
+	
+	w=w/a;
+	w=a-i;
+	w=w*a;
+	w=args.length;
+	
+	int aa_d=9
+	
+	if ((a>8) || (a>=w) || (w<20) || (i<=9)) {
+		a=0;
+	}
+    
+	if (w != 8) {
+		w=8;
+	}
+	if (b == true) {
+		b=false;
+	} else {
+		a = 9;
+	}
+	
+	this.sum=8;
+	
+	while (!c) {
+		if (b || c) {
+			continue;
+		}
+		
+		if ((a==9) && b) {
+			break;
+		}
+	
+	}
+	
+	return 90;
+  }
+
+}
