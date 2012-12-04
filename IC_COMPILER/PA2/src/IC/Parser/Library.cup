@@ -1,63 +1,52 @@
 package IC.Parser;
 
 import IC.AST.*;
-
-parser code  {:
-	/** Causes the parser to print every token it reads.
-	 * This is useful for debugging.
-	 */
-	public boolean printTokens;
-	
-	private Lexer lexer;
-
-	public Parser(Lexer lexer) {
-		super(lexer);
-		this.lexer = lexer;
-	}
-	
-	public int getLine() {
-		return lexer.getLineNumber();
-	}
-	
-	public void syntax_error(Symbol s) {
-		Token tok = (Token) s;
-		System.out.println("Line " + tok.getLine()+": Syntax error; unexpected " + tok);
-	}
-:}
-
+import IC.*;
+import java.util.*;
 
 /* Terminals */
 terminal RB, LB, COMMA, RP, LP, LCBR, RCBR, SEMI;
-terminal CLASS, CLASS_ID, ID;
+terminal CLASS, CLASS_ID;
+terminal String ID;
 terminal STATIC, VOID, INT, STRING, BOOLEAN;
 
 /* Non-Terminals */
-non terminal LibraryMethod libmethod;
-non terminal List<LibraryMethod> libmethod_list;
+nonterminal LibraryMethod libmethod;
+nonterminal List<Method> libmethod_list;
 
-non terminal Formal formals;
-non terminal List<Formal> formals_list;
+nonterminal Formal formals;
+nonterminal List<Formal> formals_list;
 
-non terminal ICClass libic;
-non terminal type, brackets, arrtype;
+nonterminal ICClass libic;
+nonterminal Type type;
+nonterminal Type arrtype;
+nonterminal brackets;
 
-type ::= VOID | STRING | INT | BOOLEAN;
+type ::= VOID:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.VOID); :}
+         | STRING:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.STRING); :}
+         | INT:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.INT); :}
+         | BOOLEAN:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.BOOLEAN); :}
+         ;
 brackets ::= LB RB | brackets LB RB;
 arrtype ::= type | arrtype brackets;
 
 formals_list ::= formals:l
-				{: RESULT = new ArrayList<Formal>(l); :}
+				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf;  :}
 				| formals_list:l COMMA formals:m
 				{: l.add(m); RESULT = l; :};
 
 formals ::= arrtype:t ID:n
-        {: RESULT = Formal(t, n); :};
+        {: RESULT = new Formal(t, n); :};
 
 libic ::= CLASS:c CLASS_ID LCBR libmethod_list:l RCBR
-{: RESULT = new ICClass(c.getLine(),"Library",new ArrayList<Field>(),l); }
+{: RESULT = new ICClass(((Token)c).getLine(),"Library",new ArrayList<Field>(),l); :};
 
 libmethod_list ::= libmethod:l
-				{: RESULT = new ArrayList<LibraryMethod>(l); :}
+				{: List<Method> lf = new ArrayList<Method>(); lf.add(l); RESULT=lf; :}
 				| libmethod_list:l libmethod:m
 				{: l.add(m); RESULT = l; :};
 				

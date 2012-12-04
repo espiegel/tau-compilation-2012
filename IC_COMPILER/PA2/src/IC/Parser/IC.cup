@@ -1,14 +1,31 @@
 package IC.Parser;
 
 import IC.AST.*;
+import IC.*;
+import java.util.*;
 
 ////////////////////////////////////////////
 // Symbol list (terminals and non-terminals)
 
-nonterminal Program Program;
+nonterminal Program program;
+nonterminal Literal literal;
+nonterminal ICClass classDecl;
+nonterminal List<ASTNode> classbody_list;
+nonterminal Field field;
+nonterminal Method method;
+nonterminal List<String> morefields;
+nonterminal Type type;
 
-terminal         ASSIGN;
-terminal Integer INTEGER;
+terminal LP, RP, LB, RB, LCBR, RCBR, COMMA, DOT, SEMI;
+terminal BOOLEAN, INTEGER, STRING, VOID, INT, NULL;  /* types */
+terminal EQUAL, NEQUAL, GT, GTE, LT, LTE,
+         LNEG, LAND, LOR, FALSE, TRUE;               /* logic */      
+terminal MINUS, PLUS, MULTIPLY, MOD, DIVIDE, ASSIGN; /* operators */
+terminal STATIC, IF, ELSE, BREAK, CLASS, RETURN,
+         CONTINUE, EXTENDS, THIS, WHILE, FOR, NEW;   /* keywords */
+terminal String ID;
+terminal String CLASS_ID;
+terminal QUOTE, LENGTH;
 
 //////////////////////////
 // Precedence declarations
@@ -16,4 +33,97 @@ terminal Integer INTEGER;
 //////////////
 // The grammar
 
-Literal ::= INTEGER | NULL;
+literal ::= INTEGER:i
+            {: RESULT = new Literal(((Token)i).getLine(), LiteralTypes.INTEGER, i); :}
+            | NULL:i
+            {: RESULT = new Literal(((Token)i).getLine(), LiteralTypes.NULL, i); :};
+
+
+program ::= classDecl:c
+            {: List<ICClass> l = new ArrayList<ICClass>(); l.add(c); RESULT = new Program(l); :};
+classDecl ::= CLASS:c CLASS_ID:i LCBR classbody_list:l RCBR
+{:  List<Method> methods = new ArrayList<Method>();
+    List<Field> fields = new ArrayList<Field>();
+    for(ASTNode a : l) {
+       if(a instanceof Method)
+           methods.add(((Method)a));
+       else if(a instanceof Field)
+           fields.add(((Field)a));
+    }
+    RESULT = new ICClass(((Token)c).getLine(),i,fields,methods); 
+:};
+			
+classbody_list ::= field:f
+                  {: List<ASTNode> lf = new ArrayList<ASTNode>(); lf.add(f); RESULT=lf;  :}
+                  | method:m
+                  {: List<ASTNode> lm = new ArrayList<ASTNode>(); lm.add(m); RESULT=lm;  :}
+                  | classbody_list:l method:m
+                  {: l.add(m); RESULT = l; :}
+                  | classbody_list:l field:f
+                  {: l.add(f); RESULT = l; :};                 
+
+
+field ::= type:t ID:n SEMI 
+          {: RESULT = new Field(t,n); :}
+          | field:f morefields:m SEMI
+          {: for(String s : m)
+                RESULT = new Field(f.getType(), s);
+          :};
+          
+morefields ::= COMMA ID:n
+               {: List<String> l = new ArrayList<String>(); l.add(n); RESULT=l; :}
+               | morefields:m COMMA ID:n
+               {: m.add(n); RESULT = m; :};
+
+/* 
+/////////////////////////////////////////////////////////////////////////
+// Need to continue doing the method... - Eidan @ 9.23pm 4/12/12
+//////////////////////////////////////////////////////////////////////////
+
+method ::= methodtype:t ID:n LP formals RP LCBR stmt_list:s RCBR
+           {: RESULT = new Method :};
+
+formals ::= type ID | formals COMMA formals;
+
+methodtype ::= type | VOID;
+type ::= INT | BOOLEAN | STRING | CLASS_ID;
+brackets ::= LB RB | brackets LB RB;
+arrtype ::= type | arrtype brackets;
+
+
+stmt_list ::= stmt:s
+	{: RESULT = new StmtList(s); :}
+	| stmt_list:sl stmt:s
+	{: sl.addStmt(s); RESULT = sl; :}
+;
+
+stmt ::= location '=' expr ';'
+| call ';'
+| return [expr] ';'
+| if '(' expr ')' stmt
+| break ';'
+| continue ';'
+| '{' stmt* '}'
+| type ID['=' expr] ';';
+
+expr ::= location
+		| call
+		| THIS
+		| new CLASS '(' ')'
+		| new type '[' expr ']'
+		| expr '.' length
+		| expr binop expr
+		| unop expr
+		| literal
+		| '(' expr ')';
+		
+call ::= staticCall|virtualCall;
+staticCall ::= CLASS '.' ID '(' [expr (',' expr)*] ')';
+virtualCall ::= [expr'.'] ID '(' [expr (',' expr)*] ')';
+location ::= ID | expr'.' ID | expr'[' expr ']';
+
+binop ::= '+' | '-' | '*' | '/' | '%' | '&&' | '||' | '<'
+		| '<' | '<=' | '>' | '>=' | '==' | '!=';
+unop ::= '-' | '!';
+literal ::= INTEGER | STRING | true | false | null;
+*/
