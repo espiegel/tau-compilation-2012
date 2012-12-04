@@ -3,38 +3,40 @@ package IC.Parser;
 import java_cup.runtime.Symbol;
 
 /**
- * Token class. This is returned by the Lexer for
- * each token found in a given IC file.
+ * Token class. This is returned by the Lexer for each token found in a given IC
+ * file.
  * 
  * @author Eidan
- *
+ * 
  */
 public class Token extends Symbol {
 	private int line;
 	private int column;
 
-	public Token(int id, int line, int column) /*throws LexicalError*/ {
+	public Token(int id, int line, int column) /* throws LexicalError */{
 		this(id, line, column, null);
 	}
 
-	public Token(int id, int line, int column, Object val) /*throws LexicalError*/ {
+	public Token(int id, int line, int column, Object val) /*
+															 * throws
+															 * LexicalError
+															 */{
 		super(id, null);
-		
-		this.line = line; 
+
+		this.line = line;
 		this.column = column;
 		super.value = val;
-		
+
 		/***
-		if (id == IC.Parser.sym.INTEGER){
-		try { 
-			int a = Integer.parseInt(val.toString()); 
-			}
-		 catch (Exception e) { 
-			throw new LexicalError("Number is too long.", line);
-			}
-		}
-		***/
-		
+		 * if (id == IC.Parser.sym.INTEGER){ try { int a =
+		 * Integer.parseInt(val.toString()); } catch (Exception e) { throw new
+		 * LexicalError("Number is too long.", line); } }
+		 ***/
+
+	}
+
+	public int getLine() {
+		return line;
 	}
 
 	@Override
