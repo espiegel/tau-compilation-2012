@@ -20,6 +20,8 @@ nonterminal List<Formal> formals_list;
 nonterminal ICClass libic;
 nonterminal Type type;
 
+precedence left LP, RP, LB, RB;
+
 start with libic;
 
 type ::= VOID:t
@@ -31,7 +33,7 @@ type ::= VOID:t
          | BOOLEAN:t
          {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.BOOLEAN); :}
          | type:t LB RB
-         {: t.incrementDimension(); :}
+         {: t.incrementDimension(); RESULT = t:}
          ;
 
 formals_list ::= formals:l
