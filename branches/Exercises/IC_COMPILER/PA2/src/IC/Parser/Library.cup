@@ -20,6 +20,8 @@ nonterminal List<Formal> formals_list;
 nonterminal ICClass libic;
 nonterminal Type type;
 
+start with libic;
+
 type ::= VOID:t
          {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.VOID); :}
          | STRING:t
