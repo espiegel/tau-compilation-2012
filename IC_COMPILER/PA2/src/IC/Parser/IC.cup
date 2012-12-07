@@ -13,8 +13,13 @@ nonterminal ICClass classDecl;
 nonterminal List<ASTNode> classbody_list;
 nonterminal Field field;
 nonterminal Method method;
+nonterminal Type methodtype;
 nonterminal List<String> morefields;
 nonterminal Type type;
+nonterminal Formal formals;
+nonterminal List<Formal> formals_list;
+nonterminal List<Statement> stmt_list;
+
 
 terminal LP, RP, LB, RB, LCBR, RCBR, COMMA, DOT, SEMI;
 terminal BOOLEAN, INTEGER, STRING, VOID, INT, NULL;  /* types */
@@ -24,11 +29,13 @@ terminal MINUS, PLUS, MULTIPLY, MOD, DIVIDE, ASSIGN; /* operators */
 terminal STATIC, IF, ELSE, BREAK, CLASS, RETURN,
          CONTINUE, EXTENDS, THIS, WHILE, FOR, NEW;   /* keywords */
 terminal String ID;
-terminal String CLASS_ID;
+terminal CLASS_ID; // This is not a string.. it can also be a type.
 terminal QUOTE, LENGTH;
 
 //////////////////////////
 // Precedence declarations
+
+//start with program;
 
 //////////////
 // The grammar
@@ -41,6 +48,7 @@ literal ::= INTEGER:i
 
 program ::= classDecl:c
             {: List<ICClass> l = new ArrayList<ICClass>(); l.add(c); RESULT = new Program(l); :};
+            
 classDecl ::= CLASS:c CLASS_ID:i LCBR classbody_list:l RCBR
 {:  List<Method> methods = new ArrayList<Method>();
     List<Field> fields = new ArrayList<Field>();
@@ -50,7 +58,7 @@ classDecl ::= CLASS:c CLASS_ID:i LCBR classbody_list:l RCBR
        else if(a instanceof Field)
            fields.add(((Field)a));
     }
-    RESULT = new ICClass(((Token)c).getLine(),i,fields,methods); 
+    RESULT = new ICClass(((Token)c).getLine(), ((Token)i).getValueName(),fields,methods); 
 :};
 			
 classbody_list ::= field:f
@@ -75,22 +83,39 @@ morefields ::= COMMA ID:n
                | morefields:m COMMA ID:n
                {: m.add(n); RESULT = m; :};
 
-/* 
-/////////////////////////////////////////////////////////////////////////
-// Need to continue doing the method... - Eidan @ 9.23pm 4/12/12
-//////////////////////////////////////////////////////////////////////////
 
-method ::= methodtype:t ID:n LP formals RP LCBR stmt_list:s RCBR
-           {: RESULT = new Method :};
+method ::= methodtype:t ID:n LP formals_list:f RP LCBR stmt_list:s RCBR
+           {: RESULT = new VirtualMethod(t, n, f, s); :}
+           | STATIC methodtype:t ID:n LP formals_list:f RP LCBR stmt_list:s RCBR
+           {: RESULT = new StaticMethod(t, n, f, s); :};
 
-formals ::= type ID | formals COMMA formals;
+formals_list ::= formals:l
+				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf;  :}
+				| formals_list:l COMMA formals:m
+				{: l.add(m); RESULT = l; :};
 
-methodtype ::= type | VOID;
-type ::= INT | BOOLEAN | STRING | CLASS_ID;
-brackets ::= LB RB | brackets LB RB;
-arrtype ::= type | arrtype brackets;
+formals ::= type:t ID:n
+        {: RESULT = new Formal(t, n); :};
 
+methodtype ::= type
+              | VOID:t
+              {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.VOID); :};
+              
+type ::= STRING:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.STRING); :}
+         | INT:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.INT); :}
+         | BOOLEAN:t
+         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.BOOLEAN); :}
+         | type:t LB RB
+         {: t.incrementDimension(); RESULT = t; :}
+         | CLASS_ID:t
+         {: RESULT = new UserType(((Token)t).getLine(), ((Token)t).getValueName()); :};
 
+/*
+//////////////////////////////////////////
+// Eidan 7/12/12 - need to finish these 
+//////////////////////////////////////////
 stmt_list ::= stmt:s
 	{: RESULT = new StmtList(s); :}
 	| stmt_list:sl stmt:s
