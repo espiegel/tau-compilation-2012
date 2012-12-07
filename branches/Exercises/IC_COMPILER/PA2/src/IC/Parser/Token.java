@@ -39,6 +39,9 @@ public class Token extends Symbol {
 		return line;
 	}
 
+	public Object getValue() { return super.value; }
+	public String getValueName() { return super.value.toString(); }
+	
 	@Override
 	public String toString() {
 		String ID;

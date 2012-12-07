@@ -33,7 +33,7 @@ type ::= VOID:t
          | BOOLEAN:t
          {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.BOOLEAN); :}
          | type:t LB RB
-         {: t.incrementDimension(); RESULT = t:}
+         {: t.incrementDimension(); RESULT = t; :}
          ;
 
 formals_list ::= formals:l
