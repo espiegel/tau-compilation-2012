@@ -14,8 +14,8 @@ terminal STATIC, VOID, INT, STRING, BOOLEAN;
 nonterminal LibraryMethod libmethod;
 nonterminal List<Method> libmethod_list;
 
-nonterminal Formal formals;
-nonterminal List<Formal> formals_list;
+nonterminal Formal formal;
+nonterminal List<Formal> formal_list;
 
 nonterminal ICClass libic;
 nonterminal Type type;
@@ -24,38 +24,40 @@ precedence left LP, RP, LB, RB;
 
 start with libic;
 
-type ::= VOID:t
-         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.VOID); :}
-         | STRING:t
-         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.STRING); :}
-         | INT:t
-         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.INT); :}
-         | BOOLEAN:t
-         {: RESULT = new PrimitiveType(((Token)t).getLine(), DataTypes.BOOLEAN); :}
-         | type:t LB RB
-         {: t.incrementDimension(); RESULT = t; :}
-         ;
+type ::= 
+		INT:t 
+ 	 {: RESULT = (Type)(new PrimitiveType(tleft, DataTypes.INT)); :}  
+ 	 | BOOLEAN:t
+ 	 {: RESULT = (Type)(new PrimitiveType(tleft, DataTypes.BOOLEAN)); :} 
+ 	 | STRING:t
+ 	 {: RESULT = (Type)(new PrimitiveType(tleft, DataTypes.STRING)); :} 
+ 	 | type:t LB RB    /* array */ 
+ 	 {: t.incrementDimension(); RESULT = t; :}  ;
 
-formals_list ::= formals:l
+formal_list ::= formal:l
 				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf;  :}
-				| formals_list:l COMMA formals:m
-				{: l.add(m); RESULT = l; :};
+				| formal_list:l COMMA formal:m
+				{: l.add(m); RESULT = l; :} ;
 
-formals ::= type:t ID:n
-        {: RESULT = new Formal(t, n); :};
+formal ::= type:t ID:n
+        {: RESULT = new Formal(t, n); :} ;
 
 libic ::= CLASS:c CLASS_ID LCBR libmethod_list:l RCBR
-{: RESULT = new ICClass(((Token)c).getLine(),"Library",new ArrayList<Field>(),l); :};
+		{: RESULT = new ICClass(((Token)c).getLine(),"Library",new ArrayList<Field>(),l); :} ;
 
 libmethod_list ::= libmethod:l
 				{: List<Method> lf = new ArrayList<Method>(); lf.add(l); RESULT=lf; :}
 				| libmethod_list:l libmethod:m
-				{: l.add(m); RESULT = l; :};
+				{: l.add(m); RESULT = l; :} ;
 				
-libmethod ::= STATIC type:t ID:n LP formals_list:f RP SEMI 
-              {: RESULT = new LibraryMethod(t,n,f); :}
-              | STATIC type:t ID:n LP RP SEMI
-              {: RESULT = new LibraryMethod(t,n,new ArrayList<Formal>()); :}
-              ;
+libmethod ::= STATIC type:t ID:mid LP formal_list:formlst RP SEMI
+          {: RESULT = new LibraryMethod(t, (String)mid, formlst); :}
+          |   STATIC type:t ID:mid LP RP SEMI
+          {: RESULT = new LibraryMethod(t, (String)mid, new ArrayList<Formal>()); :}
+          |   STATIC VOID ID:mid LP formal_list:formlst RP SEMI
+          {: RESULT = new LibraryMethod((Type)(new PrimitiveType(midleft, DataTypes.VOID)), (String)mid, formlst); :}  
+          |   STATIC VOID ID:mid LP RP SEMI
+          {: RESULT = new LibraryMethod((Type)(new PrimitiveType(midleft, DataTypes.VOID)), (String)mid, new ArrayList<Formal>()); :} 
+          ; 
             
             
