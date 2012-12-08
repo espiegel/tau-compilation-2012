@@ -3,6 +3,8 @@ package IC.Parser;
 import IC.AST.*;
 import IC.*;
 import java.util.*;
+import java_cup.runtime.*;
+
 
 ////////////////////////////////////////////
 // Symbol list (terminals and non-terminals)
