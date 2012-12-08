@@ -53,7 +53,7 @@ public class Compiler {
 		try {
 			System.out.println(pScan.parse().value);
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 }
