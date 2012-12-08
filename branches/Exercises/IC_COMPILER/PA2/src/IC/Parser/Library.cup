@@ -3,6 +3,19 @@ package IC.Parser;
 import IC.AST.*;
 import IC.*;
 import java.util.*;
+import java_cup.runtime.*;
+
+parser code {:
+
+	// override method call in case of a (unrecovered) syntax error
+	public void unrecovered_syntax_error(Symbol current_token) throws SyntaxError{
+		throw new SyntaxError(current_token.left+1, (String)current_token.value);
+	}
+	
+	// override method call in case of a syntax error, to avoid duplicate error messages
+	public void syntax_error(Symbol current_token){}
+:};
+
 
 /* Terminals */
 terminal RB, LB, COMMA, RP, LP, LCBR, RCBR, SEMI;
