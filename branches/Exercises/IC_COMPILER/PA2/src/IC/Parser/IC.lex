@@ -36,7 +36,8 @@ import IC.Parser.LexicalError;
 	if(yystate() == STATE_COMMENT1 || yystate() == STATE_COMMENT2)   
 		throw new LexicalError("Unclosed comment at end of file.",yyline+1);
 		 
-	return new Token(sym.EOF,yyline+1,yycolumn);
+	return token(sym.EOF,"EOF");
+	
 
 %eofval}
 
@@ -76,53 +77,53 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 
 
 <YYINITIAL> {
-	"class" 	{ return token(sym.CLASS); }
-	"return" 	{ return token(sym.RETURN); }
-	"new" 		{ return token(sym.NEW); }
-	"extends" 	{ return token(sym.EXTENDS); }
-	"if" 		{ return token(sym.IF); }
-	"length" 	{ return token(sym.LENGTH); }
-	"static" 	{ return token(sym.STATIC); }
-	"else" 		{ return token(sym.ELSE); }
-	"true" 		{ return token(sym.TRUE); }
-	"void" 		{ return token(sym.VOID); }
-	"while" 	{ return token(sym.WHILE); }
-	"false" 	{ return token(sym.FALSE); }
-	"int" 		{ return token(sym.INT); }
-	"break" 	{ return token(sym.BREAK); }
-	"null" 		{ return token(sym.NULL); }
-	"boolean" 	{ return token(sym.BOOLEAN); }
-    "continue" 	{ return token(sym.CONTINUE); }
-	"string" 	{ return token(sym.STRING); }
-	"this" 		{ return token(sym.THIS); }
+	"class" 	{ return token(sym.CLASS,yytext()); }
+	"return" 	{ return token(sym.RETURN,yytext()); }
+	"new" 		{ return token(sym.NEW,yytext()); }
+	"extends" 	{ return token(sym.EXTENDS,yytext()); }
+	"if" 		{ return token(sym.IF,yytext()); }
+	"length" 	{ return token(sym.LENGTH,yytext()); }
+	"static" 	{ return token(sym.STATIC,yytext()); }
+	"else" 		{ return token(sym.ELSE,yytext()); }
+	"true" 		{ return token(sym.TRUE,yytext()); }
+	"void" 		{ return token(sym.VOID,yytext()); }
+	"while" 	{ return token(sym.WHILE,yytext()); }
+	"false" 	{ return token(sym.FALSE,yytext()); }
+	"int" 		{ return token(sym.INT,yytext()); }
+	"break" 	{ return token(sym.BREAK,yytext()); }
+	"null" 		{ return token(sym.NULL,yytext()); }
+	"boolean" 	{ return token(sym.BOOLEAN,yytext()); }
+    "continue" 	{ return token(sym.CONTINUE,yytext()); }
+	"string" 	{ return token(sym.STRING,yytext()); }
+	"this" 		{ return token(sym.THIS,yytext()); }
 	
-	"," 		{ return token(sym.COMMA); }
-	"." 		{ return token(sym.DOT); }
-	";" 		{ return token(sym.SEMI); }
+	"," 		{ return token(sym.COMMA,yytext()); }
+	"." 		{ return token(sym.DOT,yytext()); }
+	";" 		{ return token(sym.SEMI,yytext()); }
 	
-	"=" 		{ return token(sym.ASSIGN); }
-	"+" 		{ return token(sym.PLUS); }
-	"-" 		{ return token(sym.MINUS); }
-	"*" 		{ return token(sym.MULTIPLY); }
-	"/" 		{ return token(sym.DIVIDE); }
-	"%" 		{ return token(sym.MOD); }
+	"=" 		{ return token(sym.ASSIGN,yytext()); }
+	"+" 		{ return token(sym.PLUS,yytext()); }
+	"-" 		{ return token(sym.MINUS,yytext()); }
+	"*" 		{ return token(sym.MULTIPLY,yytext()); }
+	"/" 		{ return token(sym.DIVIDE,yytext()); }
+	"%" 		{ return token(sym.MOD,yytext()); }
 	
-	">"  { return token(sym.GT); }
-	">=" { return token(sym.GTE); }
-	"<"  { return token(sym.LT); }
-	"<=" { return token(sym.LTE); }	
-	"&&" { return token(sym.LAND); }
-	"!"  { return token(sym.LNEG); }
-	"||" { return token(sym.LOR); }	
-	"==" { return token(sym.EQUAL); }
-	"!=" { return token(sym.NEQUAL); }
+	">"  { return token(sym.GT,yytext()); }
+	">=" { return token(sym.GTE,yytext()); }
+	"<"  { return token(sym.LT,yytext()); }
+	"<=" { return token(sym.LTE,yytext()); }	
+	"&&" { return token(sym.LAND,yytext()); }
+	"!"  { return token(sym.LNEG,yytext()); }
+	"||" { return token(sym.LOR,yytext()); }	
+	"==" { return token(sym.EQUAL,yytext()); }
+	"!=" { return token(sym.NEQUAL,yytext()); }
 	
-	{LP} { return token(sym.LP); }
-	{RP} { return token(sym.RP); }
-	{LB} { return token(sym.LB); }
-	{RB} { return token(sym.RB); }
-	{LCBR} { return token(sym.LCBR); }
-	{RCBR} { return token(sym.RCBR); }
+	{LP} { return token(sym.LP,yytext()); }
+	{RP} { return token(sym.RP,yytext()); }
+	{LB} { return token(sym.LB,yytext()); }
+	{RB} { return token(sym.RB,yytext()); }
+	{LCBR} { return token(sym.LCBR,yytext()); }
+	{RCBR} { return token(sym.RCBR,yytext()); }
 	
 	{CLASS_ID}        { return token(sym.CLASS_ID, yytext()); }
 	{ID}              { return token(sym.ID, yytext()); }

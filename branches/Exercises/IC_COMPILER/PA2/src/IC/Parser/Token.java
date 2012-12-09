@@ -17,12 +17,9 @@ public class Token extends Symbol {
 		this(id, line, column, null);
 	}
 
-	public Token(int id, int line, int column, Object val) /*
-															 * throws
-															 * LexicalError
-															 */{
+	public Token(int id, int line, int column, Object val) /* throws LexicalError */{
 		super(id, null);
-
+		this.left = line;
 		this.line = line;
 		this.column = column;
 		super.value = val;
@@ -32,11 +29,15 @@ public class Token extends Symbol {
 		 * Integer.parseInt(val.toString()); } catch (Exception e) { throw new
 		 * LexicalError("Number is too long.", line); } }
 		 ***/
-
 	}
 
 	public int getLine() {
 		return line;
+	}
+	
+	private boolean hasSpecialValue() {
+		return this.sym == IC.Parser.sym.INTEGER || this.sym == IC.Parser.sym.ID ||
+				this.sym == IC.Parser.sym.CLASS_ID || this.sym == IC.Parser.sym.QUOTE;
 	}
 
 	public Object getValue() { return super.value; }
@@ -45,8 +46,7 @@ public class Token extends Symbol {
 	@Override
 	public String toString() {
 		String ID;
-		String VAL = (this.value == null) ? ""
-				: '(' + this.value.toString() + ')';
+		String VAL = (hasSpecialValue()) ? '(' + this.value.toString() + ')' : "";
 		switch (this.sym) {
 		case IC.Parser.sym.ASSIGN:
 			ID = "ASSIGN";
@@ -199,6 +199,8 @@ public class Token extends Symbol {
 		default:
 			ID = "Doesn't exist";
 		}
-		return this.line + ": " + ID + VAL;
+		return this.left + ": " + ID + VAL;
 	}
+
+
 }
