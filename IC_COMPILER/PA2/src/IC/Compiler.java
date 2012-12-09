@@ -2,6 +2,7 @@ package IC;
 
 import java.io.*;
 
+import IC.AST.ICClass;
 import IC.Parser.*;
 
 import java_cup.runtime.Symbol;
@@ -51,7 +52,10 @@ public class Compiler {
 		Lexer libScan = new Lexer(txtLib);
 		LibraryParser pScan = new LibraryParser(libScan);
 		try {
-			System.out.println(pScan.parse().value);
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(sigLib);
+			ICClass libroot = (ICClass) pScan.parse().value;
+			System.out.println(libroot.accept(printer));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
