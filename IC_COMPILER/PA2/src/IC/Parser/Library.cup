@@ -9,7 +9,7 @@ parser code {:
 
 	// override method call in case of a (unrecovered) syntax error
 	public void unrecovered_syntax_error(Symbol current_token) throws SyntaxError{
-		throw new SyntaxError(current_token.left+1, (String)current_token.value);
+		throw new SyntaxError(current_token.left, current_token.value.toString());
 	}
 	
 	// override method call in case of a syntax error, to avoid duplicate error messages
@@ -18,10 +18,17 @@ parser code {:
 
 
 /* Terminals */
-terminal RB, LB, COMMA, RP, LP, LCBR, RCBR, SEMI;
-terminal CLASS, CLASS_ID;
+terminal LP, RP, LB, RB, LCBR, RCBR, COMMA, DOT, SEMI;
+terminal BOOLEAN, INTEGER, STRING, VOID, INT, NULL;  /* types */
+terminal EQUAL, NEQUAL, GT, GTE, LT, LTE,
+         LNEG, LAND, LOR, FALSE, TRUE;               /* logic */      
+terminal MINUS, PLUS, MULTIPLY, MOD, DIVIDE, ASSIGN; /* operators */
+terminal STATIC, IF, ELSE, BREAK, CLASS, RETURN,
+         CONTINUE, EXTENDS, THIS, WHILE, FOR, NEW;   /* keywords */
 terminal String ID;
-terminal STATIC, VOID, INT, STRING, BOOLEAN;
+terminal CLASS_ID; // This is not a string.. it can also be a type.
+terminal QUOTE, LENGTH;
+
 
 /* Non-Terminals */
 nonterminal LibraryMethod libmethod;
@@ -56,7 +63,7 @@ formal ::= type:t ID:n
         {: RESULT = new Formal(t, n); :} ;
 
 libic ::= CLASS:c CLASS_ID LCBR libmethod_list:l RCBR
-		{: RESULT = new ICClass(((Token)c).getLine(),"Library",new ArrayList<Field>(),l); :} ;
+		{: RESULT = new ICClass(cleft,"Library",new ArrayList<Field>(),l); :} ;
 
 libmethod_list ::= libmethod:l
 				{: List<Method> lf = new ArrayList<Method>(); lf.add(l); RESULT=lf; :}
