@@ -144,9 +144,6 @@ public class Token extends Symbol {
 		case IC.Parser.sym.STATIC:
 			ID = "STATIC";
 			break;
-		case IC.Parser.sym.FOR:
-			ID = "FOR";
-			break;
 		case IC.Parser.sym.LB:
 			ID = "LB";
 			break;
