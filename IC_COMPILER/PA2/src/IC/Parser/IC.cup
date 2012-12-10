@@ -10,7 +10,9 @@ parser code {:
 
 	// override method call in case of a (unrecovered) syntax error
 	public void unrecovered_syntax_error(Symbol current_token) throws SyntaxError{
+		System.out.println("Error found on Symbol "+current_token);
 		throw new SyntaxError(current_token.left, current_token.toString());
+		
 	}
 	
 	// override method call in case of a syntax error, to avoid duplicate error messages
@@ -25,9 +27,8 @@ nonterminal Literal literal;
 nonterminal List<ICClass> classDecl_list;
 nonterminal ICClass classDecl;
 nonterminal List<ASTNode> classbody_list;
-nonterminal Field field;
+nonterminal List<Field> field;
 nonterminal Method method;
-nonterminal List<String> morefields;
 nonterminal Type type;
 nonterminal Formal formals;
 nonterminal List<Formal> formals_list;
@@ -74,7 +75,7 @@ start with program;
 // The grammar
 
 program ::= classDecl_list:c
-            {: List<ICClass> l = new ArrayList<ICClass>(); l.add(c); RESULT = new Program(l); :};
+            {: RESULT = new Program(c); :};
 
 classDecl_list ::= classDecl:c
 	{: List<ICClass> l = new ArrayList<ICClass>(); l.add(c); RESULT = l; :}
@@ -121,17 +122,11 @@ classbody_list ::= field:f
 
 
 field ::= type:t id_list:n SEMI 
-          {: RESULT = new Field(t,n); :}
-          | field:f morefields:m SEMI
-          {: for(String s : m)
-                RESULT = new Field(f.getType(), s);
-          :};
+          {: List<Field> list = new ArrayList<Field>();
+             for(String id : n)
+                 list.add(new Field(t,id));
+             RESULT = list; :};
           
-morefields ::= COMMA ID:n
-               {: List<String> l = new ArrayList<String>(); l.add(n); RESULT=l; :}
-               | morefields:m COMMA ID:n
-               {: m.add(n); RESULT = m; :};
-
 id_list ::= ID:id
 	{: List<String> l = new ArrayList<String>(); l.add(id); RESULT = l; :}
 	| id_list:l COMMA ID:id
