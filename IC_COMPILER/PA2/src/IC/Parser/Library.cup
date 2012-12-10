@@ -22,11 +22,12 @@ terminal LP, RP, LB, RB, LCBR, RCBR, COMMA, DOT, SEMI;
 terminal BOOLEAN, INTEGER, STRING, VOID, INT, NULL;  /* types */
 terminal EQUAL, NEQUAL, GT, GTE, LT, LTE,
          LNEG, LAND, LOR, FALSE, TRUE;               /* logic */      
-terminal MINUS, PLUS, MULTIPLY, MOD, DIVIDE, ASSIGN; /* operators */
+terminal MINUS, PLUS, MULTIPLY, MOD, DIVIDE, ASSIGN, /* operators */
+         UMINUS;
 terminal STATIC, IF, ELSE, BREAK, CLASS, RETURN,
-         CONTINUE, EXTENDS, THIS, WHILE, FOR, NEW;   /* keywords */
+         CONTINUE, EXTENDS, THIS, WHILE, NEW;        /* keywords */
 terminal String ID;
-terminal CLASS_ID; // This is not a string.. it can also be a type.
+terminal String CLASS_ID;
 terminal QUOTE, LENGTH;
 
 
@@ -44,8 +45,7 @@ precedence left LP, RP, LB, RB;
 
 start with libic;
 
-type ::= 
-		INT:t 
+type ::= INT:t 
  	 {: RESULT = (Type)(new PrimitiveType(tleft, DataTypes.INT)); :}  
  	 | BOOLEAN:t
  	 {: RESULT = (Type)(new PrimitiveType(tleft, DataTypes.BOOLEAN)); :} 
@@ -55,7 +55,7 @@ type ::=
  	 {: t.incrementDimension(); RESULT = t; :}  ;
 
 formal_list ::= formal:l
-				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf;  :}
+				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf; :}
 				| formal_list:l COMMA formal:m
 				{: l.add(m); RESULT = l; :} ;
 
@@ -77,7 +77,4 @@ libmethod ::= STATIC type:t ID:mid LP formal_list:formlst RP SEMI
           |   STATIC VOID ID:mid LP formal_list:formlst RP SEMI
           {: RESULT = new LibraryMethod((Type)(new PrimitiveType(midleft, DataTypes.VOID)), (String)mid, formlst); :}  
           |   STATIC VOID ID:mid LP RP SEMI
-          {: RESULT = new LibraryMethod((Type)(new PrimitiveType(midleft, DataTypes.VOID)), (String)mid, new ArrayList<Formal>()); :} 
-          ; 
-            
-            
+          {: RESULT = new LibraryMethod((Type)(new PrimitiveType(midleft, DataTypes.VOID)), (String)mid, new ArrayList<Formal>()); :} ;      
