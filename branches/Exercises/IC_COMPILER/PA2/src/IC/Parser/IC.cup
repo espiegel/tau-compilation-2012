@@ -112,13 +112,13 @@ classDecl ::= CLASS CLASS_ID:i LCBR RCBR
 
 			
 classbody_list ::= field:f
-                  {: List<ASTNode> lf = new ArrayList<ASTNode>(); lf.add(f); RESULT=lf;  :}
+                  {: List<ASTNode> lf = new ArrayList<ASTNode>(); for(Field t : f) lf.add(t); RESULT=lf;  :}
                   | method:m
                   {: List<ASTNode> lm = new ArrayList<ASTNode>(); lm.add(m); RESULT=lm;  :}
                   | classbody_list:l method:m
                   {: l.add(m); RESULT = l; :}
                   | classbody_list:l field:f
-                  {: l.add(f); RESULT = l; :};                 
+                  {: for(Field t : f) l.add(t); RESULT = l; :};                 
 
 
 field ::= type:t id_list:n SEMI 
