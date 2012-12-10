@@ -2,7 +2,7 @@ package IC;
 
 import java.io.*;
 
-import IC.AST.ICClass;
+import IC.AST.*;
 import IC.Parser.*;
 
 import java_cup.runtime.Symbol;
@@ -18,44 +18,78 @@ import java_cup.runtime.Symbol;
  * 
  */
 public class Compiler {
-	public static void main(String[] args) throws IOException {
-
-		Symbol currToken;
-		FileReader txtFile = new FileReader(args[0]);
-		for (int i = 1; i < args.length; ++i) {
-			if (args[i].substring(0, 2).equals("-L")) {
-				TreatLibrary(args[i].substring(2));
+	
+	private static boolean bParse_lib = false;
+	private static boolean bPrint_ast = false;
+	
+	private static String lib_path = null;
+	private static String program_path = null;
+	
+	private static final String EXIT1 = "SYSTEM EXIT! REASON: no arguments were given to compiler.";
+	private static final String EXIT2 = "SYSTEM EXIT! REASON: conflicting arguments.";
+	private static final String PRINT_AST = "-print-ast";
+	private static final String LIB_FLAG = "-L";
+	
+	
+	public static void main(String[] args) throws IOException{
+		
+		if (args.length == 0) exit (EXIT1);
+		
+		else program_path = args[0]; /* assuming the first argument is a path to an IC program. */
+		
+		for(int i=1;i<args.length;i++){
+			String s = args[i];
+			if (s.startsWith(LIB_FLAG)){
+			
+				if (!bParse_lib){
+					lib_path = s.substring(2);
+					bParse_lib = true;
+				}
+				else exit (EXIT2);
 			}
-		}
-		try {
-
-			Lexer scanner = new Lexer(txtFile);
-			Parser p = new Parser(scanner);
-			do {
-				currToken = scanner.next_token();
-				System.out.print(currToken
-						+ ((currToken.sym != IC.Parser.sym.EOF) ? "\n" : ""));
-			} while (currToken.sym != IC.Parser.sym.EOF);
-//			Object result = p.parse().value;
-//			System.out.println(result);
-
-		} catch (LexicalError e) {
-			System.out.println(e);
-		} catch (Exception e) {
-			System.out.println(e);
-		}
+			else if (s.equals(PRINT_AST)){
+				if (!bPrint_ast) bPrint_ast = true;
+				else exit (EXIT2);
+			}
+			else exit (EXIT2);
+			}
+		
+		if (bParse_lib) parseLibrary(lib_path);
+		parseProgram(program_path);
+	}
+	
+		
+	
+	private static void exit(String msg){
+		System.out.println(msg);
+		System.exit(1);
 	}
 
-	public static void TreatLibrary(String sigLib) throws IOException {
+	private static void parseLibrary(String lib_path) throws IOException {
 
-		FileReader txtLib = new FileReader(sigLib);
-		Lexer libScan = new Lexer(txtLib);
-		LibraryParser pScan = new LibraryParser(libScan);
+		FileReader reader = new FileReader(lib_path);
+		Lexer scanner = new Lexer(reader);
+		LibraryParser parser = new LibraryParser(scanner);
+		
 		try {
-			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(sigLib);
-			ICClass libroot = (ICClass) pScan.parse().value;
-			System.out.println(libroot.accept(printer));
-			
+			ICClass root = (ICClass) parser.parse().value;
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
+			if (bPrint_ast) System.out.println(root.accept(printer));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void parseProgram(String prog_path) throws IOException {
+
+		FileReader reader = new FileReader(prog_path);
+		Lexer scanner = new Lexer(reader);
+		Parser parser = new Parser(scanner);
+		
+		try {
+			Program root = (Program) parser.parse().value;
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(prog_path);
+			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
