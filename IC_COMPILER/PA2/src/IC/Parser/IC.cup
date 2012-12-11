@@ -10,8 +10,7 @@ parser code {:
 
 	// override method call in case of a (unrecovered) syntax error
 	public void unrecovered_syntax_error(Symbol current_token) throws SyntaxError{
-		System.out.println("Error found on Symbol "+current_token);
-		throw new SyntaxError(current_token.left, current_token.toString());
+		throw new SyntaxError(current_token.left, current_token.value.toString());
 		
 	}
 	
@@ -74,7 +73,8 @@ start with program;
 //////////////
 // The grammar
 
-program ::= classDecl_list:c
+program ::= {: RESULT = new Program(new ArrayList<ICClass>()); :}
+			| classDecl_list:c
             {: RESULT = new Program(c); :};
 
 classDecl_list ::= classDecl:c

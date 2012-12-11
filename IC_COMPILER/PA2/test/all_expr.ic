@@ -1,0 +1,54 @@
+
+class Gelfand {
+
+ int k;
+ 
+ void foo4() { return; }
+ 
+ static void foo3(int a) { return; }
+ 
+ int foo(int a) { 
+	
+	int[] a = new int[5];
+	
+	a[4]=8;
+	
+	a[1]=a.length;
+	
+	boolean b = !(true);
+	boolean c = false;
+	
+	boolean d= b && c;
+	d=b || c;
+	
+	int[][][][] arr;
+	
+	Gelfand cl;
+	
+	Gelfand.foo3(8);
+	
+	Gelfand.foo4(); 
+ 
+	foo(4);
+	
+	return 5; 
+ }
+ 
+ 
+  int foo2(int a) { 
+	
+	this.k=foo(6);
+	
+	this.k=9;
+	
+	A b = new A();
+	
+	b.ttt();
+	
+	b.sss(6);
+ 
+	return 5;  
+ }
+
+
+}

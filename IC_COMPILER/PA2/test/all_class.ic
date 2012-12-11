@@ -1,0 +1,37 @@
+
+class Shirov {
+
+ int sum,a;
+ int b;
+
+}
+
+class Kasparov {
+
+
+}
+
+class Korchnoi {
+
+	int a;
+	
+	void foo7(boolean r) { return; }
+
+
+}
+
+class Gelfand extends Ivanchuk {
+
+ string foo(int a, string t) { return "aaa"; }
+ void foo2(int a) { 
+	int d=7777777777777777777777777777777777;
+	return; 
+ }
+
+
+}
+
+class Kasparov extends Karpov {
+
+
+}

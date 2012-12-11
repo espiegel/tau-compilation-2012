@@ -1,0 +1,23 @@
+
+class Gelfand {
+
+ int k;
+ 
+ int foo(int a) { 
+	
+	int[] a = new int[5];
+	
+	boolean c=fasle;
+	c=true;
+	
+	int a=9;
+	
+	Gelafand g=null;
+
+	string s="aaaa";
+ 
+	return 5; 
+ }
+ 
+
+}
