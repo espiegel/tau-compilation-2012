@@ -1,0 +1,157 @@
+
+SUCCESS: PARSED LIBRARY SUCCESSFULLY!
+
+
+1: Declaration of class: Library
+  2: Declaration of library method: println
+    2: Primitive data type: void
+    2: Parameter: s
+     2: Primitive data type: string
+  3: Declaration of library method: print
+    3: Primitive data type: void
+    3: Parameter: s
+     3: Primitive data type: string
+  4: Declaration of library method: printi
+    4: Primitive data type: void
+    4: Parameter: i
+     4: Primitive data type: int
+  5: Declaration of library method: printb
+    5: Primitive data type: void
+    5: Parameter: b
+     5: Primitive data type: boolean
+  7: Declaration of library method: readi
+    7: Primitive data type: int
+  8: Declaration of library method: readln
+    8: Primitive data type: string
+  9: Declaration of library method: eof
+    9: Primitive data type: boolean
+  11: Declaration of library method: stoi
+    11: Primitive data type: int
+    11: Parameter: s
+     11: Primitive data type: string
+    11: Parameter: n
+     11: Primitive data type: int
+  13: Declaration of library method: itos
+    13: Primitive data type: string
+    13: Parameter: i
+     13: Primitive data type: int
+  14: Declaration of library method: stoa
+    14: Primitive data type: 1-dimensional array of int
+    14: Parameter: s
+     14: Primitive data type: string
+  15: Declaration of library method: atos
+    15: Primitive data type: string
+    15: Parameter: a
+     15: Primitive data type: 1-dimensional array of int
+  17: Declaration of library method: random
+    17: Primitive data type: int
+    17: Parameter: n
+     17: Primitive data type: int
+  18: Declaration of library method: time
+    18: Primitive data type: int
+  19: Declaration of library method: exit
+    19: Primitive data type: int
+    19: Parameter: i
+     19: Primitive data type: int
+
+SUCCESS: PARSED PROGRAM SUCCESSFULLY!
+
+
+Abstract Syntax Tree: C:\Users\gkodinet\workspace\compilation\branches\Exercises\IC_COMPILER\PA2\test\all_ops.ic
+
+2: Declaration of class: Gelfand
+  4: Declaration of field: k
+   4: Primitive data type: int
+  6: Declaration of static method: foo3
+    6: Primitive data type: void
+    6: Return statement
+  8: Declaration of virtual method: foo
+    8: Primitive data type: int
+    8: Parameter: a
+     8: Primitive data type: int
+    10: Declaration of local variable: a, with initial value
+      10: Primitive data type: int
+      10: Mathematical unary operation: unary subtraction
+       10: Integer literal: 8
+    11: Declaration of local variable: b, with initial value
+      11: Primitive data type: boolean
+      11: Logical unary operation: logical negation
+       11: Boolean literal: true
+    12: Declaration of local variable: c, with initial value
+      12: Primitive data type: boolean
+      12: Boolean literal: false
+    14: Assignment statement
+      14: Reference to variable: a
+      14: Mathematical binary operation: addition
+        14: Integer literal: 1
+        14: Integer literal: 2
+    15: Assignment statement
+      15: Reference to variable: a
+      15: Mathematical binary operation: subtraction
+        15: Integer literal: 1
+        15: Integer literal: 2
+    16: Assignment statement
+      16: Reference to variable: a
+      16: Mathematical binary operation: division
+        16: Integer literal: 1
+        16: Integer literal: 2
+    17: Assignment statement
+      17: Reference to variable: a
+      17: Mathematical binary operation: modulo
+        17: Integer literal: 1
+        17: Integer literal: 2
+    18: Assignment statement
+      18: Reference to variable: a
+      18: Mathematical binary operation: multiplication
+        18: Integer literal: 1
+        18: Integer literal: 2
+    20: If statement
+      20: Logical binary operation: equality
+        20: Reference to variable: a
+        20: Reference to variable: a
+      20: Block of statements
+        20: Assignment statement
+          20: Reference to variable: a
+          20: Reference to variable: a
+    21: If statement
+      21: Logical binary operation: inequality
+        21: Reference to variable: a
+        21: Reference to variable: a
+      21: Block of statements
+        21: Assignment statement
+          21: Reference to variable: a
+          21: Reference to variable: a
+    22: If statement
+      22: Logical binary operation: greater than or equal to
+        22: Reference to variable: a
+        22: Reference to variable: a
+      22: Block of statements
+        22: Assignment statement
+          22: Reference to variable: a
+          22: Reference to variable: a
+    23: If statement
+      23: Logical binary operation: less than or equal to
+        23: Reference to variable: a
+        23: Reference to variable: a
+      23: Block of statements
+        23: Assignment statement
+          23: Reference to variable: a
+          23: Reference to variable: a
+    24: If statement
+      24: Logical binary operation: less than
+        24: Reference to variable: a
+        24: Reference to variable: a
+      24: Block of statements
+        24: Assignment statement
+          24: Reference to variable: a
+          24: Reference to variable: a
+    25: If statement
+      25: Logical binary operation: greater than
+        25: Reference to variable: a
+        25: Reference to variable: a
+      25: Block of statements
+        25: Assignment statement
+          25: Reference to variable: a
+          25: Reference to variable: a
+    27: Return statement, with return value
+     27: Integer literal: 5

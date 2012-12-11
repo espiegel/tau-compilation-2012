@@ -1,0 +1,15 @@
+
+class Gelfand extends Ivanchuk {
+
+ string foo(int a, string t) { return "aaa"; }
+ void foo2(int a) { return; }
+ void foo3() { return; }
+ int foo4() { return 7; }
+ 
+ static string foo5(int a) { return "aaa"; }
+ static void foo6(int a) { return; }
+ static void foo7(int[][] a) { return; }
+ static int foo8() { return 7; }
+
+
+

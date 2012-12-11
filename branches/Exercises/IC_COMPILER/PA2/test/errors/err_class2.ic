@@ -1,0 +1,10 @@
+
+class Gelfand extends {
+
+ string foo(int a, string t) { return "aaa"; }
+ void foo2(int a) { return; }
+ void foo3() { return; }
+ int foo4() { return 7; }
+
+}
+

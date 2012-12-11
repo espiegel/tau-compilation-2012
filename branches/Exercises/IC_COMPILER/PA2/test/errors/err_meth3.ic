@@ -1,0 +1,14 @@
+
+class Gelfand {
+
+	void foo() {
+		i = i+1;
+	}
+	
+	int i;
+	
+	int foo2 (string i, foo()){
+		i = 100;
+	}
+}
+

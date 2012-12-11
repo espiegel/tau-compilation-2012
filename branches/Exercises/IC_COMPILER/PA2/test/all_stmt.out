@@ -1,0 +1,190 @@
+
+SUCCESS: PARSED LIBRARY SUCCESSFULLY!
+
+
+1: Declaration of class: Library
+  2: Declaration of library method: println
+    2: Primitive data type: void
+    2: Parameter: s
+     2: Primitive data type: string
+  3: Declaration of library method: print
+    3: Primitive data type: void
+    3: Parameter: s
+     3: Primitive data type: string
+  4: Declaration of library method: printi
+    4: Primitive data type: void
+    4: Parameter: i
+     4: Primitive data type: int
+  5: Declaration of library method: printb
+    5: Primitive data type: void
+    5: Parameter: b
+     5: Primitive data type: boolean
+  7: Declaration of library method: readi
+    7: Primitive data type: int
+  8: Declaration of library method: readln
+    8: Primitive data type: string
+  9: Declaration of library method: eof
+    9: Primitive data type: boolean
+  11: Declaration of library method: stoi
+    11: Primitive data type: int
+    11: Parameter: s
+     11: Primitive data type: string
+    11: Parameter: n
+     11: Primitive data type: int
+  13: Declaration of library method: itos
+    13: Primitive data type: string
+    13: Parameter: i
+     13: Primitive data type: int
+  14: Declaration of library method: stoa
+    14: Primitive data type: 1-dimensional array of int
+    14: Parameter: s
+     14: Primitive data type: string
+  15: Declaration of library method: atos
+    15: Primitive data type: string
+    15: Parameter: a
+     15: Primitive data type: 1-dimensional array of int
+  17: Declaration of library method: random
+    17: Primitive data type: int
+    17: Parameter: n
+     17: Primitive data type: int
+  18: Declaration of library method: time
+    18: Primitive data type: int
+  19: Declaration of library method: exit
+    19: Primitive data type: int
+    19: Parameter: i
+     19: Primitive data type: int
+
+SUCCESS: PARSED PROGRAM SUCCESSFULLY!
+
+
+Abstract Syntax Tree: C:\Users\gkodinet\workspace\compilation\branches\Exercises\IC_COMPILER\PA2\test\all_stmt.ic
+
+2: Declaration of class: Shirov
+  4: Declaration of field: k
+   4: Primitive data type: int
+  6: Declaration of virtual method: foo1
+    6: Primitive data type: int
+    6: Return statement, with return value
+     6: Integer literal: 7
+  9: Declaration of virtual method: foo
+    9: Primitive data type: void
+    9: Parameter: a
+     9: Primitive data type: int
+    11: Declaration of local variable: a, with initial value
+      11: Primitive data type: 1-dimensional array of int
+      11: Array allocation
+        11: Primitive data type: int
+        11: Integer literal: 5
+    13: Assignment statement
+      13: Reference to array
+        13: Reference to variable: a
+        13: Integer literal: 3
+      13: Integer literal: 4
+    15: Assignment statement
+      15: Reference to array
+        15: Reference to variable: a
+        15: Integer literal: 2
+      15: Call to virtual method: foo1
+    17: Declaration of local variable: x
+     17: Primitive data type: int
+    19: If statement
+      19: Logical binary operation: greater than
+        19: Reference to array
+          19: Reference to variable: a
+          19: Integer literal: 1
+        19: Integer literal: 1
+      19: Block of statements
+        20: Assignment statement
+          20: Reference to array
+            20: Reference to variable: a
+            20: Integer literal: 1
+          20: Integer literal: 1
+    23: If statement, with Else operation
+      23: Logical binary operation: greater than
+        23: Reference to array
+          23: Reference to variable: a
+          23: Integer literal: 1
+        23: Integer literal: 1
+      23: Block of statements
+        24: Assignment statement
+          24: Reference to array
+            24: Reference to variable: a
+            24: Integer literal: 1
+          24: Integer literal: 1
+      25: Block of statements
+        26: If statement, with Else operation
+          26: Logical binary operation: greater than
+            26: Reference to array
+              26: Reference to variable: a
+              26: Integer literal: 1
+            26: Integer literal: 8
+          26: Block of statements
+            27: Assignment statement
+              27: Reference to array
+                27: Reference to variable: a
+                27: Integer literal: 3
+              27: Integer literal: 6
+          28: Block of statements
+            29: Assignment statement
+              29: Reference to array
+                29: Reference to variable: a
+                29: Integer literal: 1
+              29: Integer literal: 2
+        32: Assignment statement
+          32: Reference to array
+            32: Reference to variable: a
+            32: Integer literal: 1
+          32: Integer literal: 4
+    35: While statement
+      35: Logical binary operation: greater than
+        35: Reference to array
+          35: Reference to variable: a
+          35: Integer literal: 1
+        35: Integer literal: 1
+      35: Block of statements
+        36: Assignment statement
+          36: Reference to array
+            36: Reference to variable: a
+            36: Integer literal: 1
+          36: Mathematical binary operation: subtraction
+            36: Reference to array
+              36: Reference to variable: a
+              36: Integer literal: 1
+            36: Integer literal: 1
+        37: If statement
+          37: Logical binary operation: less than
+            37: Reference to variable: x
+            37: Integer literal: 0
+          37: Block of statements
+            38: Assignment statement
+              38: Reference to variable: x
+              38: Integer literal: 9
+    42: While statement
+      42: Logical binary operation: greater than
+        42: Reference to array
+          42: Reference to variable: a
+          42: Integer literal: 1
+        42: Integer literal: 1
+      42: Block of statements
+        43: Break statement
+    46: While statement
+      46: Logical binary operation: greater than
+        46: Reference to array
+          46: Reference to variable: a
+          46: Integer literal: 1
+        46: Integer literal: 1
+      46: Block of statements
+        47: Continue statement
+    50: Method call statement
+     50: Call to virtual method: foo1
+    53: Declaration of local variable: y, with initial value
+      53: Primitive data type: int
+      53: Integer literal: 9
+    55: If statement
+      55: Logical binary operation: less than
+        55: Reference to variable: x
+        55: Integer literal: 0
+      55: Assignment statement
+        55: Reference to variable: x
+        55: Integer literal: 0
+    58: Return statement

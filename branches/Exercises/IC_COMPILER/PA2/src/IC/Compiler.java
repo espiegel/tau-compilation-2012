@@ -21,7 +21,7 @@ public class Compiler {
 	private static boolean bParse_lib = false;
 	private static boolean bPrint_ast = false;
 	
-	private static String lib_path = null;
+	private static String lib_path = "libic.sig";
 	private static String program_path = null;
 	
 	private static final String EXIT1 = "SYSTEM EXIT! REASON: no arguments were given to compiler.";
@@ -57,7 +57,7 @@ public class Compiler {
 				}
 			}
 		
-		if (bParse_lib) parseLibrary();
+		parseLibrary();
 		parseProgram();
 	}
 	
@@ -80,7 +80,7 @@ public class Compiler {
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
 			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e);
 		}
 	}
 	
@@ -96,7 +96,7 @@ public class Compiler {
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(program_path);
 			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e);;
 		}
 	}
 }

@@ -1,0 +1,32 @@
+
+class Gelfand {
+
+ int k;
+ 
+ static void foo3() { return; }
+ 
+ int foo(int a) { 
+
+    int a=-8;
+	boolean b = !(true);
+	boolean c = false;
+	
+	a=1+2;
+	a=1-2;
+	a=1/2;
+	a=1%2;
+	a=1*2;
+	
+	if (a==a) { a=a;}
+	if (a!=a) { a=a;}
+	if (a>=a) { a=a;}
+	if (a<=a) { a=a;}
+	if (a<a) { a=a;}
+	if (a>a) { a=a;}
+ 
+	return 5; 
+ }
+ 
+
+
+}
