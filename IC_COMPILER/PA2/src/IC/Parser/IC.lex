@@ -137,12 +137,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	{PREFIX_ZERO} { throw new LexicalError("A number must not begin with zeros.", yyline+1); }
 	
 	{NUMBER}
-	{
-	 int a;
-	 try { a = Integer.parseInt(yytext()); }
-	 catch (Exception e) { throw new LexicalError("Number is too long.", yyline+1); }
-		return token(sym.INTEGER, a);
-	}
+	{	return token(sym.INTEGER, yytext());	}
 
 	/* Error fallback */
 	. { throw new LexicalError("illegal character '"+yytext()+"'", yyline+1); }
