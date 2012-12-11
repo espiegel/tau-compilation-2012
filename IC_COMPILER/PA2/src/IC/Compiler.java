@@ -37,8 +37,6 @@ public class Compiler {
 		
 		if (args.length == 0) exit (EXIT1);
 		
-		else  /* assuming the first argument is a path to an IC program. */
-		
 		for(int i=0;i<args.length;i++){
 			String s = args[i];
 			if (s.startsWith(LIB_FLAG)){
