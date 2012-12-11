@@ -5,7 +5,6 @@ import java.io.*;
 import IC.AST.*;
 import IC.Parser.*;
 
-import java_cup.runtime.Symbol;
 
 /**
  * Compiler class. Reads an IC file and runs the Lexer on it. Prints all the IC
@@ -27,6 +26,9 @@ public class Compiler {
 	
 	private static final String EXIT1 = "SYSTEM EXIT! REASON: no arguments were given to compiler.";
 	private static final String EXIT2 = "SYSTEM EXIT! REASON: conflicting arguments.";
+	private static final String SUCC1 = "\nSUCCESS: PARSED PROGRAM SUCCESSFULLY!\n";
+	private static final String SUCC2 = "\nSUCCESS: PARSED LIBRARY SUCCESSFULLY!\n";
+	
 	private static final String PRINT_AST = "-print-ast";
 	private static final String LIB_FLAG = "-L";
 	
@@ -35,9 +37,9 @@ public class Compiler {
 		
 		if (args.length == 0) exit (EXIT1);
 		
-		else program_path = args[0]; /* assuming the first argument is a path to an IC program. */
+		else  /* assuming the first argument is a path to an IC program. */
 		
-		for(int i=1;i<args.length;i++){
+		for(int i=0;i<args.length;i++){
 			String s = args[i];
 			if (s.startsWith(LIB_FLAG)){
 			
@@ -51,11 +53,14 @@ public class Compiler {
 				if (!bPrint_ast) bPrint_ast = true;
 				else exit (EXIT2);
 			}
-			else exit (EXIT2);
+			else {
+				if (program_path==null) program_path = args[i];
+				else exit (EXIT2);
+				}
 			}
 		
-		if (bParse_lib) parseLibrary(lib_path);
-		parseProgram(program_path);
+		if (bParse_lib) parseLibrary();
+		parseProgram();
 	}
 	
 		
@@ -65,7 +70,7 @@ public class Compiler {
 		System.exit(1);
 	}
 
-	private static void parseLibrary(String lib_path) throws IOException {
+	private static void parseLibrary() throws IOException {
 
 		FileReader reader = new FileReader(lib_path);
 		Lexer scanner = new Lexer(reader);
@@ -73,6 +78,7 @@ public class Compiler {
 		
 		try {
 			ICClass root = (ICClass) parser.parse().value;
+			System.out.println(SUCC2);
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
 			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
@@ -80,15 +86,16 @@ public class Compiler {
 		}
 	}
 	
-	private static void parseProgram(String prog_path) throws IOException {
+	private static void parseProgram() throws IOException {
 
-		FileReader reader = new FileReader(prog_path);
+		FileReader reader = new FileReader(program_path);
 		Lexer scanner = new Lexer(reader);
 		Parser parser = new Parser(scanner);
 		
 		try {
 			Program root = (Program) parser.parse().value;
-			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(prog_path);
+			System.out.println(SUCC1);
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(program_path);
 			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
 			e.printStackTrace();
