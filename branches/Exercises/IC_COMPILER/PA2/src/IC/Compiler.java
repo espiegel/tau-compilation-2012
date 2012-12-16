@@ -24,7 +24,7 @@ public class Compiler {
 	private static String lib_path = "libic.sig";
 	private static String program_path = null;
 	
-	private static final String EXIT1 = "SYSTEM EXIT! REASON: no arguments were given to compiler.";
+	private static final String EXIT1 = "SYSTEM EXIT! REASON: a mandatory argument wasn't given to the compiler.";
 	private static final String EXIT2 = "SYSTEM EXIT! REASON: conflicting arguments.";
 	private static final String SUCC1 = "\nSUCCESS: PARSED PROGRAM SUCCESSFULLY!\n";
 	private static final String SUCC2 = "\nSUCCESS: PARSED LIBRARY SUCCESSFULLY!\n";
@@ -35,8 +35,7 @@ public class Compiler {
 	
 	public static void main(String[] args) throws IOException{
 		
-		if (args.length == 0) exit (EXIT1);
-		
+
 		for(int i=0;i<args.length;i++){
 			String s = args[i];
 			if (s.startsWith(LIB_FLAG)){
@@ -56,6 +55,8 @@ public class Compiler {
 				else exit (EXIT2);
 				}
 			}
+		
+		if (program_path == null) exit (EXIT1);
 		
 		parseLibrary();
 		parseProgram();
