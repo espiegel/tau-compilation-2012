@@ -213,6 +213,10 @@ IC.cup CUP grammar dump:
 [87] literal ::= FALSE 
 [88] literal ::= NULL 
 
+Bonus:
+To prevent declerations of local variables inside "if else" statements/"while" loops we divided stmt rule into two seperate rules:
+stmt_minus_decl and declaration. Our syntax permits derivations of stmt_minus_decl only inside "if else" statements/"while" loop, and so,
+if a declaration is encountered inside "if else" statements/"while" loop a SyntaxError will be thrown.
 
 Feedback:
 The exercise took us aprox. 3-4 days of joined work. The most difficult part was to reach the stage after parsing the library file. 
