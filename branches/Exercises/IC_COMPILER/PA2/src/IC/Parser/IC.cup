@@ -178,9 +178,9 @@ stmt_list ::= stmt:s
 	{: sl.add(s); RESULT = sl; :};
 	
 stmt ::= stmt_minus_decl:s1 
-		{: RESULT = s1 :}
+		{: RESULT = s1; :}
 		| declaration:s2
-		{: RESULT = s2 :};
+		{: RESULT = s2; :};
 		
 
 stmt_minus_decl ::=  
