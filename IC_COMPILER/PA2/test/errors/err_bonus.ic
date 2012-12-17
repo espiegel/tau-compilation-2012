@@ -1,0 +1,13 @@
+
+class Gelfand {
+
+	void foo() {
+		int a=9;
+		
+		if (a>6) 
+			int j=0;
+		
+	}
+
+}
+
