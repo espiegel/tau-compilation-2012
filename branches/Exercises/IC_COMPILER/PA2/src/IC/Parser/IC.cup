@@ -182,7 +182,6 @@ stmt ::= stmt_minus_decl:s1
 		| declaration:s2
 		{: RESULT = s2; :};
 		
-
 stmt_minus_decl ::=  
 	location:l ASSIGN expr:e SEMI
 	{:	RESULT = new Assignment(l, e); :}
@@ -192,11 +191,11 @@ stmt_minus_decl ::=
 	{:	RESULT = new Return(rleft); :}
 	| RETURN:r expr:e SEMI
 	{:	RESULT = new Return(rleft, e); :}
-	| IF LP expr:e RP stmt:s ELSE stmt:es
+	| IF LP expr:e RP stmt_minus_decl:s ELSE stmt_minus_decl:es
 	{:	RESULT = new If(e, s, es); :}
-	| IF LP expr:e RP stmt:s
+	| IF LP expr:e RP stmt_minus_decl:s
 	{:	RESULT = new If(e, s); :}
-	| WHILE LP expr:e RP stmt:s
+	| WHILE LP expr:e RP stmt_minus_decl:s
 	{:	RESULT = new While(e, s); :}
 	| BREAK:b SEMI
 	{:	RESULT = new Break(bleft); :}

@@ -58,8 +58,8 @@ public class Compiler {
 		
 		if (program_path == null) exit (EXIT1);
 		
-		parseLibrary();
 		parseProgram();
+		parseLibrary();
 	}
 	
 		
