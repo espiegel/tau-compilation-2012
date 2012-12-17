@@ -41,7 +41,9 @@ nonterminal StaticCall static_call;
 nonterminal VirtualCall virtual_call;
 nonterminal UnaryOp unop;
 nonterminal BinaryOp binop;
-non terminal List<String> id_list;
+nonterminal List<String> id_list;
+nonterminal Statement stmt_minus_decl;
+nonterminal Statement declaration;
 
 terminal LP, RP, LB, RB, LCBR, RCBR, COMMA, DOT, SEMI;
 terminal BOOLEAN, INTEGER, STRING, VOID, INT, NULL;  /* types */
@@ -174,8 +176,15 @@ stmt_list ::= stmt:s
 	{: List<Statement> list = new ArrayList<Statement>(); list.add(s); RESULT = list; :}
 	| stmt_list:sl stmt:s
 	{: sl.add(s); RESULT = sl; :};
+	
+stmt ::= stmt_minus_decl:s1 
+		{: RESULT = s1 :}
+		| declaration:s2
+		{: RESULT = s2 :};
+		
 
-stmt ::=  location:l ASSIGN expr:e SEMI
+stmt_minus_decl ::=  
+	location:l ASSIGN expr:e SEMI
 	{:	RESULT = new Assignment(l, e); :}
 	| call:c SEMI
 	{:	RESULT = new CallStatement(c); :}
@@ -194,12 +203,13 @@ stmt ::=  location:l ASSIGN expr:e SEMI
 	| CONTINUE:c SEMI
 	{:	RESULT = new Continue(cleft); :}
 	| LCBR:lb stmt_list:sl RCBR
-	{:	RESULT = new StatementsBlock(lbleft, sl); :}
-	| type:t ID:id SEMI
+	{:	RESULT = new StatementsBlock(lbleft, sl); :};
+	
+declaration ::= type:t ID:id SEMI
 	{:	RESULT = new LocalVariable(t, id); :}
 	| type:t ID:id ASSIGN expr:e SEMI
 	{:	RESULT = new LocalVariable(t, id, e); :};
-
+	
 expr_list ::= expr:e 
 	{:	List<Expression> l = new ArrayList<Expression>(); l.add(e); RESULT = l; :}
 	| expr_list:el COMMA expr:e
