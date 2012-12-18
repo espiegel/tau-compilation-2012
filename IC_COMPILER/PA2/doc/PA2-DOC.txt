@@ -24,8 +24,8 @@ Error Handling:
 1.	If a mandatory argument wasn't given to the compiler, the program will exits with an appropriate message. 
 2.	Also if there are a number of conflicting arguments given, again the program will exits with an appropriate message. 
 3.	If a parser object has detected a syntax error, then a SyntaxError will be thrown specifing the line and token where the error has occured.
-	We decided that the said token will be printed as is (; will be printed as ; and not as SEMI) 
-	because this way it will make more sense for the person who uses the compiler.
+	We decided that the said token will be printed as is (for example ";" will be printed as ; and not as SEMI) because this way it will make more sense 
+	for an ordinary person who might be using this compiler. see also Bonus I for more details on error handling and error recovery.
 
 
 Testing Strategy:
@@ -213,7 +213,13 @@ IC.cup CUP grammar dump:
 [87] literal ::= FALSE 
 [88] literal ::= NULL 
 
-Bonus:
+Bonus I:
+We implemented error recovey behaviour by using the special "error" symbol (see CUP manual section 6) to derive errors as if they were ordinary
+syntactic sturctures of the IC language. If an error occurs during derivation of some rule then the parser will try to find the last token of the 
+right side of the said rule. If the said token is found, the parser will report the error and continue parsing from the next token. 
+Otherwise a SyntaxError will be thrown and parsing will stop.
+
+Bonus II:
 To prevent declerations of local variables inside "if else" statements/"while" loops we divided stmt rule into two seperate rules:
 stmt_minus_decl and declaration. Our syntax permits derivations of stmt_minus_decl only inside "if else" statements/"while" loop, and so,
 if a declaration is encountered inside "if else" statements/"while" loop a SyntaxError will be thrown.
