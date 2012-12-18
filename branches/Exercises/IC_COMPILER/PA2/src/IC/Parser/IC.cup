@@ -14,6 +14,14 @@ parser code {:
 		
 	}
 	
+	public void report_error(int line, String message) {
+    	System.err.println("Error in line " + line + ": " + message + " Parsing resumed from next good token");
+    }
+    
+	protected int report_error() {
+    	return 0;
+    }
+	
 	// override method call in case of a syntax error, to avoid duplicate error messages
 	public void syntax_error(Symbol current_token){}
 :};
@@ -127,7 +135,10 @@ field ::= type:t id_list:n SEMI
           {: List<Field> list = new ArrayList<Field>();
              for(String id : n)
                  list.add(new Field(t,id));
-             RESULT = list; :};
+             RESULT = list; :}
+          | error:e SEMI
+          {: parser.report_error(eleft, "Field expected."); 
+             RESULT = new ArrayList<Field>(); :};
           
 id_list ::= ID:id
 	{: List<String> l = new ArrayList<String>(); l.add(id); RESULT = l; :}
@@ -151,6 +162,7 @@ method ::= STATIC VOID ID:id LP RP LCBR stmt_list:sl RCBR
 	{: RESULT = new VirtualMethod(new PrimitiveType(idleft, DataTypes.VOID), id, fl, sl); :}
 	| type:t ID:id LP formals_list:fl RP LCBR stmt_list:sl RCBR
 	{: RESULT = new VirtualMethod(t, id, fl, sl); :};
+      
 
 formals_list ::= formals:l
 				{: List<Formal> lf = new ArrayList<Formal>(); lf.add(l); RESULT=lf;  :}
