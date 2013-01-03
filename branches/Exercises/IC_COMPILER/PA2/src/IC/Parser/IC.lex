@@ -47,7 +47,7 @@ import IC.Parser.LexicalError;
 
 END_LINE	 	=		\n
 INPUT_CHAR 		= 		[^\n]
-WHITESPACE 		= 		[ \t] | {END_LINE}
+WHITESPACE 		= 		[ \t\r] | {END_LINE}
 
 LCBR 	= 		"{"
 RCBR 	= 		"}"
@@ -132,7 +132,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 	{INLINE_COMMENT}  { /* ignore */ }
 	"/*"			  { yybegin(STATE_COMMENT1);}
 	
-	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);}
+	"\"" 			{string.setLength(0); string.append('"'); yybegin(STATE_STRING);} /* changed from '"' */
 	
 	{PREFIX_ZERO} { throw new LexicalError("A number must not begin with zeros.", yyline+1); }
 	
@@ -166,7 +166,7 @@ ID 			= 		{LLETTER}({ALPHA_NUM})*
 */
 <STATE_STRING>{
 
-	"\""				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());}
+	"\""				{string.append('"'); yybegin(YYINITIAL); return token(sym.QUOTE,string.toString());} /* changed from '"' */
 	[ !#-\[\]-~]+		{string.append(yytext());} /* Characters with ASCII Value 32-126 */
 	"\n"				{throw new LexicalError("Unterminated string at end of line.", yyline+1); }
 	"\\t"				{string.append("\\t");}

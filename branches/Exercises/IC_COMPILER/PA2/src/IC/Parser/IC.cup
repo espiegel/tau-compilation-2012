@@ -67,15 +67,16 @@ terminal QUOTE, LENGTH;
 
 //////////////////////////
 // Precedence declarations
-precedence left LB, RB, LP, RP, DOT;
-precedence right UMINUS, LNEG;
-precedence left MULTIPLY, DIVIDE, MOD; // Operators
-precedence left LT, LTE, GT, GTE;      // Relational Operators
-precedence left EQUAL, NEQUAL;         // Equality
-precedence left PLUS, MINUS; 
+
+precedence right ASSIGN;
 precedence left LOR;
 precedence left LAND;
-precedence right ASSIGN;
+precedence left EQUAL, NEQUAL;         // Equality
+precedence left LT, LTE, GT, GTE;      // Relational Operators
+precedence left PLUS, MINUS; 
+precedence left DIVIDE, MULTIPLY, MOD; // Operators
+precedence right UMINUS, LNEG;
+precedence left LB, RB, LP, RP, DOT;
 precedence left IF, ELSE;
 
 start with program;
@@ -83,12 +84,10 @@ start with program;
 //////////////
 // The grammar
 
-program ::= {: RESULT = new Program(new ArrayList<ICClass>()); :}
-			| classDecl_list:c
+program ::= classDecl_list:c
             {: RESULT = new Program(c); :};
 
-classDecl_list ::= classDecl:c
-	{: List<ICClass> l = new ArrayList<ICClass>(); l.add(c); RESULT = l; :}
+classDecl_list ::= {: RESULT = new ArrayList<ICClass>(); :} /* Empty */
 	| classDecl_list:clst classDecl:c
 	{: clst.add(c); RESULT = clst; :};
 
@@ -184,8 +183,7 @@ type ::= STRING:t
          | CLASS_ID:t
          {: RESULT = new UserType(tleft, t); :};
 
-stmt_list ::= stmt:s
-	{: List<Statement> list = new ArrayList<Statement>(); list.add(s); RESULT = list; :}
+stmt_list ::= {: RESULT = new ArrayList<Statement>(); :} /* empty  */
 	| stmt_list:sl stmt:s
 	{: sl.add(s); RESULT = sl; :};
 	
