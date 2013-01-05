@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Abstract AST node base class.
  * 
@@ -8,6 +10,8 @@ package IC.AST;
 public abstract class ASTNode {
 
 	private int line;
+	
+	private SymbolTable enclosingScope;
 
 	/**
 	 * Double dispatch method, to allow a visitor to visit a specific subclass.
@@ -31,6 +35,10 @@ public abstract class ASTNode {
 
 	public int getLine() {
 		return line;
+	}
+	
+	public SymbolTable enclosingScope(){
+		return enclosingScope;
 	}
 
 }

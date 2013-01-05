@@ -1,7 +1,6 @@
 package IC;
 
 import java.io.*;
-
 import IC.AST.*;
 import IC.Parser.*;
 
@@ -97,7 +96,7 @@ public class Compiler {
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(program_path);
 			if (bPrint_ast) System.out.println(root.accept(printer));
 		} catch (Exception e) {
-			System.out.println(e);;
+			System.out.println(e);
 		}
 	}
 }
