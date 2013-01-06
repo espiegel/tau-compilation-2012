@@ -41,11 +41,11 @@ public class SymbolTable {
 	 */
 	public void insert(Symbol sym) throws SemanticError {
 
-		if (entries.containsKey(sym.toString())) {
+		if (entries.containsKey(sym.getID())) {
 			throw new SemanticError("multiple definitions for symbol in scope",
 					sym.getID());
 		}
-		entries.put(sym.toString(), sym);
+		entries.put(sym.getID(), sym);
 	}
 
 	/**
