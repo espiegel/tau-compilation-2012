@@ -1,9 +1,11 @@
 package IC.TypeTable;
 
+import IC.DataTypes;
+
 public class StringType extends Type {
 
 	public StringType() {
-		super("string");
+		super(DataTypes.STRING.getDescription());
 	}
 	
 	@Override

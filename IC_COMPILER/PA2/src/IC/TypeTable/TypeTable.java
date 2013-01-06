@@ -35,16 +35,16 @@ public class TypeTable {
 
 	public static MethodType getMethodType(Method method) throws SemanticError {
 		
-		Type ret = getType(method.getType().getDictionaryName());
+		Type ret = getType(method.getType().toString());
 		List<Type> params = new ArrayList<Type>();
 		for (Formal formal : method.getFormals()) {
-			Type T = getType(formal.getType().getDictionaryName());
+			Type T = getType(formal.getType().toString());
 			params.add(T);
 		}
 		MethodType tmpMethod = new MethodType(params,ret);
 		MethodType mt = methodTypes.get(tmpMethod.getName());
 		if (mt == null) {
-			methodTypes.put(tmpMethod.getName(),tmpMethod);
+			methodTypes.put(tmpMethod.toString(),tmpMethod);
 			return tmpMethod;
 		}
 		else{
@@ -85,7 +85,7 @@ public class TypeTable {
 	public static void addClassType(ICClass A) throws SemanticError {
 		String name = A.getName();
 		if (classTypes.containsKey(name)) {
-			throw new SemanticError("double definition", name);
+			throw new SemanticError("multiple definitons for class", name);
 		}
 		if (A.hasSuperClass() && !classTypes.containsKey(A.getSuperClassName())) {
 			throw new SemanticError("class inherits from unknown class", name,

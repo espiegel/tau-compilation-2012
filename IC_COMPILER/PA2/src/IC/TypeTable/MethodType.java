@@ -2,6 +2,8 @@ package IC.TypeTable;
 
 import java.util.List;
 
+import IC.DataTypes;
+
 public class MethodType extends Type {
 	
 	private Type ret;
@@ -18,7 +20,16 @@ public class MethodType extends Type {
 	public boolean equals(MethodType MT){
 		return isSubtype(MT);
 	}
-
+	
+	public boolean isMainMethodType() throws SemanticError{
+		return (params.size() == 1) &&
+				isSubtype(TypeTable.getType("string[]")) &&
+				ret == TypeTable.getType("void");
+	}
+	
+	public Type getReturnType(){
+		return ret;
+	}
 
 	@Override
 	public boolean isSubtype(Type B) {

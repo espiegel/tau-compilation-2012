@@ -1,9 +1,11 @@
 package IC.TypeTable;
 
+import IC.DataTypes;
+
 public class VoidType extends Type {
 
 	public VoidType() {
-		super("void");
+		super(DataTypes.VOID.getDescription());
 	}
 
 	@Override
