@@ -1,9 +1,11 @@
 package IC.TypeTable;
 
+import IC.DataTypes;
+
 public class IntType extends Type{
 	
 	public IntType(){
-		super("int");
+		super(DataTypes.INT.getDescription());
 	}
 
 	@Override

@@ -9,9 +9,9 @@ public class Symbol {
 	protected Type type = null;
 	private Kind kind = null;
 
-	public Symbol(ASTNode node, Kind k, String id) {
-		this.line = node.getLine();
-		this.kind = k;
+	public Symbol(int line, String id, Kind kind) {
+		this.line = line;
+		this.kind = kind;
 		this.id=id;
 	}
 

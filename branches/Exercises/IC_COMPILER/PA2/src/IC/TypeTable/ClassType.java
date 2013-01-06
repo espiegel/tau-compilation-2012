@@ -9,7 +9,6 @@ public class ClassType extends Type {
 	public ClassType(ICClass A) {
 		super(A.getName());
 		astClass = A;
-		A.getSuperClassName();
 	}
 
 	@Override

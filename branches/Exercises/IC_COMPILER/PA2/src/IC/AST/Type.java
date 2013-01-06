@@ -26,7 +26,7 @@ public abstract class Type extends ASTNode {
 	public abstract String getName();
 	
 	//returns String ID that can be used in TypeTable's Mappings
-	public String getDictionaryName(){
+	public String toString(){
 		String dictName = this.getName();
 		for (int i=0;i<this.dimension;i++){
 			dictName+="[]";
