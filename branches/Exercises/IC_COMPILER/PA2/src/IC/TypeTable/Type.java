@@ -5,6 +5,10 @@ public abstract class Type {
 	private String name;
 	private int uniqueId;
 
+	public int getUniqueId() {
+		return uniqueId;
+	}
+
 	public Type(String name) {
 		this.name = name;
 		this.uniqueId = TypeTable.getUniqueId();
