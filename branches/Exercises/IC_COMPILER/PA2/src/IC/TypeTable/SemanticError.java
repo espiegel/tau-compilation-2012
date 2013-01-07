@@ -2,6 +2,8 @@ package IC.TypeTable;
 
 public class SemanticError extends Exception {
 	
+	private static final long serialVersionUID = 7339415692878177569L;
+	
 	private String msg;
 	private String value;
 	private int line;
@@ -21,7 +23,7 @@ public class SemanticError extends Exception {
 	}
 	
 	public String toString(){
-		return line+" : "+msg+": "+value;
+		return "Semantic error on line: "+line+" : "+msg+": "+value;
 	}
 
 }

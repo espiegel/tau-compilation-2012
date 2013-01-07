@@ -25,5 +25,18 @@ public class ClassType extends Type {
 			return false;
 		}
 	}
+	
+    public String toString(){
+        String str = this.getName();
 
+        if (this.astClass.hasSuperClass())
+        {
+                try {
+                	str += ", Superclass ID: "+TypeTable.getClassType(astClass.getSuperClassName()).getUniqueId();
+                }
+                catch (SemanticError se) { }
+        }
+        
+        return str;
+    }
 }
