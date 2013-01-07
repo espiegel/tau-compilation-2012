@@ -1,5 +1,8 @@
 package IC.AST;
 
+import IC.SymbolTable.ClassSymbolTable;
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Class field AST node.
  * 
@@ -35,6 +38,11 @@ public class Field extends ASTNode {
 
 	public String getName() {
 		return name;
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

@@ -15,10 +15,11 @@ public class GlobalSymbolTable extends SymbolTable {
 		return ((ClassSymbol)this.lookup(name)).getClassSymbolTable();
 	}
 	
-
-	public void addClass(ICClass A) throws SemanticError {
-		ClassSymbol C = new ClassSymbol(A); //will also update TypeTable
-		this.insert(C);
+	//will add entry (with reference to the appropriate CST) and return it.
+	public ClassSymbol getClassSymbol(ICClass A) throws SemanticError {
+		ClassSymbol classSymbol = new ClassSymbol(A); 
+		this.insert(classSymbol);
+		return classSymbol;
 	}
 	
 	public void setID(String icfile){
