@@ -132,50 +132,25 @@ public class TypeTable {
 
 	}
 	
-	// TODO: Eidan is doing this !!!
     /**
      * returns string representation for the TypeTable fitting the "-dump-symtab" IC.Compiler flag
      * @return
      */
     public static String staticToString(){
         String str = "Type Table: "+fileName+"\n";
-        
-        // construct string representation for primitive types
-        Iterator<Type> uniquePrimitiveTypesIter = uniquePrimitiveTypes.values().iterator();
-        String primitiveTypesStr = "";
-        while (uniquePrimitiveTypesIter.hasNext()){
-                Type t = uniquePrimitiveTypesIter.next();
-                primitiveTypesStr += "\t"+t.getTypeID()+": Primitive type: "+t.getName()+"\n";
-        }
-        
-        /*
+                     
         for(Type t : primitiveTypes.values())
-        	str += "\t"+t.getTypeID()+""
-        */
+        	str += "\t"+t.getUniqueId()+": Primitive type: "+t.getName()+"\n";
+       
+        for(Type t : classTypes.values())
+        	str += "\t"+t.getUniqueId()+": Class: "+t.toString()+"\n";        
         
-        // construct string representation for class types
-        Iterator<ClassType> uniqueClassTypesIter = uniqueClassTypes.values().iterator();
-        String classTypesStr = "";
-        while (uniqueClassTypesIter.hasNext()){
-                ClassType ct = uniqueClassTypesIter.next();
-                classTypesStr += "\t"+ct.getTypeID()+": Class: "+ct.toString()+"\n";
-        }
+        for(Type t : classTypes.values())
+        	str += "\t"+t.getUniqueId()+": Array Type: "+t.toString()+"\n";
         
-        // construct string representation for array types
-        Iterator<ArrayType> uniqueArrayTypesIter = uniqueArrayTypes.values().iterator();
-        String arrayTypesStr = "";
-        while (uniqueArrayTypesIter.hasNext()){
-                ArrayType at = uniqueArrayTypesIter.next();
-                arrayTypesStr += "\t"+at.getTypeID()+": Array type: "+at.toString()+"\n";
-        }
+        for(Type t : classTypes.values())
+        	str += "\t"+t.getUniqueId()+": Method type: "+t.toString()+"\n";
         
-        // construct string representation for method types
-        String methodTypesStr = "";
-        for (MethodType mt: uniqueMethodTypes.values()){
-                methodTypesStr += "\t"+mt.getTypeID()+": Method type: "+mt.toString()+"\n";
-        }
-        
-        str += primitiveTypesStr+classTypesStr+arrayTypesStr+methodTypesStr;
         return str;
     }
 
