@@ -2,6 +2,7 @@ package IC.SymbolTable;
 
 import IC.AST.StaticMethod;
 import IC.AST.Method;
+import IC.AST.VirtualMethod;
 import IC.TypeTable.MethodType;
 import IC.TypeTable.SemanticError;
 import IC.TypeTable.Type;
@@ -14,13 +15,12 @@ public class MethodSymbol extends Symbol {
 	private MethodSymbolTable MST;
 	
 	
-	public MethodSymbol(Method method, ClassSymbolTable CST) throws SemanticError {
+	public MethodSymbol(Method method) throws SemanticError {
 		super(method.getLine(), method.getName(), Kind.METHOD, true);
 		
-		MST = new MethodSymbolTable(method, CST);
 		this.type = TypeTable.getMethodType(method);
-		this.isStatic = (method instanceof StaticMethod ? true : false);
-		MST = new MethodSymbolTable(method, CST);
+		this.isStatic = method.isStatic();
+
 	}
 
 	public boolean isStatic() {
@@ -37,6 +37,10 @@ public class MethodSymbol extends Symbol {
 	
 	public MethodSymbolTable getMethodSymbolTable() {
 		return MST;
+	}
+	
+	public void setMethodSymbolTable(MethodSymbolTable mst) {
+		MST = mst;
 	}
 	
 }

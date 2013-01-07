@@ -48,6 +48,16 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	}
 	
 	private boolean visitMethod(Method method, SymbolTable scope){
+		method.setEnclosingScope(scope);
+		try {
+			((ClassSymbolTable)scope).addMethod(method);
+			MethodSymbolTable MST = new MethodSymbolTable(method,scope);
+			for (Statement statement : method.getStatements()){
+				statement.accept(this,MST);
+			}
+		} catch (SemanticError se) {
+			handleSemanticError(se,method);
+		}
 		return true;
 	}
 	
@@ -57,8 +67,13 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 
 
 	@Override
-	public Object visit(Field field, SymbolTable context) {
-		field.setEnclosingScope(context);
+	public Object visit(Field field, SymbolTable scope) {
+		field.setEnclosingScope(scope);
+		try {
+			((ClassSymbolTable) scope).addField(field);
+		} catch (SemanticError se) {
+			handleSemanticError(se,field);
+		}
 		return true;
 	}
 	
@@ -236,6 +251,16 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable context) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(Statement statement, SymbolTable context) {
+		try {
+			throw new SemanticError("shouldn't get here", "BUG1");
+		} catch (SemanticError se) {
+			System.out.println(se);
+		}
 		return null;
 	}
 

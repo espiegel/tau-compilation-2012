@@ -1,5 +1,8 @@
 package IC.AST;
 
+import IC.SymbolTable.MethodSymbolTable;
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Abstract base class for statement AST nodes.
  * 
@@ -17,4 +20,8 @@ public abstract class Statement extends ASTNode {
 		super(line);
 	}
 
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
+	}
 }

@@ -76,4 +76,6 @@ public interface PropagatingVisitor<C,R> {
 
 	public Object visit(Method method, SymbolTable context);
 
+	public Object visit(Statement statement, SymbolTable context);
+
 }
