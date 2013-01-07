@@ -18,8 +18,9 @@ public class ClassSymbol extends Symbol {
 	private void initCST(ICClass A) throws SemanticError {
 		SymbolTable parent;
 		if (A.hasSuperClass()) {
+			// get reference to the super-class's CST
 			ClassSymbol superClass = (ClassSymbol) SymbolTableBuilder.GST
-					.lookup(A.getSuperClassName());
+					.lookup(A.getSuperClassName()); 
 			parent = superClass.getClassSymbolTable();
 		} else {
 			parent = SymbolTableBuilder.GST;
@@ -27,8 +28,6 @@ public class ClassSymbol extends Symbol {
 
 		CST = new ClassSymbolTable(A, this.getID(), parent);
 	}
-
-
 
 	public ClassSymbolTable getClassSymbolTable() {
 		return CST;
