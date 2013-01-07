@@ -1,8 +1,6 @@
 package IC.SymbolTable;
 
-import IC.AST.StaticMethod;
 import IC.AST.Method;
-import IC.AST.VirtualMethod;
 import IC.TypeTable.MethodType;
 import IC.TypeTable.SemanticError;
 import IC.TypeTable.Type;
@@ -12,7 +10,7 @@ public class MethodSymbol extends Symbol {
 
 	private boolean isStatic;
 	
-	private MethodSymbolTable MST;
+	/*private MethodSymbolTable MST;*/
 	
 	
 	public MethodSymbol(Method method) throws SemanticError {
@@ -34,7 +32,7 @@ public class MethodSymbol extends Symbol {
 	public boolean isMain() throws SemanticError{
 			return ((MethodType) type).isMainMethodType();
 	}
-	
+	/**
 	public MethodSymbolTable getMethodSymbolTable() {
 		return MST;
 	}
@@ -42,5 +40,5 @@ public class MethodSymbol extends Symbol {
 	public void setMethodSymbolTable(MethodSymbolTable mst) {
 		MST = mst;
 	}
-	
+	**/
 }

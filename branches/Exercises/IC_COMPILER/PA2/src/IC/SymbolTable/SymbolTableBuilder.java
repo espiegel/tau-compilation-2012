@@ -49,9 +49,13 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	
 	private boolean visitMethod(Method method, SymbolTable scope){
 		method.setEnclosingScope(scope);
+		MethodSymbolTable MST = new MethodSymbolTable(method,scope);
 		try {
 			((ClassSymbolTable)scope).addMethod(method);
-			MethodSymbolTable MST = new MethodSymbolTable(method,scope);
+			
+			for (Formal formal : method.getFormals()){
+				formal.accept(this,MST);
+			}
 			for (Statement statement : method.getStatements()){
 				statement.accept(this,MST);
 			}
@@ -61,10 +65,6 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 		return true;
 	}
 	
-	private boolean visitStatementBlock(StatementsBlock block, SymbolTable scope){
-		return true;
-	}
-
 
 	@Override
 	public Object visit(Field field, SymbolTable scope) {
@@ -79,7 +79,12 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	
 	@Override
 	public Object visit(Method method, SymbolTable scope) {
-		return visitMethod(method,scope);
+		try {
+			throw new SemanticError("shouldn't get here", "BUG2");
+		} catch (SemanticError se) {
+			System.out.println(se);
+		}
+		return null;
 	}
 	
 	@Override
@@ -93,27 +98,31 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	}
 
 	@Override
-	public Object visit(LibraryMethod method, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(LibraryMethod method, SymbolTable scope) {
+		return visitMethod(method,scope);
 	}
 
 	@Override
-	public Object visit(Formal formal, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(Formal formal, SymbolTable scope) {
+		try {
+			((MethodSymbolTable) scope).addLoclVar(formal);
+		} catch (SemanticError se) {
+			handleSemanticError(se,formal);
+		}
+		formal.setEnclosingScope(scope);
+		return true;
 	}
 
 	@Override
-	public Object visit(PrimitiveType type, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(PrimitiveType type, SymbolTable scope) {
+		type.setEnclosingScope(scope);
+		return true;
 	}
 
 	@Override
-	public Object visit(UserType type, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(UserType type, SymbolTable scope) {
+		type.setEnclosingScope(scope);
+		return true;
 	}
 
 	@Override
@@ -159,15 +168,25 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	}
 
 	@Override
-	public Object visit(StatementsBlock statementsBlock, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(StatementsBlock statementsBlock, SymbolTable scope) {
+		statementsBlock.setEnclosingScope(scope);
+		BlockSymbolTable BST = new BlockSymbolTable(null,scope);
+		for (Statement statement : statementsBlock.getStatements()){
+			statement.accept(this,BST);
+			}
+
+		return true;
 	}
 
 	@Override
-	public Object visit(LocalVariable localVariable, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(LocalVariable localVariable, SymbolTable scope) {
+		try {
+			((BlockSymbolTable) scope).addLoclVar(localVariable);
+		} catch (SemanticError se) {
+			handleSemanticError(se,localVariable);
+		}
+		localVariable.setEnclosingScope(scope);
+		return true;
 	}
 
 	@Override

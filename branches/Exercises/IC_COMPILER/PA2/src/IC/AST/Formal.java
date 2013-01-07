@@ -1,5 +1,9 @@
 package IC.AST;
 
+import IC.SymbolTable.MethodSymbolTable;
+import IC.SymbolTable.SymbolTable;
+import IC.SymbolTable.SymbolTableBuilder;
+
 /**
  * Method parameter AST node.
  * 
@@ -35,6 +39,10 @@ public class Formal extends ASTNode {
 
 	public String getName() {
 		return name;
+	}
+
+	public void accept(SymbolTableBuilder visitor, SymbolTable scope) {
+		visitor.visit(this,scope);
 	}
 
 }
