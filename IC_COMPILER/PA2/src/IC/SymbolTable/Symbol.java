@@ -8,11 +8,13 @@ public class Symbol {
 	private String id = null;
 	protected Type type = null;
 	private Kind kind = null;
+	private boolean isInitialized;
 
-	public Symbol(int line, String id, Kind kind) {
+	public Symbol(int line, String id, Kind kind ,boolean init) {
 		this.line = line;
 		this.kind = kind;
-		this.id=id;
+		this.id = id;
+		isInitialized = init;
 	}
 
 	public String getID() {
@@ -26,9 +28,13 @@ public class Symbol {
 	public Type getType() {
 		return type;
 	}
-	
+
 	public String toString() {
 		return this.getID();
+	}
+	
+	public boolean isInitialized(){
+		return this.isInitialized;
 	}
 
 }

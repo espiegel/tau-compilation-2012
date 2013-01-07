@@ -7,16 +7,17 @@ import IC.TypeTable.SemanticError;
 
 public class SymbolTable {
 	private int depth;
-	private String id;
+	protected String id;
 	protected SymbolTable parent;
 	protected Map<String, Symbol> entries;
-	protected boolean isStaticScope = false;
+	protected boolean isStaticScope;
 
 	public SymbolTable(String id, SymbolTable parent) {
 		this.id = id;
 		this.depth = (parent == null ? 0 : parent.depth + 1);
 		this.parent = parent;
 		this.entries = new HashMap<String, Symbol>();
+		this.isStaticScope = (parent == null ? false : parent.isStatic());  // global scope is false to prevent static from propagating.
 	}
 
 	public SymbolTable getParent() {
@@ -50,6 +51,7 @@ public class SymbolTable {
 
 	/**
 	 * lookup a symbol name recursively.
+	 * can be used to resolve any kind of symbol.
 	 * 
 	 * @param name
 	 * @return
@@ -70,7 +72,7 @@ public class SymbolTable {
 	}
 
 	private boolean noParentScope() {
-		return (parent==null) || (isStatic() && (this instanceof ClassSymbolTable));
+		return (parent == null) || (isStatic() && (parent instanceof ClassSymbolTable));
 	}
 
 	private boolean isStatic() {
@@ -79,7 +81,12 @@ public class SymbolTable {
 
 	// TODO: complete this
 	public String toString() {
+		return null;
+	}
+	
+	public String getID() {
 		return id;
+	
 	}
 
 }

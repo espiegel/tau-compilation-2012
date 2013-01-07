@@ -2,6 +2,9 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.SymbolTable;
+import IC.SymbolTable.SymbolTableBuilder;
+
 /**
  * Abstract base class for method AST nodes.
  * 
@@ -52,5 +55,10 @@ public abstract class Method extends ASTNode {
 
 	public List<Statement> getStatements() {
 		return statements;
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 }

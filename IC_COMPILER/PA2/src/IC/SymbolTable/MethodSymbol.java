@@ -11,12 +11,16 @@ public class MethodSymbol extends Symbol {
 
 	private boolean isStatic;
 	
-
-	public MethodSymbol(Method method) throws SemanticError {
-		super(method.getLine(), method.getName(), Kind.METHOD);
-
+	private MethodSymbolTable MST;
+	
+	
+	public MethodSymbol(Method method, ClassSymbolTable CST) throws SemanticError {
+		super(method.getLine(), method.getName(), Kind.METHOD, true);
+		
+		MST = new MethodSymbolTable(method, CST);
 		this.type = TypeTable.getMethodType(method);
 		this.isStatic = (method instanceof StaticMethod ? true : false);
+		MST = new MethodSymbolTable(method, CST);
 	}
 
 	public boolean isStatic() {
@@ -30,5 +34,9 @@ public class MethodSymbol extends Symbol {
 	public boolean isMain() throws SemanticError{
 			return ((MethodType) type).isMainMethodType();
 	}
-
+	
+	public MethodSymbolTable getMethodSymbolTable() {
+		return MST;
+	}
+	
 }

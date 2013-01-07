@@ -1,13 +1,23 @@
 package IC.SymbolTable;
 
 import IC.AST.Field;
+import IC.AST.ICClass;
 import IC.AST.Method;
 import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
 
-	public ClassSymbolTable(String id, GlobalSymbolTable parent) {
+	public ClassSymbolTable(ICClass A, String id, SymbolTable parent)
+			throws SemanticError {
 		super(id, parent);
+
+		for (Field field : A.getFields()) {
+			this.addField(field);
+		}
+		
+		for (Method method : A.getMethods()) {
+			this.addMethod(method);
+		}
 
 	}
 
@@ -17,9 +27,12 @@ public class ClassSymbolTable extends SymbolTable {
 	 * @param name
 	 * @throws SemanticError
 	 */
-	public void addField(Field field) throws SemanticError {
-		if (lookup(field.getType().getName()) != null)
-			throw new SemanticError("multiple definitions for symbol in class",
+	private void addField(Field field) throws SemanticError {
+		Symbol sym = lookup(field.getName());
+		if ((sym != null)
+				&& (sym.getKind() == Kind.FIELD || sym.getKind() == Kind.METHOD))
+			throw new SemanticError(
+					"multiple definitions for symbol in class hieratchy",
 					field.getName());
 		else {
 			this.insert(new FieldSymbol(field)); // will also update TypeTable
@@ -33,12 +46,15 @@ public class ClassSymbolTable extends SymbolTable {
 	 * @param name
 	 * @throws SemanticError
 	 */
-	public void addMethod(Method method) throws SemanticError {
-		if (lookup(method.getType().getName()) != null)
-			throw new SemanticError("multiple definitions for symbol in class",
+	private void addMethod(Method method) throws SemanticError {
+		Symbol sym = lookup(method.getName());
+		if ((sym != null) && (sym.getKind() == Kind.FIELD)) // methods may be
+															// overriden.
+			throw new SemanticError(
+					"multiple definitions for symbol in class hieratchy",
 					method.getName());
 		else {
-			this.insert(new MethodSymbol(method)); // will also update TypeTable
+			this.insert(new MethodSymbol(method,this)); // will also update TypeTable
 		}
 
 	}

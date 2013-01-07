@@ -53,10 +53,6 @@ public class TypeTable {
 		
 	}
 
-	public static MethodType getMethodType() {
-		return null;
-
-	}
 
 	private static ArrayType getArrayType(Type elemType) {
 

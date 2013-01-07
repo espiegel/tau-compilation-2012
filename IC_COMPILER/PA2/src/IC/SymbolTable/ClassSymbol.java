@@ -5,17 +5,33 @@ import IC.TypeTable.SemanticError;
 import IC.TypeTable.TypeTable;
 
 public class ClassSymbol extends Symbol {
-	
-	private ICClass icClass;
+
+	private ClassSymbolTable CST;
 
 	public ClassSymbol(ICClass A) throws SemanticError {
-		super(A.getLine(), A.getName(), Kind.FIELD);
+		super(A.getLine(), A.getName(), Kind.CLASS, true);
 		TypeTable.addClassType(A);
-		icClass = A;
+		initCST(A);
+		A.setEnclosingScope(CST.getParent());
 	}
-	
-	public ICClass getICClass(){
-		return icClass;
+
+	private void initCST(ICClass A) throws SemanticError {
+		SymbolTable parent;
+		if (A.hasSuperClass()) {
+			ClassSymbol superClass = (ClassSymbol) SymbolTableBuilder.GST
+					.lookup(A.getSuperClassName());
+			parent = superClass.getClassSymbolTable();
+		} else {
+			parent = SymbolTableBuilder.GST;
+		}
+
+		CST = new ClassSymbolTable(A, this.getID(), parent);
+	}
+
+
+
+	public ClassSymbolTable getClassSymbolTable() {
+		return CST;
 	}
 
 }
