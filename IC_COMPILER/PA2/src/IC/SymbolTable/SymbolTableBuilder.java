@@ -15,7 +15,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable,Object
 	
 	public SymbolTableBuilder(String icfile) {
 		GST.setID(icfile);
-		TypeTable.initTypeTable();
+		TypeTable.initTypeTable(icfile);
 	}
 	
 	
