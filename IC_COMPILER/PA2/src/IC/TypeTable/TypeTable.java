@@ -25,12 +25,19 @@ public class TypeTable {
 	private static Map<String, ClassType> classTypes = new HashMap<String, ClassType>();
 	private static Map<String, MethodType> methodTypes = new HashMap<String, MethodType>();
 
-	public static void initTypeTable() {
+	private static String fileName = null;
+	
+	public static String getFileName() {
+		return fileName;
+	}
+
+	public static void initTypeTable(String fileName) {
 		primitiveTypes.put(intType.getName(), intType);
 		primitiveTypes.put(boolType.getName(), boolType);
 		primitiveTypes.put(stringType.getName(), stringType);
 		primitiveTypes.put(voidType.getName(), voidType);
 		primitiveTypes.put(nullType.getName(), nullType);
+		TypeTable.fileName = fileName;
 	}
 
 	public static MethodType getMethodType(Method method) throws SemanticError {
@@ -70,7 +77,7 @@ public class TypeTable {
 		return at;
 	}
 
-	private static ClassType getClassType(String name) throws SemanticError {
+	public static ClassType getClassType(String name) throws SemanticError {
 
 		if (!classTypes.containsKey(name)) {
 			throw new SemanticError("undefined class", name);
@@ -124,5 +131,52 @@ public class TypeTable {
 		return null;
 
 	}
+	
+	// TODO: Eidan is doing this !!!
+    /**
+     * returns string representation for the TypeTable fitting the "-dump-symtab" IC.Compiler flag
+     * @return
+     */
+    public static String staticToString(){
+        String str = "Type Table: "+fileName+"\n";
+        
+        // construct string representation for primitive types
+        Iterator<Type> uniquePrimitiveTypesIter = uniquePrimitiveTypes.values().iterator();
+        String primitiveTypesStr = "";
+        while (uniquePrimitiveTypesIter.hasNext()){
+                Type t = uniquePrimitiveTypesIter.next();
+                primitiveTypesStr += "\t"+t.getTypeID()+": Primitive type: "+t.getName()+"\n";
+        }
+        
+        /*
+        for(Type t : primitiveTypes.values())
+        	str += "\t"+t.getTypeID()+""
+        */
+        
+        // construct string representation for class types
+        Iterator<ClassType> uniqueClassTypesIter = uniqueClassTypes.values().iterator();
+        String classTypesStr = "";
+        while (uniqueClassTypesIter.hasNext()){
+                ClassType ct = uniqueClassTypesIter.next();
+                classTypesStr += "\t"+ct.getTypeID()+": Class: "+ct.toString()+"\n";
+        }
+        
+        // construct string representation for array types
+        Iterator<ArrayType> uniqueArrayTypesIter = uniqueArrayTypes.values().iterator();
+        String arrayTypesStr = "";
+        while (uniqueArrayTypesIter.hasNext()){
+                ArrayType at = uniqueArrayTypesIter.next();
+                arrayTypesStr += "\t"+at.getTypeID()+": Array type: "+at.toString()+"\n";
+        }
+        
+        // construct string representation for method types
+        String methodTypesStr = "";
+        for (MethodType mt: uniqueMethodTypes.values()){
+                methodTypesStr += "\t"+mt.getTypeID()+": Method type: "+mt.toString()+"\n";
+        }
+        
+        str += primitiveTypesStr+classTypesStr+arrayTypesStr+methodTypesStr;
+        return str;
+    }
 
 }
