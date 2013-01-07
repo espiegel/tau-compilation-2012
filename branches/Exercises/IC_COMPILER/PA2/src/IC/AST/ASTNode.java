@@ -37,8 +37,11 @@ public abstract class ASTNode {
 		return line;
 	}
 	
-	public SymbolTable enclosingScope(){
+	public SymbolTable getEnclosingScope(){
 		return enclosingScope;
 	}
-
+	
+	public void setEnclosingScope(SymbolTable scope){
+		enclosingScope = scope;
+	}
 }

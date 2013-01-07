@@ -7,6 +7,7 @@ import IC.TypeTable.SemanticError;
 
 public class MethodSymbolTable extends BlockSymbolTable {
 	
+	
 	public MethodSymbolTable(Method method, SymbolTable parent) throws SemanticError {
 		super(method.getName(), parent);
 		
@@ -16,5 +17,5 @@ public class MethodSymbolTable extends BlockSymbolTable {
 			insert(new VarSymbol(formal));
 		}
 	}
-
+	
 }

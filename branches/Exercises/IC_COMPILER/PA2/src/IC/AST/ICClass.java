@@ -2,6 +2,9 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.GlobalSymbolTable;
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Class declaration AST node.
  * 
@@ -79,6 +82,11 @@ public class ICClass extends ASTNode {
 
 	public List<Method> getMethods() {
 		return methods;
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

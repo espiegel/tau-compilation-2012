@@ -1,22 +1,28 @@
 package IC.SymbolTable;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import IC.AST.ICClass;
 import IC.TypeTable.SemanticError;
-import IC.TypeTable.TypeTable;
 
 public class GlobalSymbolTable extends SymbolTable {
-
-	public GlobalSymbolTable(String icfile) {
-		super(icfile, null);
+	
+	
+	public GlobalSymbolTable() {
+		super(null, null);
 	}
+	
+	public ClassSymbolTable lookupCST(String name) throws SemanticError{
+		return ((ClassSymbol)this.lookup(name)).getClassSymbolTable();
+	}
+	
 
 	public void addClass(ICClass A) throws SemanticError {
-		TypeTable.addClassType(A);
-		ClassSymbol C = new ClassSymbol(A); //will also update SymbolTable
+		ClassSymbol C = new ClassSymbol(A); //will also update TypeTable
 		this.insert(C);
 	}
-
+	
+	public void setID(String icfile){
+		this.id = icfile;
+	}
+	
 }
