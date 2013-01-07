@@ -111,7 +111,8 @@ public class TypeTable {
 	}
 
 	public static boolean isPrimitive(Type B) {
-		return B == intType || B == boolType || B == stringType;
+		return B.equals(intType) || B.equals(boolType) || B.equals(stringType);
+		
 	}
 
 	public static int getUniqueId() {
