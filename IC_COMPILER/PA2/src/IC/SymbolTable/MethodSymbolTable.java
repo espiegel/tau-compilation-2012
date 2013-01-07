@@ -9,7 +9,7 @@ public class MethodSymbolTable extends BlockSymbolTable {
 	
 	
 	public MethodSymbolTable(Method method, SymbolTable parent) throws SemanticError {
-		super(method.getName(), parent);
+		super(method.getStatements(), parent);
 		
 		if (method instanceof StaticMethod) isStaticScope=true;
 		
