@@ -14,7 +14,7 @@ public class ClassSymbolTable extends SymbolTable {
 		for (Field field : A.getFields()) {
 			this.addField(field);
 		}
-		
+
 		for (Method method : A.getMethods()) {
 			this.addMethod(method);
 		}
@@ -54,9 +54,14 @@ public class ClassSymbolTable extends SymbolTable {
 					"multiple definitions for symbol in class hieratchy",
 					method.getName());
 		else {
-			this.insert(new MethodSymbol(method,this)); // will also update TypeTable
+			this.insert(new MethodSymbol(method, this)); // will also update
+															// TypeTable
 		}
 
 	}
 
+	public String toString() {
+		String str = "Class " + super.toString();
+		return str;
+	}
 }

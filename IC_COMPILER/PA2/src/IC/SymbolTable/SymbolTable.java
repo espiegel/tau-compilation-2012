@@ -81,7 +81,12 @@ public class SymbolTable {
 
 	// TODO: complete this
 	public String toString() {
-		return null;
+		String str = "Symbol Table: " + id + "\n";
+		
+		for (Map.Entry<String, Symbol> e : entries.entrySet())
+			str += e.getValue().getKind() + ": " + e.getValue().getType() + "\n";
+
+		return str;
 	}
 	
 	public String getID() {
