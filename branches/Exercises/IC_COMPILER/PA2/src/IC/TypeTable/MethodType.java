@@ -29,6 +29,8 @@ public class MethodType extends Type {
      *         checks the name, return type and parameters
      */
     public boolean equals(MethodType t) {
+    	return isSubtype(t);
+    	/*
             if (this.getName() != t.getName()) return false; // Check the name
             else if (this.ret != t.getReturnType()) return false; // Check the return types
             else
@@ -46,6 +48,7 @@ public class MethodType extends Type {
             }
             
             return true;
+            */
     }
 	
 	public boolean isMainMethodType() throws SemanticError {
