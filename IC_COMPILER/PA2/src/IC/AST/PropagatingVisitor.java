@@ -74,8 +74,8 @@ public interface PropagatingVisitor<C,R> {
 
 	public R visit(ExpressionBlock expressionBlock, C context);
 
-	public Object visit(Method method, SymbolTable context);
+	public R visit(Method method, SymbolTable context);
 
-	public Object visit(Statement statement, SymbolTable context);
+	public R visit(Statement statement, SymbolTable context);
 
 }
