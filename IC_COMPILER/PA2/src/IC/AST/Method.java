@@ -3,7 +3,7 @@ package IC.AST;
 import java.util.List;
 
 import IC.SymbolTable.SymbolTable;
-import IC.SymbolTable.SymbolTableBuilder;
+import IC.SemanticAnalysis.SymbolTableBuilder;
 
 /**
  * Abstract base class for method AST nodes.

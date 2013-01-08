@@ -1,4 +1,4 @@
-package IC.SemanticCheck;
+package IC.SemanticAnalysis;
 
 import IC.AST.*;
 import IC.SymbolTable.BlockSymbolTable;
