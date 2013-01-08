@@ -1,5 +1,8 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+import IC.SymbolTable.SymbolTableBuilder;
+
 /**
  * Abstract base class for variable reference AST nodes.
  * 
@@ -15,6 +18,11 @@ public abstract class Location extends Expression {
 	 */
 	protected Location(int line) {
 		super(line);
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

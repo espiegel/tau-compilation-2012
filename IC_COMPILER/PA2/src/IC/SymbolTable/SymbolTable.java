@@ -70,6 +70,21 @@ public class SymbolTable {
 			return ret;
 		}
 	}
+	 
+	protected Symbol lookup(String name, Kind kind) throws SemanticError {
+		
+		Symbol ret = entries.get(name);
+		if (ret == null || ret.getKind() != kind) {
+			if (noParentScope()) {
+				throw new SemanticError("symbol cannot be resolved", name);
+			} else {
+				return parent.lookup(name);
+			}
+		} else {
+			return ret;
+		}
+	}
+
 
 	private boolean noParentScope() {
 		return (parent == null) || (isStatic() && (parent instanceof ClassSymbolTable));

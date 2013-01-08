@@ -14,7 +14,7 @@ public class MethodSymbol extends Symbol {
 	
 	
 	public MethodSymbol(Method method) throws SemanticError {
-		super(method.getLine(), method.getName(), Kind.METHOD, true);
+		super(method.getLine(), method.getName(), Kind.METHOD);
 		
 		this.type = TypeTable.getMethodType(method);
 		this.isStatic = method.isStatic();
