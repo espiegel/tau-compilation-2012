@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Abstract base class for expression AST nodes.
  * 
@@ -15,5 +17,10 @@ public abstract class Expression extends ASTNode {
 	 */
 	protected Expression(int line) {
 		super(line);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 }

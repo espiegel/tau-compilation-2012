@@ -59,6 +59,15 @@ public class ClassSymbolTable extends SymbolTable {
 		}
 
 	}
+	
+	public Symbol lookupField(String name) throws SemanticError {
+		return lookup(name,Kind.FIELD);
+	}
+	
+	
+	public Symbol lookupMethod(String name) throws SemanticError {
+		return lookup(name,Kind.METHOD);
+	}
 
 
 

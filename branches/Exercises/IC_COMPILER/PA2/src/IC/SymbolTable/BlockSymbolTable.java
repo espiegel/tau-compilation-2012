@@ -12,6 +12,10 @@ public class BlockSymbolTable extends SymbolTable {
 	public void addLoclVar(LocalVariable var) throws SemanticError {
 		this.insert(new VarSymbol(var));
 	}
+	
+	public Symbol lookupVariable(String name) throws SemanticError {
+		return lookup(name,Kind.VAR);
+	}
 
 	public String toString() {
 		String str = "Block " + super.toString();

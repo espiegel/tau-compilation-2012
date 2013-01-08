@@ -9,7 +9,7 @@ public class ClassSymbol extends Symbol {
 	private ClassSymbolTable CST;
 
 	public ClassSymbol(ICClass A) throws SemanticError {
-		super(A.getLine(), A.getName(), Kind.CLASS, true);
+		super(A.getLine(), A.getName(), Kind.CLASS);
 		TypeTable.addClassType(A);
 		initCST(A);
 		A.setEnclosingScope(CST.getParent());
@@ -20,7 +20,7 @@ public class ClassSymbol extends Symbol {
 		if (A.hasSuperClass()) {
 			// get reference to the super-class's CST
 			ClassSymbol superClass = (ClassSymbol) SymbolTableBuilder.GST
-					.lookup(A.getSuperClassName()); 
+					.lookup(A.getSuperClassName(),Kind.CLASS); 
 			parent = superClass.getClassSymbolTable();
 		} else {
 			parent = SymbolTableBuilder.GST;

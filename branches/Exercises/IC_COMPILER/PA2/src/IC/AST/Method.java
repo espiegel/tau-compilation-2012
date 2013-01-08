@@ -57,8 +57,9 @@ public abstract class Method extends ASTNode {
 		return statements;
 	}
 
-	public void accept(SymbolTableBuilder visitor, SymbolTable scope) {
-		visitor.visit(this,scope);
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 	public boolean isStatic() {
