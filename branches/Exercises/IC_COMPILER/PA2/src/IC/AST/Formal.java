@@ -2,7 +2,7 @@ package IC.AST;
 
 import IC.SymbolTable.MethodSymbolTable;
 import IC.SymbolTable.SymbolTable;
-import IC.SymbolTable.SymbolTableBuilder;
+import IC.SemanticAnalysis.SymbolTableBuilder;
 
 /**
  * Method parameter AST node.

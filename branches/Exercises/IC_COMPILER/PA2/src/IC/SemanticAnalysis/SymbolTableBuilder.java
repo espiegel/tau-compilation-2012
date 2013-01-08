@@ -1,6 +1,8 @@
-package IC.SymbolTable;
+package IC.SemanticAnalysis;
+
 
 import IC.AST.*;
+import IC.SymbolTable.*;
 import IC.TypeTable.SemanticError;
 import IC.TypeTable.TypeTable;
 

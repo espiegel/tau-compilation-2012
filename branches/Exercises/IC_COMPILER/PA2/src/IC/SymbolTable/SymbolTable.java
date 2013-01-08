@@ -71,7 +71,7 @@ public class SymbolTable {
 		}
 	}
 	 
-	protected Symbol lookup(String name, Kind kind) throws SemanticError {
+	public Symbol lookup(String name, Kind kind) throws SemanticError {
 		
 		Symbol ret = entries.get(name);
 		if (ret == null || ret.getKind() != kind) {

@@ -3,6 +3,7 @@ package IC.SymbolTable;
 import IC.AST.ICClass;
 import IC.TypeTable.SemanticError;
 import IC.TypeTable.TypeTable;
+import IC.SemanticAnalysis.SymbolTableBuilder;
 
 public class ClassSymbol extends Symbol {
 
