@@ -51,7 +51,7 @@ public class TypeTable {
 		MethodType tmpMethod = new MethodType(params,ret);
 		MethodType mt = methodTypes.get(tmpMethod.getName());
 		if (mt == null) {
-			methodTypes.put(tmpMethod.toString(),tmpMethod);
+			methodTypes.put(tmpMethod.getName(),tmpMethod);
 			return tmpMethod;
 		}
 		else{

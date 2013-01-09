@@ -1,10 +1,7 @@
 package IC.TypeTable;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import IC.DataTypes;
 
 public class MethodType extends Type {
 	

@@ -7,10 +7,9 @@ import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
 
-	public ClassSymbolTable(ICClass A, String id, SymbolTable parent) {
+	public ClassSymbolTable(ICClass A, String id, SymbolTable parent) throws SemanticError {
 		super(id, parent);
 		
-		/**
 		for (Field field : A.getFields()) {
 			this.addField(field);
 		}
@@ -18,7 +17,6 @@ public class ClassSymbolTable extends SymbolTable {
 		for (Method method : A.getMethods()) {
 			this.addMethod(method);
 		}
-		**/
 
 	}
 
@@ -28,7 +26,7 @@ public class ClassSymbolTable extends SymbolTable {
 	 * @param name
 	 * @throws SemanticError
 	 */
-	public void addField(Field field) throws SemanticError {
+	private void addField(Field field) throws SemanticError {
 		Symbol sym = lookup(field.getName());
 		if ((sym != null)
 				&& (sym.getKind() == Kind.FIELD || sym.getKind() == Kind.METHOD))
@@ -47,7 +45,7 @@ public class ClassSymbolTable extends SymbolTable {
 	 * @param name
 	 * @throws SemanticError
 	 */
-	public void addMethod(Method method) throws SemanticError {
+	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
 		if ((sym != null) && (sym.getKind() == Kind.FIELD)) // methods may be
 															// overriden.
