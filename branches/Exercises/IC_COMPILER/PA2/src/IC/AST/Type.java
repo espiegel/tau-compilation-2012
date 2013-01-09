@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Abstract base class for data type AST nodes.
  * 
@@ -40,5 +42,10 @@ public abstract class Type extends ASTNode {
 
 	public void incrementDimension() {
 		++dimension;
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 }

@@ -11,11 +11,14 @@ public class GlobalSymbolTable extends SymbolTable {
 		super(null, null);
 	}
 	
-	/**
-	public ClassSymbolTable lookupCST(String name) throws SemanticError {
-		return ((ClassSymbol) this.lookup(name)).getClassSymbolTable();
+	public Symbol lookupClass(String name) throws SemanticError{
+		return this.lookup(name, Kind.CLASS);
 	}
-	**/
+	
+	public ClassSymbolTable lookupCST(String name) throws SemanticError {
+		return ((ClassSymbol) this.lookup(name,Kind.CLASS)).getClassSymbolTable();
+	}
+	
 
 	// will add entry (with reference to the appropriate CST) and return it.
 	public ClassSymbol getClassSymbol(ICClass A) throws SemanticError {
