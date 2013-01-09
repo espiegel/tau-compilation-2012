@@ -41,8 +41,8 @@ public class Formal extends ASTNode {
 		return name;
 	}
 
-	public void accept(SymbolTableBuilder visitor, SymbolTable scope) {
-		visitor.visit(this,scope);
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable scope) {
+		return visitor.visit(this,scope);
 	}
 
 }

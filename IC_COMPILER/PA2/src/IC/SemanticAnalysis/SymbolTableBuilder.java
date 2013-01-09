@@ -1,12 +1,12 @@
 package IC.SemanticAnalysis;
 
-
 import IC.AST.*;
 import IC.SymbolTable.*;
 import IC.TypeTable.SemanticError;
 import IC.TypeTable.TypeTable;
 
-public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Object> {
+public class SymbolTableBuilder implements
+		PropagatingVisitor<SymbolTable, Object> {
 	public static GlobalSymbolTable GST = new GlobalSymbolTable();
 
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
@@ -23,7 +23,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	@Override
 	public Object visit(Program program, SymbolTable context /* null */) {
 		for (ICClass C : program.getClasses()) {
-			C.accept(this, GST);
+			if (C.accept(this, GST) == null) return null;
 		}
 		return true;
 	}
@@ -32,50 +32,49 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	public Object visit(ICClass icClass, SymbolTable globalscope) {
 		ClassSymbol classSmbol = null;
 		try {
-			// adds class symbol to GST and creates class's SymbolTable hierarchy.
+			// adds class symbol to GST and creates class's SymbolTable
+			// hierarchy. adds fields and methods to class's SymbolTable.
 			classSmbol = ((GlobalSymbolTable) globalscope)
 					.getClassSymbol(icClass);
 		} catch (SemanticError se) {
 			return handleSemanticError(se, icClass);
 		}
-		
-		// if made it to here then classSymbol != null 
+
+		// if made it to here then classSymbol != null
 		for (Method method : icClass.getMethods()) {
-			method.accept(this, classSmbol.getClassSymbolTable());
+			if (method.accept(this, classSmbol.getClassSymbolTable()) == null) return null;
 		}
 		for (Field field : icClass.getFields()) {
-			field.accept(this, classSmbol.getClassSymbolTable());
+			if (field.accept(this, classSmbol.getClassSymbolTable()) == null) return null;
 		}
 
 		return true;
 	}
 
-	private boolean visitMethod(Method method, SymbolTable scope) {
+	private Object visitMethod(Method method, SymbolTable scope) {
 		method.setEnclosingScope(scope);
-		MethodSymbolTable MST = new MethodSymbolTable(method, scope);
+
+		// all formal parameters are added to the MST upon it's creation.
 		try {
-			((ClassSymbolTable) scope).addMethod(method);
+			MethodSymbolTable MST = new MethodSymbolTable(method, scope);
 
 			for (Formal formal : method.getFormals()) {
-				formal.accept(this, MST);
+				if (formal.accept(this, MST) == null) return null;
 			}
 			for (Statement statement : method.getStatements()) {
-				statement.accept(this, MST);
+				if (statement.accept(this, MST) == null) return null;
 			}
+
 		} catch (SemanticError se) {
-			handleSemanticError(se, method);
+			return handleSemanticError(se, method);
 		}
+
 		return true;
 	}
 
 	@Override
 	public Object visit(Field field, SymbolTable scope) {
 		field.setEnclosingScope(scope);
-		try {
-			((ClassSymbolTable) scope).addField(field);
-		} catch (SemanticError se) {
-			handleSemanticError(se, field);
-		}
 		return true;
 	}
 
@@ -106,14 +105,8 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 
 	@Override
 	public Object visit(Formal formal, SymbolTable scope) {
-		
+
 		formal.setEnclosingScope(scope);
-		
-		try {
-			((MethodSymbolTable) scope).addLoclVar(formal);
-		} catch (SemanticError se) {
-			handleSemanticError(se, formal);
-		}
 		return true;
 	}
 
@@ -133,22 +126,22 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	public Object visit(Assignment assignment, SymbolTable scope) {
 		assignment.setEnclosingScope(scope);
 		
-		// set local variable as initialized.
-		if (assignment.getVariable() instanceof VariableLocation){
-			VariableLocation location = (VariableLocation) assignment.getVariable();
-			try {
-				VarSymbol var = (VarSymbol)scope.lookup(location.getName(),Kind.VAR);
-				var.initialize();
-			} catch (SemanticError se) {
-				handleSemanticError(se,location);
-			}
-		}
-		
-        if (assignment.getVariable().accept(this,scope)==null) return null;
-        
-        if (assignment.getAssignment().accept(this, scope)==null) return null;
-        
-        return true;
+		//TODO: handle variable initialization issues. (BONUS)
+		/**
+		 * if (assignment.getVariable() instanceof VariableLocation) {
+		 * VariableLocation location = (VariableLocation) assignment
+		 * .getVariable(); if (!location.isExternal()) { try { Symbol var =
+		 * scope.lookup(location.getName()); if (var.getKind() == Kind.VAR) {
+		 * ((VarSymbol) var).initialize(); } } catch (SemanticError se) {
+		 * handleSemanticError(se, location); } } }
+		 **/
+		if (assignment.getVariable().accept(this, scope) == null)
+			return null;
+
+		if (assignment.getAssignment().accept(this, scope) == null)
+			return null;
+
+		return true;
 	}
 
 	@Override
@@ -163,28 +156,53 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 
 	@Override
 	public Object visit(Return returnStatement, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		returnStatement.setEnclosingScope(scope);
-		
-		
+		if (returnStatement.hasValue()) {
+			if (returnStatement.getValue().accept(this, scope) == null)
+				return null;
+		}
 		return true;
 	}
-
+	
+	// initialize new scope (if necessary) then visit.
+	private Object initScopeAndvisit(Statement operation, SymbolTable scope){
+		
+		if (operation instanceof LocalVariable){
+			BlockSymbolTable BST = new BlockSymbolTable(null, scope);
+			if (operation.accept(this,BST) == null) return null;
+		}
+		else{
+			if (operation.accept(this,scope) == null) return null;
+		}
+		return true;	
+	}
+	
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
-		// TODO Auto-generated method stub
+		
 		ifStatement.setEnclosingScope(scope);
 		
-		
+		if (ifStatement.getCondition().accept(this, scope) == null)
+			return null;
+
+		if (initScopeAndvisit(ifStatement.getOperation(),scope) == null) 
+			return null;
+			
+		if (ifStatement.hasElse()){
+			if (initScopeAndvisit(ifStatement.getElseOperation(), scope) == null)
+				return null;
+		}
 		return true;
 	}
 
 	@Override
 	public Object visit(While whileStatement, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		whileStatement.setEnclosingScope(scope);
-		
-		
+		if (whileStatement.getCondition().accept(this, scope) == null)
+			return null;
+		if (initScopeAndvisit(whileStatement.getOperation(), scope) == null)
+			return null;
+
 		return true;
 	}
 
@@ -205,7 +223,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 		statementsBlock.setEnclosingScope(scope);
 		BlockSymbolTable BST = new BlockSymbolTable(null, scope);
 		for (Statement statement : statementsBlock.getStatements()) {
-			statement.accept(this, BST);
+			if (statement.accept(this, BST) == null) return null;
 		}
 
 		return true;
@@ -213,10 +231,11 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 
 	@Override
 	public Object visit(LocalVariable localVariable, SymbolTable scope) {
+		localVariable.setEnclosingScope(scope);
 		try {
 			((BlockSymbolTable) scope).addLoclVar(localVariable);
 		} catch (SemanticError se) {
-			handleSemanticError(se, localVariable);
+			return handleSemanticError(se, localVariable);
 		}
 		localVariable.setEnclosingScope(scope);
 		return true;
@@ -224,28 +243,36 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 
 	@Override
 	public Object visit(VariableLocation location, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		location.setEnclosingScope(scope);
-		
-		
-		return true;
+        if (location.isExternal()){ 
+        	// location is a field. resolving will be done later (when we know all Types).
+            if (location.getLocation().accept(this,scope) == null) return null;
+        }else try{
+            // resolve location to a previously defined variable.
+            scope.lookup(location.getName());
+        } catch (SemanticError se){
+        	return handleSemanticError(se,location);
+        }
+    
+    return true;
 	}
 
 	@Override
 	public Object visit(ArrayLocation location, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		location.setEnclosingScope(scope);
-		
-		
-		return true;
+        if (location.getArray().accept(this,scope) == null) return null;
+        
+        location.getIndex().setEnclosingScope(location.getEnclosingScope());
+        if (location.getIndex().accept(this,scope) == null) return null;
+        
+        return true;
 	}
 
 	@Override
 	public Object visit(StaticCall call, SymbolTable scope) {
 		// TODO Auto-generated method stub
 		call.setEnclosingScope(scope);
-		
-		
+
 		return true;
 	}
 
@@ -253,8 +280,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	public Object visit(VirtualCall call, SymbolTable scope) {
 		// TODO Auto-generated method stub
 		call.setEnclosingScope(scope);
-		
-		
+
 		return true;
 	}
 
@@ -268,8 +294,7 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	public Object visit(NewClass newClass, SymbolTable scope) {
 		// TODO Auto-generated method stub
 		newClass.setEnclosingScope(scope);
-		
-		
+
 		return true;
 	}
 
@@ -277,17 +302,17 @@ public class SymbolTableBuilder implements PropagatingVisitor<SymbolTable, Objec
 	public Object visit(NewArray newArray, SymbolTable scope) {
 		// TODO Auto-generated method stub
 		newArray.setEnclosingScope(scope);
-		
-		
+
 		return true;
 	}
 
 	@Override
 	public Object visit(Length length, SymbolTable scope) {
 
-        length.getArray().setEnclosingScope(scope);
-        if (length.getArray().accept(this,scope) == null) return null;
-        return true;
+		length.getArray().setEnclosingScope(scope);
+		if (length.getArray().accept(this, scope) == null)
+			return null;
+		return true;
 	}
 
 	@Override
