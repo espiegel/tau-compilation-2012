@@ -7,13 +7,14 @@ import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
 
-	public ClassSymbolTable(ICClass A, String id, SymbolTable parent) throws SemanticError {
+	public ClassSymbolTable(ICClass A, String id, SymbolTable parent)
+			throws SemanticError {
 		super(id, parent);
-		
+
 		for (Field field : A.getFields()) {
 			this.addField(field);
 		}
-		
+
 		for (Method method : A.getMethods()) {
 			this.addMethod(method);
 		}
@@ -47,27 +48,31 @@ public class ClassSymbolTable extends SymbolTable {
 	 */
 	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
-		if ((sym != null) && (sym.getKind() == Kind.FIELD)) // methods may be
-															// overriden.
+		
+		// virtual methods may be overridden but static methods may not.
+		if ((sym != null) && (sym.getKind() == Kind.FIELD)) 
+
 			throw new SemanticError(
 					"multiple definitions for symbol in class hieratchy",
 					method.getName());
-		else {
+		else if ((sym != null) && (sym.getKind() == Kind.METHOD)
+				&& ((MethodSymbol) sym).isStatic()) {
+
+			throw new SemanticError("overriding static methods is not allowed",
+					method.getName());
+		} else {
 			this.insert(new MethodSymbol(method)); // will also update TypeTable
 		}
 
 	}
-	
+
 	public Symbol lookupField(String name) throws SemanticError {
-		return lookup(name,Kind.FIELD);
+		return lookup(name, Kind.FIELD);
 	}
-	
-	
+
 	public Symbol lookupMethod(String name) throws SemanticError {
-		return lookup(name,Kind.METHOD);
+		return lookup(name, Kind.METHOD);
 	}
-
-
 
 	public String toString() {
 		String str = "Class " + super.toString();

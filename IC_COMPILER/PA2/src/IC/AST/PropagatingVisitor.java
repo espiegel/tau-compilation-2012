@@ -82,4 +82,6 @@ public interface PropagatingVisitor<C,R> {
 
 	public R visit(Expression expression, C context);
 
+	public R visit(Type type, C context);
+
 }

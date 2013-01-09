@@ -23,7 +23,8 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(Program program, SymbolTable context /* null */) {
 		for (ICClass C : program.getClasses()) {
-			if (C.accept(this, GST) == null) return null;
+			if (C.accept(this, GST) == null)
+				return null;
 		}
 		return true;
 	}
@@ -42,10 +43,12 @@ public class SymbolTableBuilder implements
 
 		// if made it to here then classSymbol != null
 		for (Method method : icClass.getMethods()) {
-			if (method.accept(this, classSmbol.getClassSymbolTable()) == null) return null;
+			if (method.accept(this, classSmbol.getClassSymbolTable()) == null)
+				return null;
 		}
 		for (Field field : icClass.getFields()) {
-			if (field.accept(this, classSmbol.getClassSymbolTable()) == null) return null;
+			if (field.accept(this, classSmbol.getClassSymbolTable()) == null)
+				return null;
 		}
 
 		return true;
@@ -59,10 +62,12 @@ public class SymbolTableBuilder implements
 			MethodSymbolTable MST = new MethodSymbolTable(method, scope);
 
 			for (Formal formal : method.getFormals()) {
-				if (formal.accept(this, MST) == null) return null;
+				if (formal.accept(this, MST) == null)
+					return null;
 			}
 			for (Statement statement : method.getStatements()) {
-				if (statement.accept(this, MST) == null) return null;
+				if (statement.accept(this, MST) == null)
+					return null;
 			}
 
 		} catch (SemanticError se) {
@@ -125,8 +130,8 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(Assignment assignment, SymbolTable scope) {
 		assignment.setEnclosingScope(scope);
-		
-		//TODO: handle variable initialization issues. (BONUS)
+
+		// TODO: handle variable initialization issues. (BONUS)
 		/**
 		 * if (assignment.getVariable() instanceof VariableLocation) {
 		 * VariableLocation location = (VariableLocation) assignment
@@ -163,32 +168,33 @@ public class SymbolTableBuilder implements
 		}
 		return true;
 	}
-	
+
 	// initialize new scope (if necessary) then visit.
-	private Object initScopeAndvisit(Statement operation, SymbolTable scope){
-		
-		if (operation instanceof LocalVariable){
+	private Object initScopeAndvisit(Statement operation, SymbolTable scope) {
+
+		if (operation instanceof LocalVariable) {
 			BlockSymbolTable BST = new BlockSymbolTable(null, scope);
-			if (operation.accept(this,BST) == null) return null;
+			if (operation.accept(this, BST) == null)
+				return null;
+		} else {
+			if (operation.accept(this, scope) == null)
+				return null;
 		}
-		else{
-			if (operation.accept(this,scope) == null) return null;
-		}
-		return true;	
+		return true;
 	}
-	
+
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
-		
+
 		ifStatement.setEnclosingScope(scope);
-		
+
 		if (ifStatement.getCondition().accept(this, scope) == null)
 			return null;
 
-		if (initScopeAndvisit(ifStatement.getOperation(),scope) == null) 
+		if (initScopeAndvisit(ifStatement.getOperation(), scope) == null)
 			return null;
-			
-		if (ifStatement.hasElse()){
+
+		if (ifStatement.hasElse()) {
 			if (initScopeAndvisit(ifStatement.getElseOperation(), scope) == null)
 				return null;
 		}
@@ -223,7 +229,8 @@ public class SymbolTableBuilder implements
 		statementsBlock.setEnclosingScope(scope);
 		BlockSymbolTable BST = new BlockSymbolTable(null, scope);
 		for (Statement statement : statementsBlock.getStatements()) {
-			if (statement.accept(this, BST) == null) return null;
+			if (statement.accept(this, BST) == null)
+				return null;
 		}
 
 		return true;
@@ -244,43 +251,71 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(VariableLocation location, SymbolTable scope) {
 		location.setEnclosingScope(scope);
-        if (location.isExternal()){ 
-        	// location is a field. resolving will be done later (when we know all Types).
-            if (location.getLocation().accept(this,scope) == null) return null;
-        }else try{
-            // resolve location to a previously defined variable.
-            scope.lookup(location.getName());
-        } catch (SemanticError se){
-        	return handleSemanticError(se,location);
-        }
-    
-    return true;
-	}
-
-	@Override
-	public Object visit(ArrayLocation location, SymbolTable scope) {
-		location.setEnclosingScope(scope);
-        if (location.getArray().accept(this,scope) == null) return null;
-        
-        location.getIndex().setEnclosingScope(location.getEnclosingScope());
-        if (location.getIndex().accept(this,scope) == null) return null;
-        
-        return true;
-	}
-
-	@Override
-	public Object visit(StaticCall call, SymbolTable scope) {
-		// TODO Auto-generated method stub
-		call.setEnclosingScope(scope);
+		if (location.isExternal()) {
+			// location is a field. resolving will be done later (when we know
+			// all Types).
+			if (location.getLocation().accept(this, scope) == null)
+				return null;
+		} else
+			try {
+				// resolve location to a previously defined variable.
+				scope.lookup(location.getName());
+			} catch (SemanticError se) {
+				return handleSemanticError(se, location);
+			}
 
 		return true;
 	}
 
 	@Override
-	public Object visit(VirtualCall call, SymbolTable scope) {
-		// TODO Auto-generated method stub
+	public Object visit(ArrayLocation location, SymbolTable scope) {
+		location.setEnclosingScope(scope);
+		// since this might be a composite expression, resolving will be made
+		// recursively.
+		if (location.getArray().accept(this, scope) == null)
+			return null;
+
+		location.getIndex().setEnclosingScope(location.getEnclosingScope());
+		if (location.getIndex().accept(this, scope) == null)
+			return null;
+
+		return true;
+	}
+
+	@Override
+	public Object visit(StaticCall call, SymbolTable scope) {
 		call.setEnclosingScope(scope);
 
+		// TODO: determine whether this check should be done here or in checker.
+		try {
+			ClassSymbolTable cst = GST.lookupCST(call.getClassName());
+			cst.lookupMethod(call.getName()); // resolve method symbol.
+		} catch (SemanticError se) {
+			return handleSemanticError(se, call);
+		}
+		// resolve call's arguments recursively.
+		for (Expression arg : call.getArguments()) {
+			if (arg.accept(this, scope) == null)
+				return null;
+		}
+		return true;
+	}
+
+	@Override
+	public Object visit(VirtualCall call, SymbolTable scope) {
+		call.setEnclosingScope(scope);
+		
+		// TODO: determine whether this check should be done here or in checker
+		if (call.isExternal()) {
+			Expression location = call.getLocation();
+			if (location.accept(this, scope) == null)
+				return null;
+		}
+
+		for (Expression arg : call.getArguments()) {
+			if (arg.accept(this, scope) == null)
+				return null; // resolve call's arguments recursively.
+		}
 		return true;
 	}
 
@@ -292,63 +327,74 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(NewClass newClass, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		newClass.setEnclosingScope(scope);
-
+		try {
+			GST.lookupClass(newClass.getName());
+		} catch (SemanticError se) {
+			return handleSemanticError(se, newClass);
+		}
 		return true;
 	}
 
 	@Override
 	public Object visit(NewArray newArray, SymbolTable scope) {
-		// TODO Auto-generated method stub
 		newArray.setEnclosingScope(scope);
-
+		if (newArray.getType().accept(this, scope) == null) return null;
+		if (newArray.getSize().accept(this, scope) == null) return null;
 		return true;
 	}
 
 	@Override
 	public Object visit(Length length, SymbolTable scope) {
-
-		length.getArray().setEnclosingScope(scope);
-		if (length.getArray().accept(this, scope) == null)
-			return null;
+		length.setEnclosingScope(scope);
+		if (length.getArray().accept(this, scope) == null) return null;
+		return true;
+	}
+	
+	private Object visitBinaryOp(BinaryOp binaryOp,SymbolTable scope){
+		binaryOp.setEnclosingScope(scope);
+		if (binaryOp.getFirstOperand().accept(this, scope) == null) return null;
+		if (binaryOp.getSecondOperand().accept(this, scope) == null) return null;
+		return scope;
+	}
+	
+	private Object visitUnaryOp(UnaryOp unaryOp,SymbolTable scope){
+		unaryOp.setEnclosingScope(scope);
+		if (unaryOp.getOperand().accept(this, scope) == null) return null;
 		return true;
 	}
 
 	@Override
-	public Object visit(MathBinaryOp binaryOp, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(MathBinaryOp binaryOp, SymbolTable scope) {
+		return visitBinaryOp(binaryOp, scope);
 	}
 
 	@Override
-	public Object visit(LogicalBinaryOp binaryOp, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(LogicalBinaryOp binaryOp, SymbolTable scope) {
+		return visitBinaryOp(binaryOp, scope);
 	}
 
 	@Override
-	public Object visit(MathUnaryOp unaryOp, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(MathUnaryOp unaryOp, SymbolTable scope) {
+		return visitUnaryOp(unaryOp, scope);
 	}
 
 	@Override
-	public Object visit(LogicalUnaryOp unaryOp, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(LogicalUnaryOp unaryOp, SymbolTable scope) {
+		return visitUnaryOp(unaryOp, scope);
 	}
 
 	@Override
-	public Object visit(Literal literal, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(Literal literal, SymbolTable scope) {
+		literal.setEnclosingScope(scope);
+		return true;
 	}
 
 	@Override
-	public Object visit(ExpressionBlock expressionBlock, SymbolTable context) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(ExpressionBlock expressionBlock, SymbolTable scope) {
+        expressionBlock.setEnclosingScope(scope);
+        if (expressionBlock.getExpression().accept(this,scope) == null) return null;
+        return true;
 	}
 
 	@Override
@@ -374,6 +420,16 @@ public class SymbolTableBuilder implements
 	public Object visit(Expression expression, SymbolTable context) {
 		try {
 			throw new SemanticError("shouldn't get here", "BUG4");
+		} catch (SemanticError se) {
+			System.out.println(se);
+		}
+		return null;
+	}
+
+	@Override
+	public Object visit(Type type, SymbolTable context) {
+		try {
+			throw new SemanticError("shouldn't get here", "BUG6");
 		} catch (SemanticError se) {
 			System.out.println(se);
 		}
