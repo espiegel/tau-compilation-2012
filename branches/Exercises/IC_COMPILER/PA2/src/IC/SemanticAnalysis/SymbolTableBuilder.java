@@ -168,10 +168,10 @@ public class SymbolTableBuilder implements
 		}
 		return true;
 	}
-
+	
+	/**
 	// initialize new scope (if necessary) then visit.
 	private Object initScopeAndvisit(Statement operation, SymbolTable scope) {
-
 		if (operation instanceof LocalVariable) {
 			BlockSymbolTable BST = new BlockSymbolTable(null, scope);
 			if (operation.accept(this, BST) == null)
@@ -180,23 +180,23 @@ public class SymbolTableBuilder implements
 			if (operation.accept(this, scope) == null)
 				return null;
 		}
+		if (operation.accept(this, scope) == null) return null;
 		return true;
 	}
-
+	**/
+	
+	
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
 
 		ifStatement.setEnclosingScope(scope);
 
-		if (ifStatement.getCondition().accept(this, scope) == null)
-			return null;
-
-		if (initScopeAndvisit(ifStatement.getOperation(), scope) == null)
-			return null;
+		if (ifStatement.getCondition().accept(this, scope) == null) return null;
+		
+		if (ifStatement.getOperation().accept(this,scope) == null) return null;
 
 		if (ifStatement.hasElse()) {
-			if (initScopeAndvisit(ifStatement.getElseOperation(), scope) == null)
-				return null;
+			if (ifStatement.getElseOperation().accept(this,scope) == null) return null;
 		}
 		return true;
 	}
@@ -204,11 +204,8 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(While whileStatement, SymbolTable scope) {
 		whileStatement.setEnclosingScope(scope);
-		if (whileStatement.getCondition().accept(this, scope) == null)
-			return null;
-		if (initScopeAndvisit(whileStatement.getOperation(), scope) == null)
-			return null;
-
+		if (whileStatement.getCondition().accept(this, scope) == null) return null;
+		if (whileStatement.getOperation().accept(this,scope) == null) return null;
 		return true;
 	}
 
@@ -305,7 +302,7 @@ public class SymbolTableBuilder implements
 	public Object visit(VirtualCall call, SymbolTable scope) {
 		call.setEnclosingScope(scope);
 		
-		// TODO: determine whether this check should be done here or in checker
+		// method name will be resolved later in during type check.
 		if (call.isExternal()) {
 			Expression location = call.getLocation();
 			if (location.accept(this, scope) == null)
