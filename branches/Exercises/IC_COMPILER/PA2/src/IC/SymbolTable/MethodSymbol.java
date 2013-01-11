@@ -10,12 +10,11 @@ public class MethodSymbol extends Symbol {
 
 	private boolean isStatic;
 	
-	private ClassSymbolTable CST;
+	/*private ClassSymbolTable CST;*/
 	
 	
-	public MethodSymbol(Method method,ClassSymbolTable cst) throws SemanticError {
+	public MethodSymbol(Method method) throws SemanticError {
 		super(method.getLine(), method.getName(), Kind.METHOD);
-		CST = cst;
 		this.type = TypeTable.getMethodType(method); //updates TypeTable (if necessary).
 		this.isStatic = method.isStatic();
 
@@ -32,12 +31,6 @@ public class MethodSymbol extends Symbol {
 	public boolean isMain() throws SemanticError{
 			return ((MethodType) type).isMainMethodType();
 	}
-	
-	public ClassSymbolTable getClassSymbolTable() {
-		return CST;
-	}
-	
-
 	
 	
 }

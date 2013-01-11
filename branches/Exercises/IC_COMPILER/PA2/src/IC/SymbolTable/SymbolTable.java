@@ -12,7 +12,7 @@ public class SymbolTable {
 	protected SymbolTable parent;
 	protected Map<String, Symbol> entries;
 	protected boolean isStaticScope;
-	protected List<SymbolTable> children;
+	private List<SymbolTable> children;
 	
 	public SymbolTable(String id, SymbolTable parent) {
 		this.id = id;
@@ -109,6 +109,10 @@ public class SymbolTable {
 	public String getID() {
 		return id;
 	
+	}
+
+	public void addChild(SymbolTable ST) {
+		children.add(ST);
 	}
 
 }

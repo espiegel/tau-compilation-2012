@@ -63,7 +63,7 @@ public class ClassSymbolTable extends SymbolTable {
 			throw new SemanticError("overriding static methods is not allowed",
 					method.getName());
 		} else {
-			this.insert(new MethodSymbol(method,this)); // will also update TypeTable
+			this.insert(new MethodSymbol(method)); // will also update TypeTable
 		}
 
 	}

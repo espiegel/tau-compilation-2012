@@ -5,8 +5,8 @@ import IC.TypeTable.SemanticError;
 
 public class BlockSymbolTable extends SymbolTable {
 
-	public BlockSymbolTable(SymbolTable parentscope) {
-		super("statement block in " + parentscope.getID(), parentscope);
+	public BlockSymbolTable(String name, SymbolTable parentscope) {
+		super(name, parentscope);
 	}
 
 	public void addLoclVar(LocalVariable var) throws SemanticError {
