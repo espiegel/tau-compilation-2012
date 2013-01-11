@@ -21,4 +21,12 @@ public class BlockSymbolTable extends SymbolTable {
 		String str = "Block " + super.toString();
 		return str;
 	}
+	
+	 /**
+     * returns the block's enclosing class
+     * @return Enclosing Class
+     */
+    public ClassSymbolTable getEnclosingClassSymbolTable(){
+            return ((BlockSymbolTable) parent).getEnclosingClassSymbolTable();
+    }
 }

@@ -1,7 +1,12 @@
 package IC.SemanticAnalysis;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import IC.AST.*;
 import IC.SymbolTable.BlockSymbolTable;
+import IC.SymbolTable.FieldSymbol;
+import IC.SymbolTable.MethodSymbol;
 import IC.TypeTable.SemanticError;
 
 /**
@@ -185,7 +190,7 @@ public class SemanticChecker implements Visitor
         // Type check
         // Check that the return type is the same type/subtype of the enclosing method's type
         try {
-            IC.TypeTable.Type returnType = ((BlockSymbolTable) returnStatement.getEnclosingScope()).getVarSymbolRec("_ret").getType();
+            IC.TypeTable.Type returnType = ((BlockSymbolTable) returnStatement.getEnclosingScope()).lookupVariable("_ret").getType();
             if (!returnedValueType.isSubtype(returnType))
             {
                 System.err.println(new SemanticError("Type mismatch, not of type "+returnType.getName(),
@@ -245,7 +250,8 @@ public class SemanticChecker implements Visitor
         
         // Type check
         // Check that the condition is of type boolean
-        try {
+        try
+        {
             if (!conditionType.isSubtype(IC.TypeTable.TypeTable.getType("boolean")))
             {
                 System.err.println(new SemanticError("Condition in while statement not of type boolean",
@@ -331,7 +337,7 @@ public class SemanticChecker implements Visitor
             try {
                 // Type check
                 // Check that the initValue type is a subtype of the local variable's type
-                IC.TypeTable.Type localVariableType = ((BlockSymbolTable) localVariable.getEnclosingScope()).getVarSymbol(localVariable.getName()).getType();
+                IC.TypeTable.Type localVariableType = ((BlockSymbolTable) localVariable.getEnclosingScope()).lookupVariable(localVariable.getName()).getType();
         
                 if (!initValueType.isSubtype(localVariableType))
                 {
@@ -362,50 +368,338 @@ public class SemanticChecker implements Visitor
      */
 	@Override
 	public Object visit(VariableLocation location) {
-		// TODO Auto-generated method stub
-		return null;
+        if (location.isExternal())
+        {
+            IC.TypeTable.Type locationType = (IC.TypeTable.Type) location.getLocation().accept(this);
+            if (locationType == null)
+            	return null;
+            try
+            {
+                IC.TypeTable.TypeTable.getClassType(locationType.getName());
+                // If the location is a class, check that it has a field with this name
+                IC.SymbolTable.ClassSymbolTable cst = this.GST.lookupCST(locationType.getName());
+                try
+                {
+                    IC.SymbolTable.FieldSymbol fs = (FieldSymbol)cst.lookupField(location.getName());  
+                    return fs.getType(); // Return the type of this field
+                } catch(SemanticError se) {
+                        se.setLine(location.getLine());
+                        System.err.println(se);
+                        return null;
+                }
+             } catch(SemanticError se ) {
+                        System.err.println(new SemanticError("Location of type "+locationType.getName()+" does not have a field",
+                                        location.getName(), location.getLine()));
+                        return null;
+                }
+        }
+        else // Location is not external
+        { 
+            try
+            {
+                IC.TypeTable.Type thisLocationType = ((BlockSymbolTable) location.getEnclosingScope()).lookupVariable(location.getName()).getType();
+                return thisLocationType;
+            } catch(SemanticError se) {
+                    se.setLine(location.getLine());
+                    System.err.println(se);
+                    return null;
+            }
+        }
 	}
 
+	/**
+     * ArrayLocation visitor:
+     * Recursive call to array and index
+     * Checks that the index is an integer
+     * Returns null if it encounters an error, returns true otherwise.
+     */
 	@Override
 	public Object visit(ArrayLocation location) {
-		// TODO Auto-generated method stub
-		return null;
+        IC.TypeTable.ArrayType arrayType = (IC.TypeTable.ArrayType) location.getArray().accept(this);
+        if (arrayType == null)
+        	return null;
+
+        IC.TypeTable.Type indexType = (IC.TypeTable.Type) location.getIndex().accept(this);
+        if (indexType == null)
+        	return null;
+        
+        // Check that the index is an integer
+        try
+        {
+                if (!indexType.isSubtype(IC.TypeTable.TypeTable.getType("int")))
+                {
+                        System.err.println(new SemanticError("The index of the array must be of type int",
+                                        arrayType.getName(),location.getLine()));
+                        return null;
+                }
+        }
+        catch(SemanticError se) { System.err.println("Error in ArrayLocation visitor of SemanticChecker"); }
+        
+        return arrayType.getElemType(); // Return the type of the array
 	}
 
+	/**
+     * StaticCall visitor:
+     * Calls the arguments recursively
+     * Checks that the method is defined in the enclosing class
+     * Checks that all arguments correspond to the method's arguments types
+     * Returns null if it encounters an error, returns true otherwise.
+     */
 	@Override
 	public Object visit(StaticCall call) {
-		// TODO Auto-generated method stub
-		return null;
+	      // check if the class in the static call exists
+        IC.SymbolTable.ClassSymbolTable cst = GST.lookupCST(call.getClassName());
+        if (cst == null)
+        {
+            System.err.println(new SemanticError("Class does not exist",                     
+                            call.getClassName(),call.getLine()));
+            return null;
+        }
+        // Check that the method is defined (as static) in the enclosing class
+        try
+        {
+                IC.SymbolTable.MethodSymbol method = (MethodSymbol)cst.lookupMethod(call.getName());
+                // Check if the method is static
+                if (!method.isStatic())
+                {
+                    System.err.println(new SemanticError("Method is not static",                                 
+                                    call.getName(),call.getLine()));
+                    return null;
+                }
+                // otherwise (method exists in class and is static) check arguments types
+                Iterator<IC.TypeTable.Type> methodArgsTypeIter = ((IC.TypeTable.MethodType) method.getType()).getParams().iterator();
+                for(Expression arg: call.getArguments())
+                {
+                    IC.TypeTable.Type argType = (IC.TypeTable.Type) arg.accept(this);
+                    
+                    if (argType == null)
+                    	return null;
+                    
+                    // We encountered a wrong argument
+                    if (!argType.isSubtype(methodArgsTypeIter.next()))
+                    { 
+                            System.err.println(new SemanticError("Wrong argument type passed to method",                                
+                                            argType.getName(),call.getLine()));
+                            return null;
+                    }
+                }
+                // Check if the method expects more parameters
+                if (methodArgsTypeIter.hasNext())
+                {
+                        System.err.println(new SemanticError("Not enough arguments passed to the method",                                    
+                                        call.getName(),call.getLine()));
+                        return null;
+                }
+                
+                //Return the method's return type
+                return ((IC.TypeTable.MethodType) method.getType()).getReturnType();
+        }
+        catch (SemanticError se)  // We didn't find this method in the hierarchy
+        {
+            se.setLine(call.getLine());
+            System.err.println(se);
+            return null;
+        }
+        catch (NoSuchElementException nsee) // The Method's parameters list is shorter than the arguments list
+        {
+        	System.err.println(new SemanticError("Too many arguments passed to method",                               
+                                call.getName(),call.getLine()));
+            return null;
+        }
 	}
 
+	/**
+     * VirtualCall visitor:
+     * Calls the arguments recursively.
+     * Checks that the method is defined in the enclosing class
+     * Check that all the arguments correspond to the method's arguments types
+     * Returns null if it encounters an error, returns true otherwise.
+     */
 	@Override
 	public Object visit(VirtualCall call) {
-		// TODO Auto-generated method stub
-		return null;
+		   
+        IC.SymbolTable.ClassSymbolTable cst = null;
+        
+        if (call.isExternal())
+        {
+            IC.TypeTable.Type locType = (IC.TypeTable.Type) call.getLocation().accept(this); 
+            if (locType == null)
+            	return null;
+            
+            try { cst = GST.lookupCST(locType.getName()); }
+            catch (SemanticError e)
+            {
+				System.err.println(new SemanticError("Location not of a user defined type",                      
+                        locType.getName(),call.getLine()));
+				return null;
+			}
+            
+            if (cst == null) // Location is not a class
+            { 
+                System.err.println(new SemanticError("Location not of a user defined type",                      
+                                locType.getName(),call.getLine()));
+                return null;
+            }
+        }
+        // This is not an external call.
+        else { 
+                cst = ((BlockSymbolTable)call.getEnclosingScope()).getEnclosingClassSymbolTable();
+                if (inStatic)
+                {
+                    System.err.println(new SemanticError("Calling a local virtual method from a static scope",                                       
+                                    call.getName(),call.getLine()));
+                    return null;
+                }
+        }
+        
+        MethodSymbol ms = null;
+        try { ms = (MethodSymbol)cst.lookupMethod(call.getName()); }
+        catch (SemanticError se)
+        {
+                se.setLine(call.getLine());
+                System.err.println(se);
+                return null;
+        }
+        
+        if (ms.isStatic())
+        {
+                System.err.println(new SemanticError("Static method is called virtually",                              
+                                call.getName(),call.getLine()));
+                return null;
+        }
+        // Check arguments types
+        Iterator<IC.TypeTable.Type> methodArgsTypeIter = ((IC.TypeTable.MethodType) ms.getType()).getParams().iterator();
+        for(Expression arg: call.getArguments())
+        {
+                IC.TypeTable.Type argType = (IC.TypeTable.Type) arg.accept(this);
+                
+                if (argType == null)
+                	return null;
+                try
+                {
+                    if (!argType.isSubtype(methodArgsTypeIter.next()))
+                    { // wrong argument type sent to method
+                            System.err.println(new SemanticError("Wrong argument type passed to method",                                         
+                                            argType.getName(),call.getLine()));
+                            return null;
+                    }
+                }
+                catch (NoSuchElementException nsee)
+                {
+                        System.err.println(new SemanticError("Too many arguments passed to method",                                       
+                                        call.getName(),call.getLine()));
+                        return null;
+                }
+        }
+        // Check if method expects more parameters
+        if (methodArgsTypeIter.hasNext())
+        {
+                System.err.println(new SemanticError("Not enough arguments passed to method",                                
+                                call.getName(),call.getLine()));
+                return null;
+        }
+        
+        // Return the method's return type
+        return ((IC.TypeTable.MethodType) ms.getType()).getReturnType();
 	}
 
+	/**
+     * Visitor for 'this' expression
+     * Checks that it is not referenced inside a static method.
+     */
 	@Override
 	public Object visit(This thisExpression) {
-		// TODO Auto-generated method stub
-		return null;
+	    if (inStatic)
+	    {
+            System.err.println(new SemanticError("Cannot reference 'this' in a static method",                         
+                            "this",thisExpression.getLine()));
+            return null;
+	    }
+	    
+	    return ((BlockSymbolTable) thisExpression.getEnclosingScope()).getEnclosingClassSymbolTable().getThis().getType();
 	}
 
+	/**
+     * Visitor for the newClass expression
+     * checks that the class type exists
+     */
 	@Override
 	public Object visit(NewClass newClass) {
-		// TODO Auto-generated method stub
-		return null;
+		 IC.TypeTable.ClassType ct = null;
+         try { ct = IC.TypeTable.TypeTable.getClassType(newClass.getName()); }
+         catch (SemanticError se)
+         {
+                 se.setLine(newClass.getLine());
+                 System.err.println(se);
+                 return null;
+         }
+         
+         return ct;
 	}
 
+	/**
+     * Visitor for NewArray expression.
+     * Checks that element type is a legal type.
+     * Checks that the size of the array is of type int.
+     * Returns the arrayType.
+     */
 	@Override
 	public Object visit(NewArray newArray) {
-		// TODO Auto-generated method stub
-		return null;
+		IC.TypeTable.Type elemType = null;
+        
+        try { elemType = IC.TypeTable.TypeTable.getType(newArray.getType().getName()); }
+        catch (SemanticError se) // Illegal array element type
+        { 
+            se.setLine(newArray.getLine());
+            System.err.println(se);
+            return null;
+        }
+        
+        IC.TypeTable.Type sizeType = (IC.TypeTable.Type) newArray.getSize().accept(this);
+        
+        if (sizeType == null)
+        	return null;
+        try
+        {
+            if (!sizeType.isSubtype(IC.TypeTable.TypeTable.getType("int")))
+            {
+                System.err.println(new SemanticError("The size of the array is not an integer",                               
+                                sizeType.getName(),newArray.getLine()));
+                return null;
+            }
+        }
+        catch (SemanticError se) { System.err.println("Error in newArray visitor of SemanticChecker"); }
+        
+        try { return IC.TypeTable.TypeTable.getType(elemType.getName()+"[]"); }
+        catch (SemanticError se) { System.err.println("Error in newArray visitor of SemanticChecker"); }
+        
+        return null;
 	}
 
+	/**
+     * Visitor for the array.length type.
+     * Checks that the array is an array.
+     * Returns the type 'int'.
+     */
 	@Override
 	public Object visit(Length length) {
-		// TODO Auto-generated method stub
-		return null;
+		 IC.TypeTable.Type arrType = (IC.TypeTable.Type) length.getArray().accept(this);
+         
+         if (arrType == null)
+        	 return null;
+         
+         if (!arrType.getName().endsWith("[]"))
+         {
+                 System.err.println(new SemanticError("Not of array type",                                
+                                 arrType.getName(),length.getLine()));
+                 return null;                    
+         }
+                         
+         try { // array type. length is legal - return int type.
+                 return IC.TypeTable.TypeTable.getType("int");
+         } catch (SemanticError se) { System.err.println("*** BUG: DefTypeCheckingVisitor, Length visitor"); } // will never get here
+         
+         return null;
 	}
 
 	@Override
