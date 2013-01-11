@@ -27,7 +27,7 @@ public class ClassSymbol extends Symbol {
 			parent = SymbolTableBuilder.GST;
 		}
 
-		CST = new ClassSymbolTable(A, this.getID(), parent);
+		CST = new ClassSymbolTable(A, this.getID(), parent, this);
 	}
 
 	public ClassSymbolTable getClassSymbolTable() {

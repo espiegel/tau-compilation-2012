@@ -6,11 +6,13 @@ import IC.AST.Method;
 import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
-
-	public ClassSymbolTable(ICClass A, String id, SymbolTable parent)
+	
+	private ClassSymbol self;
+	
+	public ClassSymbolTable(ICClass A, String id, SymbolTable parent, ClassSymbol thisPtr)
 			throws SemanticError {
 		super(id, parent);
-
+		self = thisPtr;
 		for (Field field : A.getFields()) {
 			this.addField(field);
 		}
@@ -77,5 +79,9 @@ public class ClassSymbolTable extends SymbolTable {
 	public String toString() {
 		String str = "Class " + super.toString();
 		return str;
+	}
+	
+	public ClassSymbol getthis(){
+		return self;
 	}
 }

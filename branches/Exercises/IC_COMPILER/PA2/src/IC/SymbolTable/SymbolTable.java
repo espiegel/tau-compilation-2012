@@ -1,6 +1,7 @@
 package IC.SymbolTable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import IC.TypeTable.SemanticError;
@@ -11,7 +12,8 @@ public class SymbolTable {
 	protected SymbolTable parent;
 	protected Map<String, Symbol> entries;
 	protected boolean isStaticScope;
-
+	protected List<SymbolTable> children;
+	
 	public SymbolTable(String id, SymbolTable parent) {
 		this.id = id;
 		this.depth = (parent == null ? 0 : parent.depth + 1);
