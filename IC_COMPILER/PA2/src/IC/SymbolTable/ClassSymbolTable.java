@@ -81,7 +81,7 @@ public class ClassSymbolTable extends SymbolTable {
 		return str;
 	}
 	
-	public ClassSymbol getthis(){
+	public ClassSymbol getThis(){
 		return self;
 	}
 }
