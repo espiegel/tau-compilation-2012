@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Root AST node for an IC program.
  * 
@@ -28,6 +30,15 @@ public class Program extends ASTNode {
 
 	public List<ICClass> getClasses() {
 		return classes;
+	}
+
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
+	}
+
+	public void insertLibrary(ICClass lib) {
+		classes.add(0, lib);
 	}
 
 }
