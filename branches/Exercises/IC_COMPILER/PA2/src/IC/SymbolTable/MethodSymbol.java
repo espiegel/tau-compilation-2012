@@ -33,7 +33,7 @@ public class MethodSymbol extends Symbol {
 			return ((MethodType) type).isMainMethodType();
 	}
 	
-	public ClassSymbolTable getMethodSymbolTable() {
+	public ClassSymbolTable getClassSymbolTable() {
 		return CST;
 	}
 	
