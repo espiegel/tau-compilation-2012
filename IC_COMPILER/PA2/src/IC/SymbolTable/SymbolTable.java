@@ -108,11 +108,13 @@ public class SymbolTable {
 	
 	public String getID() {
 		return id;
-	
 	}
 
 	public void addChild(SymbolTable ST) {
 		children.add(ST);
 	}
-
+	
+	public List<SymbolTable> getChildren(){
+		return this.children;
+	}
 }
