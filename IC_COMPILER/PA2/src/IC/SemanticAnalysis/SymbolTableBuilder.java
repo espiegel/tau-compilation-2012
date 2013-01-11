@@ -60,6 +60,7 @@ public class SymbolTableBuilder implements
 		// all formal parameters are added to the MST upon it's creation.
 		try {
 			MethodSymbolTable MST = new MethodSymbolTable(method, scope);
+			scope.addChild(MST);
 
 			for (Formal formal : method.getFormals()) {
 				if (formal.accept(this, MST) == null)
@@ -224,7 +225,8 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(StatementsBlock statementsBlock, SymbolTable scope) {
 		statementsBlock.setEnclosingScope(scope);
-		BlockSymbolTable BST = new BlockSymbolTable(scope);
+		BlockSymbolTable BST = new BlockSymbolTable("statement block in "+scope.getID(),scope);
+		scope.addChild(BST);
 		for (Statement statement : statementsBlock.getStatements()) {
 			if (statement.accept(this, BST) == null)
 				return null;
