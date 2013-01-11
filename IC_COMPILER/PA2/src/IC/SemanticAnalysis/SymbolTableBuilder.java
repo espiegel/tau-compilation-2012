@@ -224,7 +224,7 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(StatementsBlock statementsBlock, SymbolTable scope) {
 		statementsBlock.setEnclosingScope(scope);
-		BlockSymbolTable BST = new BlockSymbolTable(null, scope);
+		BlockSymbolTable BST = new BlockSymbolTable(scope);
 		for (Statement statement : statementsBlock.getStatements()) {
 			if (statement.accept(this, BST) == null)
 				return null;

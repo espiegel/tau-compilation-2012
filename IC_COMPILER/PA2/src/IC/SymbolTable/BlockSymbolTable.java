@@ -5,28 +5,30 @@ import IC.TypeTable.SemanticError;
 
 public class BlockSymbolTable extends SymbolTable {
 
-	public BlockSymbolTable(String name, SymbolTable parentscope) {
-		super(name, parentscope);
+	public BlockSymbolTable(SymbolTable parentscope) {
+		super("statement block in " + parentscope.getID(), parentscope);
 	}
 
 	public void addLoclVar(LocalVariable var) throws SemanticError {
 		this.insert(new VarSymbol(var));
 	}
-	
+
 	public Symbol lookupVariable(String name) throws SemanticError {
-		return lookup(name,Kind.VAR);
+		return lookup(name, Kind.VAR);
 	}
 
 	public String toString() {
-		String str = "Block " + super.toString();
+		String str = "Statement Block Symbol Table ( located in "
+				+ parent.getID() + " )";
 		return str;
 	}
-	
-	 /**
-     * returns the block's enclosing class
-     * @return Enclosing Class
-     */
-    public ClassSymbolTable getEnclosingClassSymbolTable(){
-            return ((BlockSymbolTable) parent).getEnclosingClassSymbolTable();
-    }
+
+	/**
+	 * returns the block's enclosing class
+	 * 
+	 * @return Enclosing Class
+	 */
+	public ClassSymbolTable getEnclosingClassSymbolTable() {
+		return ((BlockSymbolTable) parent).getEnclosingClassSymbolTable();
+	}
 }
