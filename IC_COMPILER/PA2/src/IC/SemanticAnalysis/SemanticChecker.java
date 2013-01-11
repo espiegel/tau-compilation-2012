@@ -448,7 +448,14 @@ public class SemanticChecker implements Visitor
 	@Override
 	public Object visit(StaticCall call) {
 	      // check if the class in the static call exists
-        IC.SymbolTable.ClassSymbolTable cst = GST.lookupCST(call.getClassName());
+        IC.SymbolTable.ClassSymbolTable cst;
+		try {
+			cst = GST.lookupCST(call.getClassName());
+		} catch (SemanticError e) {
+			System.err.println(new SemanticError("Class does not exist",                     
+                    call.getClassName(),call.getLine()));
+			return null;
+		}
         if (cst == null)
         {
             System.err.println(new SemanticError("Class does not exist",                     
@@ -695,19 +702,65 @@ public class SemanticChecker implements Visitor
                  return null;                    
          }
                          
-         try { // array type. length is legal - return int type.
-                 return IC.TypeTable.TypeTable.getType("int");
-         } catch (SemanticError se) { System.err.println("*** BUG: DefTypeCheckingVisitor, Length visitor"); } // will never get here
+         try { return IC.TypeTable.TypeTable.getType("int"); }
+         catch (SemanticError se) { System.err.println("Error in length visitor of SemanticChecker"); }
          
          return null;
 	}
 
+	/**
+     * Visitor for MathBinaryOp
+     * Checks that the types are legal: int or string for +, int for everything else.
+     * Returns the type of the operation.
+     */
 	@Override
 	public Object visit(MathBinaryOp binaryOp) {
-		// TODO Auto-generated method stub
-		return null;
+		IC.TypeTable.Type op1Type = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(this);
+        IC.TypeTable.Type op2Type = (IC.TypeTable.Type) binaryOp.getSecondOperand().accept(this);
+        if ((op1Type == null) || (op2Type == null))
+        	return null;
+        if (op1Type != op2Type) // Check that both operands are of the same type
+        { 
+            System.err.println(new SemanticError("Cannot perform math operation on different types",                       
+                            binaryOp.getOperator().getOperatorString(), binaryOp.getLine()));
+            return null;
+        }
+
+       // Check everything instead of "+" : "-","*","/","%"
+        if (binaryOp.getOperator() != IC.BinaryOps.PLUS)
+        {                  
+            try
+            {
+            	// Check only one operand's type since they have the same type.
+                if (!op1Type.isSubtype(IC.TypeTable.TypeTable.getType("int")))
+                {
+                        System.err.println(new SemanticError("Math operation on a non int type",                          
+                                        op1Type.getName(),binaryOp.getLine()));
+                        return null;
+                }
+            }
+            catch (SemanticError se) { System.err.println("Error in MathBinaryOP visitor of SemanticChecker"); }
+        }
+        else
+        {
+            try
+            {
+                if (!op1Type.isSubtype(IC.TypeTable.TypeTable.getType("int")) && !op1Type.isSubtype(IC.TypeTable.TypeTable.getType("string")))
+                {
+                    System.err.println(new SemanticError("Addition operation on an illegal type",                                   
+                                    op1Type.getName(),binaryOp.getLine()));
+                    return null;
+                }
+            }
+            catch (SemanticError se) { System.err.println("Error in MathBinaryOP visitor of SemanticChecker"); }
+        }
+        // Return the type, in this case its legal
+        return op1Type;
 	}
 
+	/* Eidan, 11/1/12...
+	 * Still need to continue this part...
+	 * */
 	@Override
 	public Object visit(LogicalBinaryOp binaryOp) {
 		// TODO Auto-generated method stub
