@@ -46,7 +46,7 @@ class Gelfand {
 	b.ttt();
 	
 	b.sss(6);
- 
+
 	return 5;  
  }
 
