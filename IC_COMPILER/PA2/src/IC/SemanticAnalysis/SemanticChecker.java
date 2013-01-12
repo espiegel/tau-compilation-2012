@@ -8,6 +8,7 @@ import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.FieldSymbol;
 import IC.SymbolTable.MethodSymbol;
 import IC.TypeTable.SemanticError;
+import IC.TypeTable.TypeTable;
 
 /**
  * Visitor for resolving the following issues:
@@ -758,37 +759,162 @@ public class SemanticChecker implements Visitor
         return op1Type;
 	}
 
-	/* Eidan, 11/1/12...
-	 * Still need to continue this part...
-	 * */
+	/**
+     * Visitor for LogicalBinaryOp
+     * Checks that the operands are of the correct type
+     * Returns the type 'boolean'.
+     */
 	@Override
 	public Object visit(LogicalBinaryOp binaryOp) {
-		// TODO Auto-generated method stub
-		return null;
+		  IC.TypeTable.Type typeOperand1 = (IC.TypeTable.Type) binaryOp.getFirstOperand().accept(this);
+          IC.TypeTable.Type typeOperand2 = (IC.TypeTable.Type) binaryOp.getSecondOperand().accept(this);
+          
+          if ((typeOperand1 == null) || (typeOperand2 == null))
+        	  return null;
+          
+          // No operand is a subtype of the other operand
+          if (!typeOperand1.isSubtype(typeOperand2) && !typeOperand2.isSubtype(typeOperand1))
+          { 
+        	  // Operator is a "||" or "&&" 
+        	  if (binaryOp.getOperator() == IC.BinaryOps.LAND || 
+                  binaryOp.getOperator() == IC.BinaryOps.LOR)
+        	  {
+                  System.err.println(new SemanticError("Logical operation is a non boolean type",                               
+                                  binaryOp.getOperator().getOperatorString(),binaryOp.getLine()));
+                  return null;
+              }
+        	 // Operator is a "==" or "!=" 
+        	  else if (binaryOp.getOperator() == IC.BinaryOps.EQUAL || 
+                       binaryOp.getOperator() == IC.BinaryOps.NEQUAL)
+        	  { 
+                  System.err.println(new SemanticError("When comparing foreign types at least one has to be subtype of another, or of the same type",                                  
+                                  binaryOp.getOperator().getOperatorString(),binaryOp.getLine()));
+                  return null;                            
+              }
+              // Operator is a "<=", ">=", "<" or ">"
+        	  else 
+        	  { 
+                  System.err.println(new SemanticError("Comparing non int values",                                  
+                                  binaryOp.getOperator().getOperatorString(),binaryOp.getLine()));
+                  return null;
+              }
+          }
+          // Operator is a "||" or "&&"
+          if ((binaryOp.getOperator() == IC.BinaryOps.LAND) ||
+              (binaryOp.getOperator() == IC.BinaryOps.LOR))
+          {
+              try
+              {
+                  if (!typeOperand1.isSubtype(IC.TypeTable.TypeTable.getType("boolean")))
+                  {
+                      System.err.println(new SemanticError("Cannot perform logical operation on non boolean values",                                     
+                                      typeOperand1.getName(),binaryOp.getLine()));
+                      return null;
+                  }
+              }
+              catch (SemanticError se) { System.err.println("Error in LogicalBinaryOP visitor of SemanticChecker"); }
+          }
+          // Operator is a "<=", ">=", "<" or ">"
+          else if (binaryOp.getOperator() != IC.BinaryOps.EQUAL && 
+                   binaryOp.getOperator() != IC.BinaryOps.NEQUAL)
+          {
+              try
+              {
+                  if (!typeOperand1.isSubtype(IC.TypeTable.TypeTable.getType("int")))
+                  {
+                      System.err.println(new SemanticError("Comparing non int values",                                      
+                                      typeOperand1.getName(),binaryOp.getLine()));
+                      return null;
+                  }
+              }
+              catch (SemanticError se) { System.err.println("Error in LogicalBinaryOP visitor of SemanticChecker"); }
+          }
+          
+          // The types are legal, return a boolean type.
+          IC.TypeTable.Type ret = null;
+          try { ret = IC.TypeTable.TypeTable.getType("boolean"); }
+          catch (SemanticError se){ System.err.println("Error in LogicalBinaryOP visitor of SemanticChecker"); }
+          
+          return ret;
 	}
 
+	/**
+     * Visitor for MathUnaryOp - only one math unary operation - unary minus. 
+     * Checks that the operand is of type int.
+     * Returns the type 'int'.
+     */
 	@Override
 	public Object visit(MathUnaryOp unaryOp) {
-		// TODO Auto-generated method stub
-		return null;
+		IC.TypeTable.Type opType = (IC.TypeTable.Type) unaryOp.getOperand().accept(this);
+        if (opType == null)
+        	return null;
+        
+        try
+        {
+            if (!opType.isSubtype(IC.TypeTable.TypeTable.getType("int"))) // opType is not an integer
+            {
+                System.err.println(new SemanticError("Mathematical unary operation on a non int type",                               
+                                opType.getName(),unaryOp.getLine()));
+                return null;
+            }
+        }
+        catch  (SemanticError se){ System.err.println("Error in MathUnaryOp visitor of SemanticChecker"); }
+        return opType; // in
 	}
 
+	/**
+     * Visitor for LogicalUnaryOp - only one logic unary operation - unary logical negation. 
+     * Checks that the operand is of type boolean.
+     * Returns the type 'boolean'.
+     */
 	@Override
 	public Object visit(LogicalUnaryOp unaryOp) {
-		// TODO Auto-generated method stub
-		return null;
+		IC.TypeTable.Type opType = (IC.TypeTable.Type) unaryOp.getOperand().accept(this);
+        if (opType == null) return null;
+        
+        try
+        {
+            if (!opType.isSubtype(IC.TypeTable.TypeTable.getType("boolean")))
+            {
+                System.err.println(new SemanticError("Cannot perform logical unary operation on a non boolean type",                               
+                                opType.getName(),unaryOp.getLine()));
+                return null;
+            }
+        }
+        catch  (SemanticError se) { System.err.println("Error in LogicalUnaryOp visitor of SemanticChecker"); } 
+        return opType;
 	}
 
+	 /**
+     * Literal visitor:
+     * Returns the type of the literal
+     */
 	@Override
 	public Object visit(Literal literal) {
-		// TODO Auto-generated method stub
-		return null;
+		IC.LiteralTypes type = literal.getType();
+        try
+        {
+            switch (type)
+            {
+		            case STRING: return TypeTable.getType("string");
+		            case INTEGER: return TypeTable.getType("int");
+		            case TRUE: return TypeTable.getType("boolean");
+		            case FALSE: return TypeTable.getType("boolean");
+		            case NULL: return TypeTable.getType("null");
+            }
+        }
+        catch(SemanticError se) { System.err.println("Error in Literal visitor of SemanticChecker"); }
+        return null;
 	}
 
+	/**
+     * ExpressionBlock visitor:
+     * Calls expressions recursively
+     * Returns null if it encountered an error otherwise the type of the expression
+     */
 	@Override
 	public Object visit(ExpressionBlock expressionBlock) {
-		// TODO Auto-generated method stub
-		return null;
+		return (IC.TypeTable.Type) expressionBlock.getExpression().accept(this);
 	}
 
 }
