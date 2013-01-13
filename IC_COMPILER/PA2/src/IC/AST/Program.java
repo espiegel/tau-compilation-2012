@@ -31,7 +31,7 @@ public class Program extends ASTNode {
 	public List<ICClass> getClasses() {
 		return classes;
 	}
-
+	
 	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
 			SymbolTable context) {
 		return visitor.visit(this, context);
