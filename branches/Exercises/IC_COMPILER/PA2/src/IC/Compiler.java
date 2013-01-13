@@ -5,6 +5,7 @@ import IC.AST.*;
 import IC.Parser.*;
 import IC.SemanticAnalysis.SymbolTableBuilder;
 import IC.SymbolTable.SymbolTable;
+import IC.TypeTable.TypeTable;
 
 /**
  * Compiler class. Reads an IC file and runs the Lexer on it. Prints all the IC
@@ -58,15 +59,32 @@ public class Compiler {
 		if (program_path == null)
 			exit(EXIT1);
 
-		ICClass lib = parseLibrary();
 		Program prog = parseProgram();
-		prog.insertLibrary(lib);
+		
+		// Parse the lib only if the user gave it as input
+		if(bParse_lib) {
+			ICClass lib = parseLibrary();
+			prog.insertLibrary(lib);
+		}
 		SymbolTableBuilder builder = new SymbolTableBuilder(program_path);
-		prog.accept(builder, null);
-		IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(
-				program_path);
-		if (bDump_symtab)
-			System.out.println(prog.accept(printer));		
+		Object globalSymbolTable = prog.accept(builder, null);
+		
+		// Couldn't construct the GST
+		if(globalSymbolTable == null) {
+			System.err.println("Error constructing global symbol table!");
+			System.exit(-1);
+		}
+		
+		// Print ast
+		if(bPrint_ast) {
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(program_path);
+			System.out.println(prog.accept(printer));
+		}
+		
+		// Dump the symbol table
+		if (bDump_symtab) {
+			System.out.println("\n"+globalSymbolTable+"\n"+TypeTable.staticToString());		
+		}
 	}
 
 	private static void exit(String msg) {

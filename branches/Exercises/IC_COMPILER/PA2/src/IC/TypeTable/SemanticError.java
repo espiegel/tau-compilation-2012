@@ -23,7 +23,7 @@ public class SemanticError extends Exception {
 	}
 	
 	public String toString(){
-		return "Semantic error on line: "+line+" : "+msg+": "+value;
+		return "semantic error at line "+line+": "+msg+": "+value; // This is the correct format
 	}
 
 }
