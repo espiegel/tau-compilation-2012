@@ -3,7 +3,9 @@ package IC;
 import java.io.*;
 import IC.AST.*;
 import IC.Parser.*;
+import IC.SemanticAnalysis.SemanticChecker;
 import IC.SemanticAnalysis.SymbolTableBuilder;
+import IC.SymbolTable.GlobalSymbolTable;
 import IC.SymbolTable.SymbolTable;
 import IC.TypeTable.TypeTable;
 
@@ -85,6 +87,18 @@ public class Compiler {
 		if (bDump_symtab) {
 			System.out.println("\n"+globalSymbolTable+"\n"+TypeTable.staticToString());		
 		}
+		 // Semantic Checks
+		System.out.println(globalSymbolTable);
+        SemanticChecker sc = new SemanticChecker((GlobalSymbolTable)globalSymbolTable);
+        Object semanticChecks = prog.accept(sc);
+        if (semanticChecks == null)
+        {
+                System.out.println("Encountered an error while type-checking");
+                System.exit(-1); // in case of a semantic error
+        }
+        else
+                System.out.println("Passed type-checking");
+        
 	}
 
 	private static void exit(String msg) {
