@@ -1,12 +1,12 @@
 package IC.SymbolTable;
 
-import java.util.Map;
-
 import IC.AST.ICClass;
 import IC.TypeTable.SemanticError;
 
 public class GlobalSymbolTable extends SymbolTable {
-
+	
+	private MethodSymbol main =null;
+	
 	public GlobalSymbolTable() {
 		super(null, null);
 	}
@@ -35,5 +35,16 @@ public class GlobalSymbolTable extends SymbolTable {
 		String str = "Global " + super.toString();
 		return str;
 	}
-
+	
+	public void setMain(MethodSymbol method){
+		main = method;
+	}
+	
+	public boolean hasMain(){
+		return main != null;
+	}
+	
+	public MethodSymbol getMain(){
+		return main;
+	}
 }
