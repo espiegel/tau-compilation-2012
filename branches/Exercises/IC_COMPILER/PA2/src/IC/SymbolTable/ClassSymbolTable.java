@@ -3,6 +3,7 @@ package IC.SymbolTable;
 import IC.AST.Field;
 import IC.AST.ICClass;
 import IC.AST.Method;
+import IC.SemanticAnalysis.SymbolTableBuilder;
 import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
@@ -63,8 +64,18 @@ public class ClassSymbolTable extends SymbolTable {
 			throw new SemanticError("overriding static methods is not allowed",
 					method.getName());
 		} else {
-			this.insert(new MethodSymbol(method)); // will also update TypeTable
+			MethodSymbol MS = new MethodSymbol(method);
+			this.insert(MS); // will also update TypeTable
+			if (MS.isMain()){
+				if (SymbolTableBuilder.GST.hasMain()){
+					throw new SemanticError("program already has main()",getID());
+				}
+				else{
+					SymbolTableBuilder.GST.setMain(MS);
+				}
+			}
 		}
+		
 
 	}
 
