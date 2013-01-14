@@ -125,12 +125,6 @@ public class TypeTable {
 	public static int getUniqueId() {
 		return uniqueId++;
 	}
-
-	// TODO: complete this.
-	public String toString() {
-		return null;
-
-	}
 	
     /**
      * returns string representation for the TypeTable fitting the "-dump-symtab" IC.Compiler flag
