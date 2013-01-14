@@ -7,11 +7,11 @@ import IC.SemanticAnalysis.SymbolTableBuilder;
 import IC.TypeTable.SemanticError;
 
 public class ClassSymbolTable extends SymbolTable {
-	
+
 	private ClassSymbol self;
-	
-	public ClassSymbolTable(ICClass A, String id, SymbolTable parent, ClassSymbol thisPtr)
-			throws SemanticError {
+
+	public ClassSymbolTable(ICClass A, String id, SymbolTable parent,
+			ClassSymbol thisPtr) throws SemanticError {
 		super(id, parent);
 		self = thisPtr;
 		for (Field field : A.getFields()) {
@@ -51,9 +51,9 @@ public class ClassSymbolTable extends SymbolTable {
 	 */
 	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
-		
+
 		// virtual methods may be overridden but static methods may not.
-		if ((sym != null) && (sym.getKind() == Kind.FIELD)) 
+		if ((sym != null) && (sym.getKind() == Kind.FIELD))
 
 			throw new SemanticError(
 					"multiple definitions for symbol in class hieratchy",
@@ -66,16 +66,15 @@ public class ClassSymbolTable extends SymbolTable {
 		} else {
 			MethodSymbol MS = new MethodSymbol(method);
 			this.insert(MS); // will also update TypeTable
-			if (MS.isMain()){
-				if (SymbolTableBuilder.GST.hasMain()){
-					throw new SemanticError("program already has main()",getID());
-				}
-				else{
+			if (MS.isMain()) {
+				if (SymbolTableBuilder.GST.hasMain()) {
+					throw new SemanticError("program already has main()",
+							getID());
+				} else {
 					SymbolTableBuilder.GST.setMain(MS);
 				}
 			}
 		}
-		
 
 	}
 
@@ -88,11 +87,12 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 
 	public String toString() {
-		String str = "Class Symbol Table" + super.toString();
+		String str = "Class Symbol Table" + ": " + getID() + "\n"
+				+ super.toString();
 		return str;
 	}
-	
-	public ClassSymbol getThis(){
+
+	public ClassSymbol getThis() {
 		return self;
 	}
 }

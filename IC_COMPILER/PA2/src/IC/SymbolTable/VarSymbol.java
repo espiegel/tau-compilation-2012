@@ -16,7 +16,7 @@ public class VarSymbol extends Symbol {
 	}
 
 	public VarSymbol(Formal formal) throws SemanticError {
-		super(formal.getLine(), formal.getName(), TypeTable.getType(formal.getType().getTypeName()), Kind.VAR);
+		super(formal.getLine(), formal.getName(), TypeTable.getType(formal.getType().getTypeName()), Kind.PARAM);
 		this.type = TypeTable.getType(formal.getType().toString());
 		/*isInitialized = true;*/
 	}
