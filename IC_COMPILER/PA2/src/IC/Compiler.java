@@ -6,7 +6,6 @@ import IC.Parser.*;
 import IC.SemanticAnalysis.SemanticChecker;
 import IC.SemanticAnalysis.SymbolTableBuilder;
 import IC.SymbolTable.GlobalSymbolTable;
-import IC.SymbolTable.SymbolTable;
 import IC.TypeTable.TypeTable;
 
 /**
@@ -30,6 +29,8 @@ public class Compiler {
 
 	private static final String EXIT1 = "SYSTEM EXIT! REASON: a mandatory argument wasn't given to the compiler.";
 	private static final String EXIT2 = "SYSTEM EXIT! REASON: conflicting arguments.";
+	private static final String EXIT3 = "SYSTEM EXIT! REASON: failed to parse program.";
+	private static final String EXIT4 = "SYSTEM EXIT! REASON: failed to parse library.";
 
 	private static final String PRINT_AST = "-print-ast";
 	private static final String LIB_FLAG = "-L";
@@ -119,8 +120,9 @@ public class Compiler {
 			return root;
 		} catch (Exception e) {
 			System.out.println(e);
+			exit(EXIT4);
+			return null;
 		}
-		return null;
 	}
 
 	private static Program parseProgram() throws IOException {
@@ -139,7 +141,8 @@ public class Compiler {
 			return root;
 		} catch (Exception e) {
 			System.out.println(e);
+			exit(EXIT3);
+			return null;
 		}
-		return null;
 	}
 }
