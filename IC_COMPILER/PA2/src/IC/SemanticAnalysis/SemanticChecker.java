@@ -398,7 +398,8 @@ public class SemanticChecker implements Visitor
         { 
             try
             {
-                IC.TypeTable.Type thisLocationType = ((BlockSymbolTable) location.getEnclosingScope()).lookupVariable(location.getName()).getType();
+            	BlockSymbolTable bst =(BlockSymbolTable) location.getEnclosingScope();
+                IC.TypeTable.Type thisLocationType =  bst.lookupVariable(location.getName()).getType();
                 return thisLocationType;
             } catch(SemanticError se) {
                     se.setLine(location.getLine());
