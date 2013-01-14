@@ -56,10 +56,8 @@ public abstract class Method extends ASTNode {
 		return statements;
 	}
 
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
-		return visitor.visit(this, context);
-	}
+	public abstract Object accept(
+			PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable context);
 
 	public boolean isStatic() {
 		return (this instanceof VirtualMethod ? false : true);

@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Virtual method AST node.
  * 
@@ -28,6 +30,11 @@ public class VirtualMethod extends Method {
 	public VirtualMethod(Type type, String name, List<Formal> formals,
 			List<Statement> statements) {
 		super(type, name, formals, statements);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }
