@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Virtual method call AST node.
  * 
@@ -53,6 +55,11 @@ public class VirtualCall extends Call {
 
 	public Expression getLocation() {
 		return location;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

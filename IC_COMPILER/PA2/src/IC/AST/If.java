@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * If statement AST node.
  * 
@@ -60,6 +62,11 @@ public class If extends Statement {
 
 	public Statement getElseOperation() {
 		return elseOperation;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

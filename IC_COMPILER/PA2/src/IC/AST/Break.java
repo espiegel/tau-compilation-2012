@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Break statement AST node.
  * 
@@ -19,6 +21,11 @@ public class Break extends Statement {
 	 */
 	public Break(int line) {
 		super(line);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

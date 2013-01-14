@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.DataTypes;
+import IC.SymbolTable.SymbolTable;
 
 /**
  * Primitive data type AST node.
@@ -30,5 +31,10 @@ public class PrimitiveType extends Type {
 
 	public String getName() {
 		return type.getDescription();
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 }

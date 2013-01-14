@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.UnaryOps;
+import IC.SymbolTable.SymbolTable;
 
 /**
  * Logical unary operation AST node.
@@ -23,6 +24,11 @@ public class LogicalUnaryOp extends UnaryOp {
 	 */
 	public LogicalUnaryOp(UnaryOps operator, Expression operand) {
 		super(operator, operand);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

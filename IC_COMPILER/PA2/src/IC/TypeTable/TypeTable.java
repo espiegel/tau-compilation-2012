@@ -42,10 +42,10 @@ public class TypeTable {
 
 	public static MethodType getMethodType(Method method) throws SemanticError {
 		
-		Type ret = getType(method.getType().toString());
+		Type ret = getType(method.getType().getTypeName());
 		List<Type> params = new ArrayList<Type>();
 		for (Formal formal : method.getFormals()) {
-			Type T = getType(formal.getType().toString());
+			Type T = getType(formal.getType().getTypeName());
 			params.add(T);
 		}
 		MethodType tmpMethod = new MethodType(params,ret);

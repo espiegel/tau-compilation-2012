@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Method call statement AST node.
  * 
@@ -26,6 +28,12 @@ public class CallStatement extends Statement {
 
 	public Call getCall() {
 		return call;
+	}
+	
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

@@ -10,8 +10,7 @@ public class ClassSymbol extends Symbol {
 	private ClassSymbolTable CST;
 
 	public ClassSymbol(ICClass A) throws SemanticError {
-		super(A.getLine(), A.getName(), Kind.CLASS);
-		TypeTable.addClassType(A);
+		super(A.getLine(), A.getName(), TypeTable.getType(A.getName()), Kind.CLASS);
 		initCST(A);
 		A.setEnclosingScope(CST.getParent());
 	}

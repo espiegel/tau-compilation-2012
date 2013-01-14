@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Array creation AST node.
  * 
@@ -37,4 +39,8 @@ public class NewArray extends New {
 		return size;
 	}
 
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
+	}
 }

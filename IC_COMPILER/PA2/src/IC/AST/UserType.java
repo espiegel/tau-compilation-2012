@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * User-defined data type AST node.
  * 
@@ -28,6 +30,11 @@ public class UserType extends Type {
 
 	public String getName() {
 		return name;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

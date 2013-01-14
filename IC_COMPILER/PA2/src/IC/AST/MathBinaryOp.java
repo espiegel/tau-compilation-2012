@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.BinaryOps;
+import IC.SymbolTable.SymbolTable;
 
 /**
  * Mathematical binary operation AST node.
@@ -25,6 +26,11 @@ public class MathBinaryOp extends BinaryOp {
 	 */
 	public MathBinaryOp(Expression operand1, BinaryOps operator, Expression operand2) {
 		super(operand1, operator, operand2);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }
