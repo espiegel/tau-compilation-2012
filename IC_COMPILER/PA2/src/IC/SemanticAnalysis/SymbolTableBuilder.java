@@ -12,6 +12,7 @@ public class SymbolTableBuilder implements
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
 		se.setLine(node.getLine());
 		System.out.println(se);
+		se.printStackTrace();
 		return null;
 	}
 
@@ -86,12 +87,7 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Method method, SymbolTable scope) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG2");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
+		return visitMethod(method, scope);
 	}
 
 	@Override
@@ -256,11 +252,13 @@ public class SymbolTableBuilder implements
 			if (location.getLocation().accept(this, scope) == null)
 				return null;
 		} else
-			try {
-				// resolve location to a previously defined variable.
-				scope.lookup(location.getName());
-			} catch (SemanticError se) {
-				return handleSemanticError(se, location);
+			// resolve location to a previously defined variable.
+			if (scope.lookup(location.getName())==null){
+				try {
+					throw new SemanticError("symbol cannot be resolved", location.getName());
+				} catch (SemanticError se) {
+					handleSemanticError(se, location);
+				}
 			}
 
 		return true;
