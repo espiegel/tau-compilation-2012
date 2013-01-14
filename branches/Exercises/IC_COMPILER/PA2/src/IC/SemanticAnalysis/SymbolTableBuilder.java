@@ -12,7 +12,7 @@ public class SymbolTableBuilder implements
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
 		se.setLine(node.getLine());
 		System.out.println(se);
-		se.printStackTrace(); //TODO: remove this
+		//se.printStackTrace(); 
 		return null;
 	}
 
@@ -153,9 +153,9 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable scope) {
-		
+
 		callStatement.setEnclosingScope(scope);
-		
+
 		if (callStatement.getCall().accept(this, scope) == null)
 			return null;
 		return true;
@@ -170,35 +170,31 @@ public class SymbolTableBuilder implements
 		}
 		return true;
 	}
-	
+
 	/**
-	// initialize new scope (if necessary) then visit.
-	private Object initScopeAndvisit(Statement operation, SymbolTable scope) {
-		if (operation instanceof LocalVariable) {
-			BlockSymbolTable BST = new BlockSymbolTable(null, scope);
-			if (operation.accept(this, BST) == null)
-				return null;
-		} else {
-			if (operation.accept(this, scope) == null)
-				return null;
-		}
-		if (operation.accept(this, scope) == null) return null;
-		return true;
-	}
-	**/
-	
-	
+	 * // initialize new scope (if necessary) then visit. private Object
+	 * initScopeAndvisit(Statement operation, SymbolTable scope) { if (operation
+	 * instanceof LocalVariable) { BlockSymbolTable BST = new
+	 * BlockSymbolTable(null, scope); if (operation.accept(this, BST) == null)
+	 * return null; } else { if (operation.accept(this, scope) == null) return
+	 * null; } if (operation.accept(this, scope) == null) return null; return
+	 * true; }
+	 **/
+
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
 
 		ifStatement.setEnclosingScope(scope);
 
-		if (ifStatement.getCondition().accept(this, scope) == null) return null;
-		
-		if (ifStatement.getOperation().accept(this,scope) == null) return null;
+		if (ifStatement.getCondition().accept(this, scope) == null)
+			return null;
+
+		if (ifStatement.getOperation().accept(this, scope) == null)
+			return null;
 
 		if (ifStatement.hasElse()) {
-			if (ifStatement.getElseOperation().accept(this,scope) == null) return null;
+			if (ifStatement.getElseOperation().accept(this, scope) == null)
+				return null;
 		}
 		return true;
 	}
@@ -206,8 +202,10 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(While whileStatement, SymbolTable scope) {
 		whileStatement.setEnclosingScope(scope);
-		if (whileStatement.getCondition().accept(this, scope) == null) return null;
-		if (whileStatement.getOperation().accept(this,scope) == null) return null;
+		if (whileStatement.getCondition().accept(this, scope) == null)
+			return null;
+		if (whileStatement.getOperation().accept(this, scope) == null)
+			return null;
 		return true;
 	}
 
@@ -226,7 +224,8 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(StatementsBlock statementsBlock, SymbolTable scope) {
 		statementsBlock.setEnclosingScope(scope);
-		BlockSymbolTable BST = new BlockSymbolTable("statement block in "+scope.getID(),scope);
+		BlockSymbolTable BST = new BlockSymbolTable("statement block in "
+				+ scope.getID(), scope);
 		scope.addChild(BST);
 		for (Statement statement : statementsBlock.getStatements()) {
 			if (statement.accept(this, BST) == null)
@@ -257,14 +256,15 @@ public class SymbolTableBuilder implements
 			if (location.getLocation().accept(this, scope) == null)
 				return null;
 		} else
-			// resolve location to a previously defined variable.
-			if (scope.lookup(location.getName())==null){
-				try {
-					throw new SemanticError("symbol cannot be resolved", location.getName());
-				} catch (SemanticError se) {
-					handleSemanticError(se, location);
-				}
+		// resolve location to a previously defined variable.
+		if (scope.lookup(location.getName()) == null) {
+			try {
+				throw new SemanticError("symbol cannot be resolved",
+						location.getName());
+			} catch (SemanticError se) {
+				handleSemanticError(se, location);
 			}
+		}
 
 		return true;
 	}
@@ -306,7 +306,7 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(VirtualCall call, SymbolTable scope) {
 		call.setEnclosingScope(scope);
-		
+
 		// method name will be resolved later in during type check.
 		if (call.isExternal()) {
 			Expression location = call.getLocation();
@@ -341,28 +341,34 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(NewArray newArray, SymbolTable scope) {
 		newArray.setEnclosingScope(scope);
-		if (newArray.getType().accept(this, scope) == null) return null;
-		if (newArray.getSize().accept(this, scope) == null) return null;
+		if (newArray.getType().accept(this, scope) == null)
+			return null;
+		if (newArray.getSize().accept(this, scope) == null)
+			return null;
 		return true;
 	}
 
 	@Override
 	public Object visit(Length length, SymbolTable scope) {
 		length.setEnclosingScope(scope);
-		if (length.getArray().accept(this, scope) == null) return null;
+		if (length.getArray().accept(this, scope) == null)
+			return null;
 		return true;
 	}
-	
-	private Object visitBinaryOp(BinaryOp binaryOp,SymbolTable scope){
+
+	private Object visitBinaryOp(BinaryOp binaryOp, SymbolTable scope) {
 		binaryOp.setEnclosingScope(scope);
-		if (binaryOp.getFirstOperand().accept(this, scope) == null) return null;
-		if (binaryOp.getSecondOperand().accept(this, scope) == null) return null;
+		if (binaryOp.getFirstOperand().accept(this, scope) == null)
+			return null;
+		if (binaryOp.getSecondOperand().accept(this, scope) == null)
+			return null;
 		return scope;
 	}
-	
-	private Object visitUnaryOp(UnaryOp unaryOp,SymbolTable scope){
+
+	private Object visitUnaryOp(UnaryOp unaryOp, SymbolTable scope) {
 		unaryOp.setEnclosingScope(scope);
-		if (unaryOp.getOperand().accept(this, scope) == null) return null;
+		if (unaryOp.getOperand().accept(this, scope) == null)
+			return null;
 		return true;
 	}
 
@@ -394,9 +400,10 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(ExpressionBlock expressionBlock, SymbolTable scope) {
-        expressionBlock.setEnclosingScope(scope);
-        if (expressionBlock.getExpression().accept(this,scope) == null) return null;
-        return true;
+		expressionBlock.setEnclosingScope(scope);
+		if (expressionBlock.getExpression().accept(this, scope) == null)
+			return null;
+		return true;
 	}
 
 	@Override
