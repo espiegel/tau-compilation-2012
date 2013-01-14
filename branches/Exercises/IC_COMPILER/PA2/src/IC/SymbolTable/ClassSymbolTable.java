@@ -88,7 +88,7 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 
 	public String toString() {
-		String str = "Class " + super.toString();
+		String str = "Class Symbol Table" + super.toString();
 		return str;
 	}
 	
