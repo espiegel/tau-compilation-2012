@@ -12,7 +12,7 @@ public class SymbolTableBuilder implements
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
 		se.setLine(node.getLine());
 		System.out.println(se);
-		se.printStackTrace();
+		se.printStackTrace(); //TODO: remove this
 		return null;
 	}
 
@@ -27,7 +27,7 @@ public class SymbolTableBuilder implements
 			if (C.accept(this, GST) == null)
 				return null;
 		}
-		return true;
+		return GST;
 	}
 
 	@Override
@@ -87,7 +87,12 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Method method, SymbolTable scope) {
-		return visitMethod(method, scope);
+		try {
+			throw new SemanticError("shouldn't get here", "BUG1");
+		} catch (SemanticError se) {
+			System.out.println(se);
+		}
+		return null;
 	}
 
 	@Override
