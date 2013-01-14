@@ -88,7 +88,7 @@ public class SymbolTableBuilder implements
 	@Override
 	public Object visit(Method method, SymbolTable scope) {
 		try {
-			throw new SemanticError("shouldn't get here", "BUG1");
+			throw new SemanticError("shouldn't get here", "BUG2");
 		} catch (SemanticError se) {
 			System.out.println(se);
 		}
