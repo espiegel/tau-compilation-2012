@@ -64,7 +64,7 @@ public class SymbolTable {
 	public Symbol lookup(String name) {
 		
 		Symbol ret = entries.get(name);
-		System.out.println(entries);
+		//System.out.println(entries);
 		if (ret == null) {
 			if (noParentScope()) {
 				return null;

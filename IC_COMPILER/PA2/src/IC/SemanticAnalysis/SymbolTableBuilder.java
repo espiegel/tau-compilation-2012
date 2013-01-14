@@ -277,7 +277,7 @@ public class SymbolTableBuilder implements
 		if (location.getArray().accept(this, scope) == null)
 			return null;
 
-		location.getIndex().setEnclosingScope(location.getEnclosingScope());
+		location.getIndex().setEnclosingScope(scope);
 		if (location.getIndex().accept(this, scope) == null)
 			return null;
 
