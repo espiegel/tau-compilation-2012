@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Array reference AST node.
  * 
@@ -35,5 +37,10 @@ public class ArrayLocation extends Location {
 
 	public Expression getIndex() {
 		return index;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 }

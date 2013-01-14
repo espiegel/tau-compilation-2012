@@ -148,12 +148,12 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(CallStatement callStatement, SymbolTable scope) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG5");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
+		
+		callStatement.setEnclosingScope(scope);
+		
+		if (callStatement.getCall().accept(this, scope) == null)
+			return null;
+		return true;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package IC.SymbolTable;
 
 import IC.AST.ICClass;
 import IC.TypeTable.SemanticError;
+import IC.TypeTable.TypeTable;
 
 public class GlobalSymbolTable extends SymbolTable {
 	
@@ -22,6 +23,7 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	// will add entry (with reference to the appropriate CST) and return it.
 	public ClassSymbol getClassSymbol(ICClass A) throws SemanticError {
+		TypeTable.addClassType(A); // must update type table before adding symbol.
 		ClassSymbol classSymbol = new ClassSymbol(A);
 		this.insert(classSymbol);
 		return classSymbol;

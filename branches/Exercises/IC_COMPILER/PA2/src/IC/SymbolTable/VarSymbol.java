@@ -10,13 +10,13 @@ public class VarSymbol extends Symbol {
 	/*private boolean isInitialized;*/
 	
 	public VarSymbol(LocalVariable local) throws SemanticError {
-		super(local.getLine(), local.getName(), Kind.VAR);
+		super(local.getLine(), local.getName(), TypeTable.getType(local.getType().getTypeName()),Kind.VAR);
 		this.type = TypeTable.getType(local.getType().toString());
 		/*isInitialized = (local.getInitValue()!=null);*/
 	}
 
 	public VarSymbol(Formal formal) throws SemanticError {
-		super(formal.getLine(), formal.getName(), Kind.VAR);
+		super(formal.getLine(), formal.getName(), TypeTable.getType(formal.getType().getTypeName()), Kind.VAR);
 		this.type = TypeTable.getType(formal.getType().toString());
 		/*isInitialized = true;*/
 	}

@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * AST node for expression in parentheses.
  * 
@@ -26,6 +28,11 @@ public class ExpressionBlock extends Expression {
 
 	public Expression getExpression() {
 		return expression;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

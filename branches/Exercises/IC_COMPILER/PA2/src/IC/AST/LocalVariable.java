@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Local variable declaration statement AST node.
  * 
@@ -61,6 +63,11 @@ public class LocalVariable extends Statement {
 
 	public Expression getInitValue() {
 		return initValue;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

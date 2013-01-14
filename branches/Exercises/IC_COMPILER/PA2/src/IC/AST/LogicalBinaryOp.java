@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.BinaryOps;
+import IC.SymbolTable.SymbolTable;
 
 /**
  * Logical binary operation AST node.
@@ -26,6 +27,11 @@ public class LogicalBinaryOp extends BinaryOp {
 	public LogicalBinaryOp(Expression operand1, BinaryOps operator,
 			Expression operand2) {
 		super(operand1, operator, operand2);
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

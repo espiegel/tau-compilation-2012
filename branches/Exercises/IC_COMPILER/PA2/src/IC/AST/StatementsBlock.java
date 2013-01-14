@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Statements block AST node.
  * 
@@ -30,6 +32,11 @@ public class StatementsBlock extends Statement {
 
 	public List<Statement> getStatements() {
 		return statements;
+	}
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

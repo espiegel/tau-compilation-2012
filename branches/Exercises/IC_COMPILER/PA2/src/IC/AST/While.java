@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * While statement AST node.
  * 
@@ -36,5 +38,9 @@ public class While extends Statement {
 	public Statement getOperation() {
 		return operation;
 	}
-
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
+	}
 }

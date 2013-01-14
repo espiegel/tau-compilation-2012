@@ -1,6 +1,7 @@
 package IC.AST;
 
 import IC.LiteralTypes;
+import IC.SymbolTable.SymbolTable;
 
 /**
  * Literal value AST node.
@@ -52,6 +53,12 @@ public class Literal extends Expression {
 
 	public Object getValue() {
 		return value;
+	}
+	
+	
+	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context) {
+		return visitor.visit(this, context);
 	}
 
 }

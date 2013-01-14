@@ -1,11 +1,13 @@
 package IC.SymbolTable;
 
 import IC.AST.Field;
+import IC.TypeTable.SemanticError;
+import IC.TypeTable.TypeTable;
 
 public class FieldSymbol extends Symbol{
 
-	public FieldSymbol(Field field) {
-		super(field.getLine(), field.getType().toString(), Kind.FIELD);
+	public FieldSymbol(Field field) throws SemanticError {
+		super(field.getLine(), field.getName() ,TypeTable.getType(field.getType().getTypeName()), Kind.FIELD);
 	}
 
 
