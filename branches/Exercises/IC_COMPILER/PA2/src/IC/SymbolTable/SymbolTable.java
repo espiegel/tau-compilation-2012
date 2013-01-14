@@ -1,5 +1,6 @@
 package IC.SymbolTable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ public class SymbolTable {
 	
 	public SymbolTable(String id, SymbolTable parent) {
 		this.id = id;
+		this.children = new ArrayList<SymbolTable>();
 		this.depth = (parent == null ? 0 : parent.depth + 1);
 		this.parent = parent;
 		this.entries = new HashMap<String, Symbol>();
@@ -59,12 +61,12 @@ public class SymbolTable {
 	 * @return
 	 * @throws SemanticError
 	 */
-	public Symbol lookup(String name) throws SemanticError {
+	public Symbol lookup(String name) {
 		
 		Symbol ret = entries.get(name);
 		if (ret == null) {
 			if (noParentScope()) {
-				throw new SemanticError("symbol cannot be resolved", name);
+				return null;
 			} else {
 				return parent.lookup(name);
 			}
@@ -73,12 +75,12 @@ public class SymbolTable {
 		}
 	}
 	 
-	public Symbol lookup(String name, Kind kind) throws SemanticError {
+	public Symbol lookup(String name, Kind kind)  {
 		
 		Symbol ret = entries.get(name);
 		if (ret == null || ret.getKind() != kind) {
 			if (noParentScope()) {
-				throw new SemanticError("symbol cannot be resolved", name);
+				return null;
 			} else {
 				return parent.lookup(name);
 			}

@@ -105,8 +105,8 @@ public class TypeTable {
 	public static Type getType(String name) throws SemanticError {
 		Type T = null;
 		if (name.endsWith("[]")) {
-			// TODO check correctness of substring function.
-			return getArrayType(getType(name.substring(name.length() - 2)));
+			String elemName = name.substring(0,name.length() - 2);
+			return getArrayType(getType(elemName));
 		} else {
 
 			T = primitiveTypes.get(name);
