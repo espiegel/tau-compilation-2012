@@ -34,4 +34,8 @@ public class ClassSymbol extends Symbol {
 		return CST;
 	}
 
+	public String toString() {
+		return getKind().toString() + ": " + getID().toString();
+	}
+
 }

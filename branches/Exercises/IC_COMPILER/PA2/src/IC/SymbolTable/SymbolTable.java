@@ -109,12 +109,22 @@ public class SymbolTable {
 
 	// TODO: complete this
 	public String toString() {
-		String str = ": " + id + "\n";
+		String str = "";
 
 		for (Map.Entry<String, Symbol> e : entries.entrySet())
-			str += "\t" + e.getValue().getKind() + ": "
-					+ e.getValue().getType() + "\n";
+			str += "\t" + e.getValue().toString() + "\n";
 
+		if (!children.isEmpty()) {
+			str += "Children tables:";
+			for (SymbolTable e : children)
+				str += " " + e.getID() + ",";
+			str = str.substring(0, str.length() - 1) + '\n';
+			str += "\n";
+
+			for (SymbolTable e : children)
+				str += e.toString() + '\n';
+			str = str.substring(0, str.length() - 1);
+		}
 		return str;
 	}
 

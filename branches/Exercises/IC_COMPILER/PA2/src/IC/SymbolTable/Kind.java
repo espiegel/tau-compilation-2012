@@ -2,10 +2,11 @@ package IC.SymbolTable;
 
 public enum Kind {
 
-	VAR("(variable)"), 
-	FIELD("(field)"), 
-	METHOD("(method)"), 
-	CLASS("(class)");
+	VAR("Local variable"), 
+	FIELD("Field"), 
+	METHOD("method"), 
+	CLASS("Class"), 
+	PARAM("Parameter");
 
 	private String description;
 
@@ -14,7 +15,11 @@ public enum Kind {
 	}
 	
 	public String getDescription(){
-		return this.description;
+		return description;
+	}
+
+	public String toString(){
+		return description;
 	}
 
 }

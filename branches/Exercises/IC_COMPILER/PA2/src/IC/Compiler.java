@@ -88,7 +88,6 @@ public class Compiler {
 			System.out.println("\n"+globalSymbolTable+"\n"+TypeTable.staticToString());		
 		}
 		 // Semantic Checks
-		System.out.println(globalSymbolTable);
         SemanticChecker sc = new SemanticChecker((GlobalSymbolTable)globalSymbolTable);
         Object semanticChecks = prog.accept(sc);
         if (semanticChecks == null)

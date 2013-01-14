@@ -8,7 +8,6 @@ public abstract class Symbol {
 	private String id = null;
 	protected Type type = null;
 	private Kind kind = null;
-	
 
 	public Symbol(int line, String id, Type type, Kind kind) {
 		this.line = line;
@@ -18,11 +17,11 @@ public abstract class Symbol {
 	}
 
 	public String getID() {
-		return this.id;
+		return id;
 	}
 
 	public Kind getKind() {
-		return this.kind;
+		return kind;
 	}
 
 	public Type getType() {
@@ -30,7 +29,8 @@ public abstract class Symbol {
 	}
 
 	public String toString() {
-		return this.getID();
+		return getKind().toString() + ": " + getType().toString() + " "
+				+ getID().toString();
 	}
 
 }

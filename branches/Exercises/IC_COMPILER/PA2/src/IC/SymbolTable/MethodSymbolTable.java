@@ -6,11 +6,13 @@ import IC.TypeTable.SemanticError;
 
 public class MethodSymbolTable extends BlockSymbolTable {
 
-	public MethodSymbolTable(Method method, SymbolTable parentscope) throws SemanticError {
+	public MethodSymbolTable(Method method, SymbolTable parentscope)
+			throws SemanticError {
 		super(method.getName(), parentscope);
 		isStaticScope = method.isStatic();
-		for (Formal formal : method.getFormals()){ 
-			addLoclVar(formal); // all formal parameters are added to the MST upon it's creation.
+		for (Formal formal : method.getFormals()) {
+			addLoclVar(formal); // all formal parameters are added to the MST
+								// upon it's creation.
 		}
 	}
 
@@ -19,7 +21,9 @@ public class MethodSymbolTable extends BlockSymbolTable {
 	}
 
 	public String toString() {
-		String str = "Method Symbol Table" + super.toString();
-		return str;
+
+		String str = super.toString();
+		str = str.substring(str.indexOf('\n')+1);
+		return "Method Symbol Table" + ": " + getID() + "\n" + str;
 	}
 }

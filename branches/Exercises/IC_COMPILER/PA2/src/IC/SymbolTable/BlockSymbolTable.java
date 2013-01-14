@@ -19,7 +19,7 @@ public class BlockSymbolTable extends SymbolTable {
 
 	public String toString() {
 		String str = "Statement Block Symbol Table ( located in "
-				+ parent.getID() + " )";
+				+ parent.getID() + " )\n" + super.toString();
 		return str;
 	}
 
