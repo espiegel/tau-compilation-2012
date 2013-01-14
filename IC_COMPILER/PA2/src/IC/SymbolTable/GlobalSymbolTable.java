@@ -34,7 +34,7 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 
 	public String toString() {
-		String str = "Global " + super.toString();
+		String str = "Global Symbol Table" + super.toString();
 		return str;
 	}
 	

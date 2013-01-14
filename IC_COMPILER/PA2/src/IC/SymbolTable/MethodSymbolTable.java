@@ -19,7 +19,7 @@ public class MethodSymbolTable extends BlockSymbolTable {
 	}
 
 	public String toString() {
-		String str = "Method " + super.toString();
+		String str = "Method Symbol Table" + super.toString();
 		return str;
 	}
 }

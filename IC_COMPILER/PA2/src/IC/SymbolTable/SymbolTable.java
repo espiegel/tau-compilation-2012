@@ -1,7 +1,7 @@
 package IC.SymbolTable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,14 +14,22 @@ public class SymbolTable {
 	protected Map<String, Symbol> entries;
 	protected boolean isStaticScope;
 	private List<SymbolTable> children;
-	
+
 	public SymbolTable(String id, SymbolTable parent) {
 		this.id = id;
 		this.children = new ArrayList<SymbolTable>();
 		this.depth = (parent == null ? 0 : parent.depth + 1);
 		this.parent = parent;
-		this.entries = new HashMap<String, Symbol>();
-		this.isStaticScope = (parent == null ? false : parent.isStatic());  // global scope is false to prevent static from propagating.
+		this.entries = new LinkedHashMap<String, Symbol>();
+		this.isStaticScope = (parent == null ? false : parent.isStatic()); // global
+																			// scope
+																			// is
+																			// false
+																			// to
+																			// prevent
+																			// static
+																			// from
+																			// propagating.
 	}
 
 	public SymbolTable getParent() {
@@ -54,17 +62,17 @@ public class SymbolTable {
 	}
 
 	/**
-	 * lookup a symbol name recursively.
-	 * can be used to resolve any kind of symbol.
+	 * lookup a symbol name recursively. can be used to resolve any kind of
+	 * symbol.
 	 * 
 	 * @param name
 	 * @return
 	 * @throws SemanticError
 	 */
 	public Symbol lookup(String name) {
-		
+
 		Symbol ret = entries.get(name);
-		//System.out.println(entries);
+		// System.out.println(entries);
 		if (ret == null) {
 			if (noParentScope()) {
 				return null;
@@ -75,9 +83,9 @@ public class SymbolTable {
 			return ret;
 		}
 	}
-	 
-	public Symbol lookup(String name, Kind kind)  {
-		
+
+	public Symbol lookup(String name, Kind kind) {
+
 		Symbol ret = entries.get(name);
 		if (ret == null || ret.getKind() != kind) {
 			if (noParentScope()) {
@@ -90,9 +98,9 @@ public class SymbolTable {
 		}
 	}
 
-
 	private boolean noParentScope() {
-		return (parent == null) || (isStatic() && (parent instanceof ClassSymbolTable));
+		return (parent == null)
+				|| (isStatic() && (parent instanceof ClassSymbolTable));
 	}
 
 	private boolean isStatic() {
@@ -101,14 +109,15 @@ public class SymbolTable {
 
 	// TODO: complete this
 	public String toString() {
-		String str = "Symbol Table: " + id + "\n";
-		
+		String str = ": " + id + "\n";
+
 		for (Map.Entry<String, Symbol> e : entries.entrySet())
-			str += e.getValue().getKind() + ": " + e.getValue().getType() + "\n";
+			str += "\t" + e.getValue().getKind() + ": "
+					+ e.getValue().getType() + "\n";
 
 		return str;
 	}
-	
+
 	public String getID() {
 		return id;
 	}
@@ -116,8 +125,8 @@ public class SymbolTable {
 	public void addChild(SymbolTable ST) {
 		children.add(ST);
 	}
-	
-	public List<SymbolTable> getChildren(){
+
+	public List<SymbolTable> getChildren() {
 		return this.children;
 	}
 }
