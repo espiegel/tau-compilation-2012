@@ -145,10 +145,10 @@ public class TypeTable {
         for(Type t : classTypes.values())
         	str += "\t"+t.getUniqueId()+": Class: "+t.toString()+"\n";        
         
-        for(Type t : classTypes.values())
+        for(Type t : arrayTypes.values())
         	str += "\t"+t.getUniqueId()+": Array Type: "+t.toString()+"\n";
         
-        for(Type t : classTypes.values())
+        for(Type t : methodTypes.values())
         	str += "\t"+t.getUniqueId()+": Method type: "+t.toString()+"\n";
         
         return str;
