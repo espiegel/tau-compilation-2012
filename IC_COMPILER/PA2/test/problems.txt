@@ -1,6 +1,6 @@
 /*- all syntax errors return error at EOF.*/
 
-
+/* another problem. return 1;return 1;return 1;return 1; */
 
 class A {
          B foo() {}

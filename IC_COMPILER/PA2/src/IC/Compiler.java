@@ -99,7 +99,7 @@ public class Compiler {
 			System.out.println("Encountered an error while type-checking");
 			System.exit(-1); // in case of a semantic error
 		} else
-			System.out.println("Passed type-checking");
+			System.out.println("Semantic check passed sucessfully");
 
 	}
 
