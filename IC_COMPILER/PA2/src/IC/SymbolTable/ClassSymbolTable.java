@@ -60,7 +60,7 @@ public class ClassSymbolTable extends SymbolTable {
 						"multiple definitions for symbol in class hierarchy",
 						method.getName(),method.getLine());
 
-			if (sym.getType() != new MethodSymbol(method).getType())
+			if (sym.getType() != MS.getType())
 				throw new SemanticError("Overloading is not allowed",
 						method.getName(),method.getLine());
 
