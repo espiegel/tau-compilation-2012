@@ -23,6 +23,13 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Program program, SymbolTable context /* null */) {
+		for (ICClass C : program.getClasses()){
+			try {
+				TypeTable.addClassType(C);
+			} catch (SemanticError se) {
+				handleSemanticError(se,C);
+			}
+		}
 		for (ICClass C : program.getClasses()) {
 			if (C.accept(this, GST) == null)
 				return null;
