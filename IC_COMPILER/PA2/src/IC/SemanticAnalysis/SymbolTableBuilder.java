@@ -396,12 +396,12 @@ public class SymbolTableBuilder implements
 	public Object visit(MathUnaryOp unaryOp, SymbolTable scope) {
 		try {
 			if (unaryOp.getOperand() instanceof MathUnaryOp)
-				throw new SemanticError("ilegal unary operator usage",
+				throw new SemanticError("illegal unary operator usage",
 						unaryOp.getOperator().toString(), unaryOp.getLine());
 
 		} catch (SemanticError e) {
 			System.out.println(e.toString());
-			//return null;
+			return null;
 		}
 
 		return visitUnaryOp(unaryOp, scope);
@@ -419,13 +419,13 @@ public class SymbolTableBuilder implements
 				try {
 					Integer.parseInt(literal.getValue().toString());
 				} catch (NumberFormatException e) {
-					throw new SemanticError("llegal integer", literal
+					throw new SemanticError("illegal integer", literal
 							.getValue().toString(), literal.getLine());
 				}
 			}
 		} catch (SemanticError e) {
 			System.out.println(e.toString());
-			// return null;
+			return null;
 		}
 		literal.setEnclosingScope(scope);
 		return true;
