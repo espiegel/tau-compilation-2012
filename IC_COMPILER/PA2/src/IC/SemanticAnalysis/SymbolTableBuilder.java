@@ -24,6 +24,24 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Program program, SymbolTable context /* null */) {
+		if(program.getClasses() == null || program.getClasses().isEmpty())
+		{
+			try {
+				throw new SemanticError("No classes in the program","program");
+			} catch (SemanticError e) {
+				System.out.println(e);
+				return null;
+			}
+		}
+		if(!program.getClasses().get(0).getName().equals("Library"))
+		{
+			try {
+				throw new SemanticError("No Library found","program");
+			} catch (SemanticError e) {
+				System.out.println(e);
+				return null;
+			}
+		}		
 		for (ICClass C : program.getClasses()){
 			try {
 				TypeTable.addClassType(C);
