@@ -581,6 +581,13 @@ public class SemanticChecker implements Visitor
                 return null;
         }
         
+        if (ms == null)
+        {
+                System.err.println(new SemanticError("Method doesn't exist",                              
+                                call.getName(),call.getLine()));
+                return null;
+        }
+        
         if (ms.isStatic())
         {
                 System.err.println(new SemanticError("Static method is called virtually",                              
