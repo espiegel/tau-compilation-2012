@@ -111,8 +111,8 @@ public class SymbolTable {
 	public String toString() {
 		String str = "";
 
-		for (Map.Entry<String, Symbol> e : entries.entrySet())
-			str += "\t" + e.getValue().toString() + "\n";
+		for (Symbol e : entries.values())
+			str += "    " + e.toString() + "\n";
 
 		if (!children.isEmpty()) {
 			str += "Children tables:";
