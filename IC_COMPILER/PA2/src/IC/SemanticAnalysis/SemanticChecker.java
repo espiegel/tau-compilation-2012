@@ -404,6 +404,12 @@ public class SemanticChecker implements Visitor
             try
             {
             	BlockSymbolTable bst =(BlockSymbolTable) location.getEnclosingScope();
+            	if(bst.lookupVariable(location.getName()) == null)
+            	{
+            		System.err.println(new SemanticError("Variable not defined",location.getName(), location.getLine()));
+            		return null;
+            	}
+            	
                 IC.TypeTable.Type thisLocationType =  bst.lookupVariable(location.getName()).getType();
                 return thisLocationType;
             } catch(SemanticError se) {

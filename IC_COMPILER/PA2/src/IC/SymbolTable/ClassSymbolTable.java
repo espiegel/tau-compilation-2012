@@ -35,8 +35,8 @@ public class ClassSymbolTable extends SymbolTable {
 		if ((sym != null)
 				&& (sym.getKind() == Kind.FIELD || sym.getKind() == Kind.METHOD))
 			throw new SemanticError(
-					"multiple definitions for symbol in class hieratchy",
-					field.getName());
+					"multiple definitions for symbol in class hierarchy",
+					field.getName(),field.getLine());
 		else {
 			this.insert(new FieldSymbol(field)); // will also update TypeTable
 		}
@@ -58,18 +58,18 @@ public class ClassSymbolTable extends SymbolTable {
 			if (sym.getKind() != Kind.METHOD)
 				throw new SemanticError(
 						"multiple definitions for symbol in class hierarchy",
-						method.getName());
+						method.getName(),method.getLine());
 
 			if (sym.getType() != new MethodSymbol(method).getType())
-				throw new SemanticError("overloading is not allowed",
-						method.getName());
+				throw new SemanticError("Overloading is not allowed",
+						method.getName(),method.getLine());
 
 			boolean a = ((MethodSymbol) sym).isStatic();
 			boolean b = MS.isStatic();
 			if ((a && !b) || (!a && b))
 				throw new SemanticError(
-						"overriding mixing static and dinamic methods is not allowed",
-						method.getName());
+						"overriding mixing static and dynamic methods is not allowed",
+						method.getName(),method.getLine());
 
 		}
 		this.insert(MS); // will also update TypeTable
