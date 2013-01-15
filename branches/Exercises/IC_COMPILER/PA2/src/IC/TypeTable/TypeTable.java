@@ -92,7 +92,7 @@ public class TypeTable {
 			throw new SemanticError("multiple definitons for class", name);
 		}
 		if (A.hasSuperClass() && !classTypes.containsKey(A.getSuperClassName())) {
-			throw new SemanticError("class inherits from unknown class", name,
+			throw new SemanticError("class inherits from unknown class", A.getSuperClassName(),
 					A.getLine());
 		}
 		classTypes.put(A.getName(), new ClassType(A));

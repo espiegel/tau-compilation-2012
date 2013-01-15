@@ -134,10 +134,10 @@ field ::= type:t id_list:n SEMI
           {: List<Field> list = new ArrayList<Field>();
              for(String id : n)
                  list.add(new Field(t,id));
-             RESULT = list; :}
-          | error:e SEMI
-          {: parser.report_error(eleft, "Field expected."); 
-             RESULT = new ArrayList<Field>(); :};
+             RESULT = list; :};
+         // | error:e SEMI
+         // {: parser.report_error(eleft, "Field expected."); 
+          //   RESULT = new ArrayList<Field>(); :};
           
 id_list ::= ID:id
 	{: List<String> l = new ArrayList<String>(); l.add(id); RESULT = l; :}
