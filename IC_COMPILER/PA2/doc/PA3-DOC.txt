@@ -92,7 +92,9 @@ Class SemanticChecker: Implements Visitor. Does all the semantic checks as detai
 
 
 Semantic Analysis:
-// TODO:
+The Semantic analysis is composed of two main parts: SymbolTableBuilder and SymanticChecker. The SymbolTableBuilder constructs all the symbol tables recursively: GlobalSymbolTable, ClassSymbolTable, MethodSymbolTable and BlockSymbolTable. It also inserts appropriate types into the TypeTable.
+SemanticChecker is used to check the semantic rules of the IC language. We check for semantic rules such as type checking, scope rules, that a class contains exactly one main method, break and continue statements appear only inside loops, correct variable declarations, RHS and LHS in an assignment must havethe same type, a conditional test expression must be of type Boolean, no method overriding or illegal shadowing, correct usage of virtual and static calls, 'this' not being used from a static method.
+
 
 Feedback:
-// TODO:
+We feel this assignment was incredibly hard. It took us about 40 hours of combined work. It was very hard in the begining to understand where to start and how to actually implement the symbol tables and visitors. If we were given a skeleton of some sort this might have helped us considerably and give us some starting momentum. We also feel that it is hard to check all possible semantic errors. Writing down all possible errors in a list somewhere might have been easier then trying to test again and again until you find or think of something new.
