@@ -13,11 +13,11 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 
 	public Symbol lookupClass(String name) throws SemanticError {
-		return this.lookup(name, Kind.CLASS);
+		return this.lookup(name);
 	}
 
 	public ClassSymbolTable lookupCST(String name) throws SemanticError {
-		return ((ClassSymbol) this.lookup(name, Kind.CLASS))
+		return ((ClassSymbol) this.lookup(name))
 				.getClassSymbolTable();
 	}
 

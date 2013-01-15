@@ -31,7 +31,7 @@ public class BlockSymbolTable extends SymbolTable {
 	}
 
 	public Symbol lookupVariable(String name) throws SemanticError {
-		return lookup(name, Kind.VAR);
+		return lookup(name);
 	}
 
 	public String toString() {

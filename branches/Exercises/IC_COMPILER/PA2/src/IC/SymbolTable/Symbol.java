@@ -1,4 +1,5 @@
 package IC.SymbolTable;
+
 import IC.TypeTable.Type;
 
 public abstract class Symbol {
@@ -25,15 +26,9 @@ public abstract class Symbol {
 	public Type getType() {
 		return type;
 	}
-	
-	private String getKindString(){
-		if ((this instanceof VarSymbol) && ((VarSymbol)this).isParameter()) 
-			return "Parameter";
-		else return  this.kind.toString();
-	}
 
 	public String toString() {
-		return getKindString().toString() + ": " + getType().toString() + " "
+		return getKind().toString() + ": " + getType().toString() + " "
 				+ getID().toString();
 	}
 

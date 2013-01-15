@@ -59,9 +59,9 @@ public class ClassSymbolTable extends SymbolTable {
 					"multiple definitions for symbol in class hieratchy",
 					method.getName());
 		else if ((sym != null) && (sym.getKind() == Kind.METHOD)
-				&& ((MethodSymbol) sym).isStatic()) {
+				&& (sym.getType() != new MethodSymbol(method).getType())) {
 
-			throw new SemanticError("overriding static methods is not allowed",
+			throw new SemanticError("overloading is not allowed",
 					method.getName());
 		} else {
 			MethodSymbol MS = new MethodSymbol(method);
@@ -79,11 +79,11 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 
 	public Symbol lookupField(String name) throws SemanticError {
-		return lookup(name, Kind.FIELD);
+		return lookup(name);
 	}
 
 	public Symbol lookupMethod(String name) throws SemanticError {
-		return lookup(name, Kind.METHOD);
+		return lookup(name);
 	}
 
 	public String toString() {

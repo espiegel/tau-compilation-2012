@@ -84,20 +84,20 @@ public class SymbolTable {
 		}
 	}
 
-	public Symbol lookup(String name, Kind kind) {
-
-		Symbol ret = entries.get(name);
-		if (ret == null || ret.getKind() != kind) {
-			if (noParentScope()) {
-				return null;
-			} else {
-				return parent.lookup(name);
-			}
-		} else {
-			return ret;
-		}
-	}
-
+//	public Symbol lookup(String name, Kind kind) {
+//
+//		Symbol ret = entries.get(name);
+//		if (ret == null || ret.getKind() != kind) {
+//			if (noParentScope()) {
+//				return null;
+//			} else {
+//				return parent.lookup(name);
+//			}
+//		} else {
+//			return ret;
+//		}
+//	}
+//
 	private boolean noParentScope() {
 		return (parent == null)
 				|| (isStatic() && (parent instanceof ClassSymbolTable));
