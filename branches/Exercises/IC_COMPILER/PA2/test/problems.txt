@@ -2,17 +2,17 @@
 
 
 
-Class A {
+class A {
          B foo() {}
   }
-  Class B {}
+  class B { void main (string[] args) {}}
 
 /*  doesn't work.... */
 
 
 /*
-- Class B extends A {}
-  Class A {}
+- class B extends A {}
+  class A {}
 */
 
  /* doesn't work... */
