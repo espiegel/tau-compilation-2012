@@ -88,7 +88,7 @@ public class Compiler {
 
 		// Dump the symbol table
 		if (bDump_symtab) {
-			System.out.println(globalSymbolTable + "\n"
+			System.out.println("\n" + globalSymbolTable + "\n"
 					+ TypeTable.staticToString());
 		}
 		// Semantic Checks
@@ -115,7 +115,7 @@ public class Compiler {
 		LibraryParser parser = new LibraryParser(scanner);
 		try {
 			ICClass root = (ICClass) parser.parse().value;
-			System.out.println("Parsed " + lib_path + " successfully!\n");
+			System.out.println("Parsed " + lib_path + " successfully!");
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
 			if (bPrint_ast)
 				System.out.println(root.accept(printer));
@@ -135,7 +135,7 @@ public class Compiler {
 
 		try {
 			Program root = (Program) parser.parse().value;
-			System.out.println("Parsed " + program_path + " successfully!\n");
+			System.out.println("Parsed " + program_path + " successfully!");
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(
 					program_path);
 			if (bPrint_ast)
