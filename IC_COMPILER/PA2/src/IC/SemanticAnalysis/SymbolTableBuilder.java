@@ -1,5 +1,6 @@
 package IC.SemanticAnalysis;
 
+import IC.LiteralTypes;
 import IC.AST.*;
 import IC.SymbolTable.*;
 import IC.TypeTable.SemanticError;
@@ -12,7 +13,7 @@ public class SymbolTableBuilder implements
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
 		se.setLine(node.getLine());
 		System.out.println(se);
-		//se.printStackTrace(); 
+		// se.printStackTrace();
 		return null;
 	}
 
@@ -247,9 +248,9 @@ public class SymbolTableBuilder implements
 		localVariable.setEnclosingScope(scope);
 		try {
 			((BlockSymbolTable) scope).addLoclVar(localVariable);
-			if (localVariable.hasInitValue()){
+			if (localVariable.hasInitValue()) {
 				if (localVariable.getInitValue().accept(this, scope) == null)
-					return null;				
+					return null;
 			}
 		} catch (SemanticError se) {
 			return handleSemanticError(se, localVariable);
@@ -393,6 +394,16 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(MathUnaryOp unaryOp, SymbolTable scope) {
+		try {
+			if (unaryOp.getOperand() instanceof MathUnaryOp)
+				throw new SemanticError("ilegal unary operator usage",
+						unaryOp.getOperator().toString(), unaryOp.getLine());
+
+		} catch (SemanticError e) {
+			System.out.println(e.toString());
+			//return null;
+		}
+
 		return visitUnaryOp(unaryOp, scope);
 	}
 
@@ -403,6 +414,19 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Literal literal, SymbolTable scope) {
+		try {
+			if (literal.getType() == LiteralTypes.INTEGER) {
+				try {
+					Integer.parseInt(literal.getValue().toString());
+				} catch (NumberFormatException e) {
+					throw new SemanticError("llegal integer", literal
+							.getValue().toString(), literal.getLine());
+				}
+			}
+		} catch (SemanticError e) {
+			System.out.println(e.toString());
+			// return null;
+		}
 		literal.setEnclosingScope(scope);
 		return true;
 	}
