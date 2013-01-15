@@ -63,42 +63,43 @@ public class Compiler {
 			exit(EXIT1);
 
 		Program prog = parseProgram();
-		
+
 		// Parse the lib only if the user gave it as input
-		if(bParse_lib) {
+		if (bParse_lib) {
 			ICClass lib = parseLibrary();
 			prog.insertLibrary(lib);
 		}
 		SymbolTableBuilder builder = new SymbolTableBuilder(program_path);
 		Object globalSymbolTable = prog.accept(builder, null);
-		
+
 		// Couldn't construct the GST
-		if(globalSymbolTable == null) {
+		if (globalSymbolTable == null) {
 			System.err.println("Error constructing global symbol table!");
 			System.exit(-1);
 		}
-		
+
 		// Print ast
-		if(bPrint_ast) {
-			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(program_path);
+		if (bPrint_ast) {
+			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(
+					program_path);
 			System.out.println(prog.accept(printer));
 		}
-		
+
 		// Dump the symbol table
 		if (bDump_symtab) {
-			System.out.println("\n"+globalSymbolTable+"\n"+TypeTable.staticToString());		
+			System.out.println(globalSymbolTable + "\n"
+					+ TypeTable.staticToString());
 		}
-		 // Semantic Checks
-        SemanticChecker sc = new SemanticChecker((GlobalSymbolTable)globalSymbolTable);
-        Object semanticChecks = prog.accept(sc);
-        if (semanticChecks == null)
-        {
-                System.out.println("Encountered an error while type-checking");
-                System.exit(-1); // in case of a semantic error
-        }
-        else
-                System.out.println("Passed type-checking");
-        
+		// Semantic Checks
+		SemanticChecker sc = new SemanticChecker(
+				(GlobalSymbolTable) globalSymbolTable);
+		Object semanticChecks = prog.accept(sc);
+		if (semanticChecks == null) {
+			System.out.println("Encountered an error while type-checking");
+			System.exit(-1); // in case of a semantic error
+		} else
+			System.out.println("Passed type-checking");
+
 	}
 
 	private static void exit(String msg) {
