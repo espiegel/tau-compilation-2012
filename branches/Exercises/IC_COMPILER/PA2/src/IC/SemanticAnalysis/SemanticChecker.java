@@ -19,7 +19,7 @@ import IC.TypeTable.TypeTable;
 public class SemanticChecker implements Visitor
 {
 	private boolean inStatic = false;
-	private boolean inLoop = false;
+	private int inLoop = 0;
 	
 	private IC.SymbolTable.GlobalSymbolTable GST;
 	 /**
@@ -267,13 +267,13 @@ public class SemanticChecker implements Visitor
         } catch (SemanticError se){System.err.println("Error in While visitor of SemanticChecker.");} // will never get here
         
         // Check operation recursively
-        inLoop = true;
+        inLoop++;
         if (whileStatement.getOperation().accept(this) == null)
         {
-            inLoop = false;
+            inLoop--;
             return null;
         }
-        inLoop = false;
+        inLoop--;
         
         return true;
 	}
@@ -285,7 +285,7 @@ public class SemanticChecker implements Visitor
      */
 	@Override
 	public Object visit(Break breakStatement) {
-	    if (!inLoop)
+	    if (inLoop==0)
 	    {
 	        System.err.println(new SemanticError("'break' statement outside loop",                            
 	                        "break",breakStatement.getLine()));
@@ -302,7 +302,7 @@ public class SemanticChecker implements Visitor
      */
 	@Override
 	public Object visit(Continue continueStatement) {
-        if (!inLoop)
+        if (inLoop==0)
         {
             System.err.println(new SemanticError("'continue' statement outside loop",
             		"continue",continueStatement.getLine()));
