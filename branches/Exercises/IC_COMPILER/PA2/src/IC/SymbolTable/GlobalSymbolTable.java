@@ -17,6 +17,7 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 
 	public ClassSymbolTable lookupCST(String name) throws SemanticError {
+		if(this.lookup(name) == null) throw new SemanticError("Class not found",name);
 		return ((ClassSymbol) this.lookup(name))
 				.getClassSymbolTable();
 	}
