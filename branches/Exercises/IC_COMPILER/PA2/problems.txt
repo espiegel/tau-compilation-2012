@@ -1,0 +1,20 @@
+- all syntax errors return error at EOF.
+
+
+
+- Class A {
+         B foo() {}
+  }
+  Class B {}
+
+  doesn't work....
+
+
+
+- Class B extends A {}
+  Class A {}
+
+  doesn't work...
+
+
+- Remove the unncessary prints from the compiler...
