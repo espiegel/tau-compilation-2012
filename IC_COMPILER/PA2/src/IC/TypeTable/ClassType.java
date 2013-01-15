@@ -20,6 +20,8 @@ public class ClassType extends Type {
 		// check Type hierarchy recursively.
 		String superName = this.astClass.getSuperClassName();
 		try {
+			if(TypeTable.getType(superName) == null)
+				throw new SemanticError("Cannot compare between types",B.getName());
 			return TypeTable.getType(superName).isSubtype(B);
 		} catch (SemanticError se) {
 			return false;
