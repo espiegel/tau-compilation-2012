@@ -36,6 +36,12 @@ public class TypeTable {
 		primitiveTypes.put(nullType.getName(), nullType);
 		primitiveTypes.put(stringType.getName(), stringType);
 		primitiveTypes.put(voidType.getName(), voidType);
+		
+		List<Type> param = new ArrayList<Type>();
+		param.add(getArrayType(stringType));
+		MethodType tmpMethod = new MethodType(param, voidType);
+		methodTypes.put(tmpMethod.getName(), tmpMethod);
+		
 		TypeTable.fileName = fileName;
 	}
 
@@ -92,8 +98,8 @@ public class TypeTable {
 			throw new SemanticError("multiple definitons for class", name);
 		}
 		if (A.hasSuperClass() && !classTypes.containsKey(A.getSuperClassName())) {
-			throw new SemanticError("class inherits from unknown class", A.getSuperClassName(),
-					A.getLine());
+			throw new SemanticError("class inherits from unknown class",
+					A.getSuperClassName(), A.getLine());
 		}
 		classTypes.put(A.getName(), new ClassType(A));
 	}
@@ -105,7 +111,8 @@ public class TypeTable {
 	 */
 	public static Type getType(String name) throws SemanticError {
 		Type T = null;
-		if(name == null) return null;
+		if (name == null)
+			return null;
 		if (name.endsWith("[]")) {
 			String elemName = name.substring(0, name.length() - 2);
 			return getArrayType(getType(elemName));
@@ -138,8 +145,8 @@ public class TypeTable {
 		String str = "Type Table: " + fileName + "\n";
 
 		for (Type t : primitiveTypes.values())
-			str += "    " + t.getUniqueId() + ": Primitive type: " + t.getName()
-					+ "\n";
+			str += "    " + t.getUniqueId() + ": Primitive type: "
+					+ t.getName() + "\n";
 
 		for (Type t : classTypes.values())
 			str += "    " + t.getUniqueId() + ": Class: " + t.toString() + "\n";
