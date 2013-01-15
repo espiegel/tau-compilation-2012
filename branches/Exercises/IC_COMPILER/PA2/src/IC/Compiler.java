@@ -64,11 +64,12 @@ public class Compiler {
 
 		Program prog = parseProgram();
 
-		// Parse the lib only if the user gave it as input
-		if (bParse_lib) {
-			ICClass lib = parseLibrary();
-			prog.insertLibrary(lib);
-		}
+		// Parse the lib from an external location if the user gave it as input.
+		// Otherwise use the default location which is the current directory.
+
+		ICClass lib = parseLibrary();
+		prog.insertLibrary(lib);
+
 		SymbolTableBuilder builder = new SymbolTableBuilder(program_path);
 		Object globalSymbolTable = prog.accept(builder, null);
 
