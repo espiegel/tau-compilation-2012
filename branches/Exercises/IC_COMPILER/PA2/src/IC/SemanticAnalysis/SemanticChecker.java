@@ -674,7 +674,10 @@ public class SemanticChecker implements Visitor
 	public Object visit(NewArray newArray) {
 		IC.TypeTable.Type elemType = null;
         
-        try { elemType = IC.TypeTable.TypeTable.getType(newArray.getType().getName()); }
+        try { 
+        	String typename = newArray.getType().getTypeName();
+        	elemType = IC.TypeTable.TypeTable.getType(typename); 
+        	}
         catch (SemanticError se) // Illegal array element type
         { 
             se.setLine(newArray.getLine());
