@@ -35,7 +35,7 @@ public class ClassSymbolTable extends SymbolTable {
 		if ((sym != null)
 				&& (sym.getKind() == Kind.FIELD || sym.getKind() == Kind.METHOD))
 			throw new SemanticError(
-					"multiple definitions for symbol in class hieratchy",
+					"multiple definitions for symbol in class hierarchy",
 					field.getName());
 		else {
 			this.insert(new FieldSymbol(field)); // will also update TypeTable
@@ -56,7 +56,7 @@ public class ClassSymbolTable extends SymbolTable {
 		if ((sym != null) && (sym.getKind() == Kind.FIELD))
 
 			throw new SemanticError(
-					"multiple definitions for symbol in class hieratchy",
+					"multiple definitions for symbol in class hierarchy",
 					method.getName());
 		else if ((sym != null) && (sym.getKind() == Kind.METHOD)
 				&& (sym.getType() != new MethodSymbol(method).getType())) {

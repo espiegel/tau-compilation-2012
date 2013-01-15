@@ -30,7 +30,7 @@ public class MethodSymbol extends Symbol {
 	}
 
 	public boolean isMain() throws SemanticError {
-		return ((MethodType) type).isMainMethodType();
+		return ((MethodType) type).isMainMethodType() && getID().equals("main");
 	}
 
 	public String toString() {

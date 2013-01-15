@@ -39,6 +39,15 @@ public class SemanticChecker implements Visitor
 	public Object visit(Program program) {
 		for(ICClass c : program.getClasses())
 			if(c.accept(this) == null) return null;
+		
+		if(!this.GST.hasMain())
+			try {
+				throw new SemanticError("Program does not have a main method.","main");
+			} catch (SemanticError e) {
+				// TODO Auto-generated catch block
+				System.out.println(e.toString());
+			}
+		
 		return true;
 	}
 
