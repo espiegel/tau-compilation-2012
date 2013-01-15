@@ -3,9 +3,11 @@ package IC.SymbolTable;
 import IC.AST.Formal;
 import IC.AST.Method;
 import IC.TypeTable.SemanticError;
+import IC.TypeTable.TypeTable;
 
 public class MethodSymbolTable extends BlockSymbolTable {
-
+	
+	
 	public MethodSymbolTable(Method method, SymbolTable parentscope)
 			throws SemanticError {
 		super(method.getName(), parentscope);
@@ -14,6 +16,8 @@ public class MethodSymbolTable extends BlockSymbolTable {
 			addLoclVar(formal); // all formal parameters are added to the MST
 								// upon it's creation.
 		}
+		retType = TypeTable.getMethodReturnType(method); // return type to be propagated
+		enclosingCST = (ClassSymbolTable)parent;	// CST to be propagated
 	}
 
 	private void addLoclVar(Formal formal) throws SemanticError {

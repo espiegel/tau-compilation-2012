@@ -7,12 +7,11 @@ import IC.TypeTable.TypeTable;
 
 public class VarSymbol extends Symbol {
 	
-	private boolean isParam;
+	private boolean isParam = false;
 	
 	public VarSymbol(LocalVariable local) throws SemanticError {
 		super(local.getLine(), local.getName(), TypeTable.getType(local.getType().getTypeName()),Kind.VAR);
 		this.type = TypeTable.getType(local.getType().toString());
-		this.isParam = false;
 	}
 
 	public VarSymbol(Formal formal) throws SemanticError {

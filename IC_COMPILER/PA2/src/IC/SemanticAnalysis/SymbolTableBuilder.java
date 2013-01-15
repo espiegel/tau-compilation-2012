@@ -240,10 +240,13 @@ public class SymbolTableBuilder implements
 		localVariable.setEnclosingScope(scope);
 		try {
 			((BlockSymbolTable) scope).addLoclVar(localVariable);
+			if (localVariable.hasInitValue()){
+				if (localVariable.getInitValue().accept(this, scope) == null)
+					return null;				
+			}
 		} catch (SemanticError se) {
 			return handleSemanticError(se, localVariable);
 		}
-		localVariable.setEnclosingScope(scope);
 		return true;
 	}
 
@@ -277,7 +280,6 @@ public class SymbolTableBuilder implements
 		if (location.getArray().accept(this, scope) == null)
 			return null;
 
-		location.getIndex().setEnclosingScope(scope);
 		if (location.getIndex().accept(this, scope) == null)
 			return null;
 
@@ -439,6 +441,16 @@ public class SymbolTableBuilder implements
 	public Object visit(Type type, SymbolTable context) {
 		try {
 			throw new SemanticError("shouldn't get here", "BUG6");
+		} catch (SemanticError se) {
+			System.out.println(se);
+		}
+		return null;
+	}
+
+	@Override
+	public Object visit(New newobj, SymbolTable context) {
+		try {
+			throw new SemanticError("shouldn't get here", "BUG7");
 		} catch (SemanticError se) {
 			System.out.println(se);
 		}

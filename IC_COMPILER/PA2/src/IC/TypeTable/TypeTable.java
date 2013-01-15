@@ -39,10 +39,14 @@ public class TypeTable {
 		primitiveTypes.put(nullType.getName(), nullType);
 		TypeTable.fileName = fileName;
 	}
-
+	
+	public static Type getMethodReturnType(Method method) throws SemanticError{
+		return getType(method.getType().getTypeName());
+	}
+	
 	public static MethodType getMethodType(Method method) throws SemanticError {
 		
-		Type ret = getType(method.getType().getTypeName());
+		Type ret = getMethodReturnType(method);
 		List<Type> params = new ArrayList<Type>();
 		for (Formal formal : method.getFormals()) {
 			Type T = getType(formal.getType().getTypeName());

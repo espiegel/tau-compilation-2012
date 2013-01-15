@@ -188,17 +188,13 @@ public class SemanticChecker implements Visitor
                 returnedValueType = IC.TypeTable.TypeTable.getType("void");
         	} catch(SemanticError se) { System.err.println("Error in the return visitor of SemanticChecker"); }
         
-        // Type check
-        // Check that the return type is the same type/subtype of the enclosing method's type
-        try {
-            IC.TypeTable.Type returnType = ((BlockSymbolTable) returnStatement.getEnclosingScope()).lookupVariable("_ret").getType();
-            if (!returnedValueType.isSubtype(returnType))
-            {
-                System.err.println(new SemanticError("Type mismatch, not of type "+returnType.getName(),
-                                returnedValueType.getName(),returnStatement.getLine()));
-                return null;
-            }
-        } catch (SemanticError se) { System.err.println("Error in the return visitor of SemanticChecker."); }
+        IC.TypeTable.Type returnType = ((BlockSymbolTable) returnStatement.getEnclosingScope()).getReturnType();
+		if (!returnedValueType.isSubtype(returnType))
+		{
+		    System.err.println(new SemanticError("Type mismatch, not of type "+returnType.getName(),
+		                    returnedValueType.getName(),returnStatement.getLine()));
+		    return null;
+		}
         
         return true;
 	}
@@ -552,7 +548,7 @@ public class SemanticChecker implements Visitor
         }
         // This is not an external call.
         else { 
-                cst = ((BlockSymbolTable)call.getEnclosingScope()).getEnclosingClassSymbolTable();
+                cst = ((BlockSymbolTable)call.getEnclosingScope()).getEnclosingCST();
                 if (inStatic)
                 {
                     System.err.println(new SemanticError("Calling a local virtual method from a static scope",                                       
@@ -625,7 +621,7 @@ public class SemanticChecker implements Visitor
             return null;
 	    }
 	    
-	    return ((BlockSymbolTable) thisExpression.getEnclosingScope()).getEnclosingClassSymbolTable().getThis().getType();
+	    return ((BlockSymbolTable) thisExpression.getEnclosingScope()).getEnclosingCST().getThis().getType();
 	}
 
 	/**
