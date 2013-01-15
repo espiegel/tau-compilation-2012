@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.SymbolTable.SymbolTable;
+
 /**
  * Abstract base class for object creation AST nodes.
  * 
@@ -16,5 +18,8 @@ public abstract class New extends Expression {
 	protected New(int line) {
 		super(line);
 	}
+	
+	public abstract Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
+			SymbolTable context);
 
 }

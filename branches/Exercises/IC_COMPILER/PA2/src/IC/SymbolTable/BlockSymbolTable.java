@@ -2,11 +2,28 @@ package IC.SymbolTable;
 
 import IC.AST.LocalVariable;
 import IC.TypeTable.SemanticError;
+import IC.TypeTable.Type;
 
 public class BlockSymbolTable extends SymbolTable {
-
+	
+	protected Type retType;
+	protected ClassSymbolTable enclosingCST;
+	
 	public BlockSymbolTable(String name, SymbolTable parentscope) {
 		super(name, parentscope);
+		if (parentscope instanceof BlockSymbolTable){
+			retType = ((BlockSymbolTable)parentscope).getReturnType(); //propagate the return type
+			enclosingCST = ((BlockSymbolTable)parentscope).getEnclosingCST(); //propagate the CST
+		}
+	}
+	
+	/**
+	 * returns the block's enclosing class
+	 * 
+	 * @return Enclosing Class
+	 */
+	public ClassSymbolTable getEnclosingCST() {
+		return enclosingCST;
 	}
 
 	public void addLoclVar(LocalVariable var) throws SemanticError {
@@ -22,13 +39,8 @@ public class BlockSymbolTable extends SymbolTable {
 				+ parent.getID() + " )\n" + super.toString();
 		return str;
 	}
-
-	/**
-	 * returns the block's enclosing class
-	 * 
-	 * @return Enclosing Class
-	 */
-	public ClassSymbolTable getEnclosingClassSymbolTable() {
-		return ((BlockSymbolTable) parent).getEnclosingClassSymbolTable();
+	
+	public Type getReturnType(){
+		return retType;
 	}
 }
