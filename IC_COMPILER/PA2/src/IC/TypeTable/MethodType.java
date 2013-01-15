@@ -43,7 +43,7 @@ public class MethodType extends Type {
 	public boolean isMainMethodType() throws SemanticError {
 		return (params.size() == 1)
 				&& params.get(0).isSubtype(TypeTable.getType("string[]"))
-				&& ret == TypeTable.getType("void") && getName().equals("main");
+				&& ret == TypeTable.getType("void");
 	}
 
 	public Type getReturnType() {
