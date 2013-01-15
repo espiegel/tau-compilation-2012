@@ -35,7 +35,7 @@ public class ClassSymbolTable extends SymbolTable {
 		if ((sym != null)
 				&& (sym.getKind() == Kind.FIELD || sym.getKind() == Kind.METHOD))
 			throw new SemanticError(
-					"multiple definitions for symbol in class hierarchy",
+					"multiple definitions for symbol in class hieratchy",
 					field.getName());
 		else {
 			this.insert(new FieldSymbol(field)); // will also update TypeTable
@@ -51,28 +51,33 @@ public class ClassSymbolTable extends SymbolTable {
 	 */
 	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
+		MethodSymbol MS = new MethodSymbol(method);
 
-		// virtual methods may be overridden but static methods may not.
-		if ((sym != null) && (sym.getKind() == Kind.FIELD))
+		// already exist
+		if (sym != null) {
+			if (sym.getKind() != Kind.METHOD)
+				throw new SemanticError(
+						"multiple definitions for symbol in class hierarchy",
+						method.getName());
 
-			throw new SemanticError(
-					"multiple definitions for symbol in class hierarchy",
-					method.getName());
-		else if ((sym != null) && (sym.getKind() == Kind.METHOD)
-				&& (sym.getType() != new MethodSymbol(method).getType())) {
+			if (sym.getType() != new MethodSymbol(method).getType())
+				throw new SemanticError("overloading is not allowed",
+						method.getName());
 
-			throw new SemanticError("overloading is not allowed",
-					method.getName());
-		} else {
-			MethodSymbol MS = new MethodSymbol(method);
-			this.insert(MS); // will also update TypeTable
-			if (MS.isMain()) {
-				if (SymbolTableBuilder.GST.hasMain()) {
-					throw new SemanticError("program already has main()",
-							getID());
-				} else {
-					SymbolTableBuilder.GST.setMain(MS);
-				}
+			boolean a = ((MethodSymbol) sym).isStatic();
+			boolean b = MS.isStatic();
+			if ((a && !b) || (!a && b))
+				throw new SemanticError(
+						"overriding mixing static and dinamic methods is not allowed",
+						method.getName());
+
+		}
+		this.insert(MS); // will also update TypeTable
+		if (MS.isMain()) {
+			if (SymbolTableBuilder.GST.hasMain()) {
+				throw new SemanticError("program already has main()", getID());
+			} else {
+				SymbolTableBuilder.GST.setMain(MS);
 			}
 		}
 

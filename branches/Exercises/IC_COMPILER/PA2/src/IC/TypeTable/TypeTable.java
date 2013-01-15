@@ -137,18 +137,18 @@ public class TypeTable {
 		String str = "Type Table: " + fileName + "\n";
 
 		for (Type t : primitiveTypes.values())
-			str += "\t" + t.getUniqueId() + ": Primitive type: " + t.getName()
+			str += "    " + t.getUniqueId() + ": Primitive type: " + t.getName()
 					+ "\n";
 
 		for (Type t : classTypes.values())
-			str += "\t" + t.getUniqueId() + ": Class: " + t.toString() + "\n";
+			str += "    " + t.getUniqueId() + ": Class: " + t.toString() + "\n";
 
 		for (Type t : arrayTypes.values())
-			str += "\t" + t.getUniqueId() + ": Array Type: " + t.toString()
+			str += "    " + t.getUniqueId() + ": Array Type: " + t.toString()
 					+ "\n";
 
 		for (Type t : methodTypes.values())
-			str += "\t" + t.getUniqueId() + ": Method type: " + t.toString()
+			str += "    " + t.getUniqueId() + ": Method type: " + t.toString()
 					+ "\n";
 
 		return str;

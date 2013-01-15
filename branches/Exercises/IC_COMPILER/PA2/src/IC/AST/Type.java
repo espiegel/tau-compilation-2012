@@ -26,17 +26,17 @@ public abstract class Type extends ASTNode {
 	}
 
 	public abstract String getName();
-	
-	//returns String ID that can be used in TypeTable's Mappings
-	public String getTypeName(){
+
+	// returns String ID that can be used in TypeTable's Mappings
+	public String getTypeName() {
 		String dictName = this.getName();
-		for (int i=0;i<this.dimension;i++){
-			dictName+="[]";
+		for (int i = 0; i < this.dimension; i++) {
+			dictName += "[]";
 		}
 		return dictName;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return getTypeName();
 	}
 
@@ -48,6 +48,6 @@ public abstract class Type extends ASTNode {
 		++dimension;
 	}
 
-	public abstract Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context);
+	public abstract Object accept(
+			PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable context);
 }
