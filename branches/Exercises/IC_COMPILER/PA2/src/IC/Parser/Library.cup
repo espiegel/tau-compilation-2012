@@ -62,8 +62,8 @@ formal_list ::= formal:l
 formal ::= type:t ID:n
         {: RESULT = new Formal(t, n); :} ;
 
-libic ::= CLASS:c CLASS_ID LCBR libmethod_list:l RCBR
-		{: RESULT = new ICClass(cleft,"Library",new ArrayList<Field>(),l); :} ;
+libic ::= CLASS:c CLASS_ID:id LCBR libmethod_list:l RCBR
+		{: RESULT = new ICClass(cleft,id,new ArrayList<Field>(),l); :} ;
 
 libmethod_list ::= libmethod:l
 				{: List<Method> lf = new ArrayList<Method>(); lf.add(l); RESULT=lf; :}
