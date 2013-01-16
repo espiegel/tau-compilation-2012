@@ -31,10 +31,12 @@ public class Compiler {
 	private static final String EXIT2 = "SYSTEM EXIT! REASON: conflicting arguments.";
 	private static final String EXIT3 = "SYSTEM EXIT! REASON: failed to parse program.";
 	private static final String EXIT4 = "SYSTEM EXIT! REASON: failed to parse library.";
+	private static final String EXIT5 = "library class should be named \"Library\". was named: ";
 
 	private static final String PRINT_AST = "-print-ast";
 	private static final String LIB_FLAG = "-L";
 	private static final String DUMP_SYMTAB = "-dump-symtab";
+	
 
 	public static void main(String[] args) throws IOException {
 
@@ -115,6 +117,9 @@ public class Compiler {
 		LibraryParser parser = new LibraryParser(scanner);
 		try {
 			ICClass root = (ICClass) parser.parse().value;
+			if (!root.getName().equals("Library")){
+				exit(EXIT5+root.getName());
+			}
 			System.out.println("Parsed " + lib_path + " successfully!");
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
 			if (bPrint_ast)
