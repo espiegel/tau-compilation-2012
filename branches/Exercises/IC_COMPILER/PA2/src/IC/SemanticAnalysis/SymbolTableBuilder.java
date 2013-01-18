@@ -27,7 +27,7 @@ public class SymbolTableBuilder implements
 		if(program.getClasses() == null || program.getClasses().isEmpty())
 		{
 			try {
-				throw new SemanticError("No classes in the program","program");
+				throw new SemanticError("No classes in the program",GST.getID());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;
@@ -36,7 +36,7 @@ public class SymbolTableBuilder implements
 		if(!program.getClasses().get(0).getName().equals("Library"))
 		{
 			try {
-				throw new SemanticError("No Library found","program");
+				throw new SemanticError("No Library found",GST.getID());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;

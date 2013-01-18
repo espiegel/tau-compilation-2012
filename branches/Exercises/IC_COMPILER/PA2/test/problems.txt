@@ -2,7 +2,13 @@
 
 /* another problem. return 1;return 1;return 1;return 1; */
 
-class A {
+class C{
+int simple(){
+	{ int i; {}
+	{int j; }}
+}
+}
+class A extends C{
          B foo() {}
   }
   class B { void main (string[] args) {}}
