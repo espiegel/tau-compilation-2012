@@ -2,6 +2,7 @@ package IC;
 
 import java.io.*;
 import IC.AST.*;
+import IC.LIR.ClassLayout;
 import IC.Parser.*;
 import IC.SemanticAnalysis.SemanticChecker;
 import IC.SemanticAnalysis.SymbolTableBuilder;
@@ -64,16 +65,16 @@ public class Compiler {
 		if (program_path == null)
 			exit(EXIT1);
 
-		Program prog = parseProgram();
+		Program program = parseProgram();
 
 		// Parse the lib from an external location if the user gave it as input.
 		// Otherwise use the default location which is the current directory.
 
 		ICClass lib = parseLibrary();
-		prog.insertLibrary(lib);
+		program.insertLibrary(lib);
 
 		SymbolTableBuilder builder = new SymbolTableBuilder(program_path);
-		Object globalSymbolTable = prog.accept(builder, null);
+		Object globalSymbolTable = program.accept(builder, null);
 
 		// Couldn't construct the GST
 		if (globalSymbolTable == null) {
@@ -85,7 +86,7 @@ public class Compiler {
 		if (bPrint_ast) {
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(
 					program_path);
-			System.out.println(prog.accept(printer));
+			System.out.println(program.accept(printer));
 		}
 
 		// Dump the symbol table
@@ -96,13 +97,19 @@ public class Compiler {
 		// Semantic Checks
 		SemanticChecker sc = new SemanticChecker(
 				(GlobalSymbolTable) globalSymbolTable);
-		Object semanticChecks = prog.accept(sc);
+		Object semanticChecks = program.accept(sc);
 		if (semanticChecks == null) {
 			System.out.println("Encountered an error while type-checking");
 			System.exit(-1); // in case of a semantic error
 		} else
 			System.out.println("Semantic check passed sucessfully");
-
+		
+		/*begin tests for PA4 */
+		ClassLayout C = new ClassLayout(program.getClasses().get(1));
+		ClassLayout A = new ClassLayout(program.getClasses().get(2),C);
+		System.out.println(C);
+		System.out.println(A);
+		/*end tests for PA4 */
 	}
 
 	private static void exit(String msg) {

@@ -3,15 +3,21 @@
 /* another problem. return 1;return 1;return 1;return 1; */
 
 class C{
-int simple(){
+int x;
+int simple1(){
 	{ int i; {}
 	{int j; }}
 }
+static void simple2(){}
+int bar(){}
 }
 class A extends C{
+	int y;
+	int z;
          B foo() {}
+         int bar(){}
   }
-  class B { void main (string[] args) {}}
+  class B { static void main (string[] args) {}}
 
 /*  doesn't work.... */
 

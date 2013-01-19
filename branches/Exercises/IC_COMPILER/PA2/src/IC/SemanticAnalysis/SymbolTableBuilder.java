@@ -112,16 +112,6 @@ public class SymbolTableBuilder implements
 	}
 
 	@Override
-	public Object visit(Method method, SymbolTable scope) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG2");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
-	@Override
 	public Object visit(VirtualMethod method, SymbolTable scope) {
 		return visitMethod(method, scope);
 	}
@@ -159,15 +149,6 @@ public class SymbolTableBuilder implements
 	public Object visit(Assignment assignment, SymbolTable scope) {
 		assignment.setEnclosingScope(scope);
 
-		// TODO: handle variable initialization issues. (BONUS)
-		/**
-		 * if (assignment.getVariable() instanceof VariableLocation) {
-		 * VariableLocation location = (VariableLocation) assignment
-		 * .getVariable(); if (!location.isExternal()) { try { Symbol var =
-		 * scope.lookup(location.getName()); if (var.getKind() == Kind.VAR) {
-		 * ((VarSymbol) var).initialize(); } } catch (SemanticError se) {
-		 * handleSemanticError(se, location); } } }
-		 **/
 		if (assignment.getVariable().accept(this, scope) == null)
 			return null;
 
@@ -197,15 +178,6 @@ public class SymbolTableBuilder implements
 		return true;
 	}
 
-	/**
-	 * // initialize new scope (if necessary) then visit. private Object
-	 * initScopeAndvisit(Statement operation, SymbolTable scope) { if (operation
-	 * instanceof LocalVariable) { BlockSymbolTable BST = new
-	 * BlockSymbolTable(null, scope); if (operation.accept(this, BST) == null)
-	 * return null; } else { if (operation.accept(this, scope) == null) return
-	 * null; } if (operation.accept(this, scope) == null) return null; return
-	 * true; }
-	 **/
 
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
@@ -456,54 +428,4 @@ public class SymbolTableBuilder implements
 			return null;
 		return true;
 	}
-
-	@Override
-	public Object visit(Statement statement, SymbolTable context) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG1");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
-	public Object visit(Location location, SymbolTable scope) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG3");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
-	@Override
-	public Object visit(Expression expression, SymbolTable context) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG4");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
-	@Override
-	public Object visit(Type type, SymbolTable context) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG6");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
-	@Override
-	public Object visit(New newobj, SymbolTable context) {
-		try {
-			throw new SemanticError("shouldn't get here", "BUG7");
-		} catch (SemanticError se) {
-			System.out.println(se);
-		}
-		return null;
-	}
-
 }
