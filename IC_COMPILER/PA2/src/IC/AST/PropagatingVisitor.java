@@ -2,12 +2,11 @@ package IC.AST;
 
 import IC.SymbolTable.SymbolTable;
 
-public interface PropagatingVisitor<C,R> {
+public interface PropagatingVisitor<C, R> {
 
 	/**
-	 * An interface for a propagating AST visitor. 
-	 * C- is the Context type
-	 * R- is the Returned type
+	 * An interface for a propagating AST visitor. C- is the Context type R- is
+	 * the Returned type
 	 */
 
 	public R visit(Program program, C context);
@@ -15,13 +14,13 @@ public interface PropagatingVisitor<C,R> {
 	public R visit(ICClass icClass, C context);
 
 	public R visit(Field field, C context);
-	
+
 	public R visit(VirtualMethod method, C context);
 
 	public R visit(StaticMethod method, C context);
 
 	public R visit(LibraryMethod method, C context);
-	
+
 	public R visit(Formal formal, C context);
 
 	public R visit(PrimitiveType type, C context);
@@ -74,16 +73,19 @@ public interface PropagatingVisitor<C,R> {
 
 	public R visit(ExpressionBlock expressionBlock, C context);
 
-	public R visit(Method method, C context);
-
-	public R visit(Statement statement, C context);
-
-	public R visit(Location location, C context);
-
-	public R visit(Expression expression, C context);
-
-	public R visit(Type type, C context);
-	
-	public R visit(New newobj, C context);
-
+	/**
+	 * abstract Classes are not to be visited...
+	 * 
+	 * public R visit(Method method, C context);
+	 * 
+	 * public R visit(Statement statement, C context);
+	 * 
+	 * public R visit(Location location, C context);
+	 * 
+	 * public R visit(Expression expression, C context);
+	 * 
+	 * public R visit(Type type, C context);
+	 * 
+	 * public R visit(New newobj, C context);
+	 */
 }
