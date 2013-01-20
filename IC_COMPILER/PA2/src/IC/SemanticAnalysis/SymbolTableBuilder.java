@@ -33,7 +33,7 @@ public class SymbolTableBuilder implements
 				return null;
 			}
 		}
-		if(!program.getClasses().get(0).getName().equals("Library"))
+		if(!program.getClasses().get(0).isLibrary())
 		{
 			try {
 				throw new SemanticError("No Library found",GST.getID());
