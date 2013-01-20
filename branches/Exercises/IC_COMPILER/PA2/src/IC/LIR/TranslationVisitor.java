@@ -1,14 +1,97 @@
 package IC.LIR;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import IC.AST.*;
+import IC.SymbolTable.GlobalSymbolTable;
 
+public class TranslationVisitor implements
+		PropagatingVisitor<Integer, TranslationData> {
 
-public class TranslationVisitor implements PropagatingVisitor<Integer,TranslationData>{
+	private GlobalSymbolTable GST; // pointer to the global symbol table
+
+	private Map<String, ClassLayout> classLayouts = new HashMap<String, ClassLayout>(); // class
+																						// layouts
+
+	private List<String> dispatchVectors = new ArrayList<String>(); // List of classes'
+															// dispatch tables
+
+	private List<String> methodsInstructions = new ArrayList<String>(); // List of methods'
+															// LIR-instructions-code
+
+	private String mainInstructions = ""; // main method LIR-instructions-code
+
+	private int whileLabelID = 0;
+
+	public TranslationVisitor(GlobalSymbolTable root) {
+		GST = root;
+	}
+
+	private String runtimeErrMsgs = "null_ptr_exception: \"Runtime Error: Null pointer dereference!\"\n"
+			+ "out_of_bounds_exception: \"Runtime Error: Array index out of bounds!\"\n"
+			+ "negative_alloc_exception: \"Runtime Error: Array allocation with negative array size!\"\n"
+			+ "zero_division_exception: \"Runtime Error: Division by zero!\"\n\n";
+
+	private String runtimeChecks = "# Runtime checks:\n" + "__checkNullRef:\n"
+			+ "Move a,Rc1\n" + "Compare 0,Rc1\n"
+			+ "JumpTrue __checkNullRef_err\n" + "Return 9999\n"
+			+ "__checkNullRef_err:\n"
+			+ "Library __println(null_ptr_exception),Rdummy\n"
+			+ "Jump _exit\n\n" +
+
+			"__checkArrayAccess:\n" + "Move a,Rc1\n" + "Move i,Rc2\n"
+			+ "ArrayLength Rc1,Rc1\n" + "Compare Rc1,Rc2\n"
+			+ "JumpGE __checkArrayAccess_err\n" + "Compare 0,Rc2\n"
+			+ "JumpL __checkArrayAccess_err\n" + "Return 9999\n"
+			+ "__checkArrayAccess_err:\n"
+			+ "Library __println(out_of_bounds_exception),Rdummy\n"
+			+ "Jump _exit\n\n" +
+
+			"__checkSize:\n" + "Move n,Rc1\n" + "Compare 0,Rc1\n"
+			+ "JumpL __checkSize_err\n" + "Return 9999\n"
+			+ "__checkSize_err:\n"
+			+ "Library __println(negative_alloc_exception),Rdummy\n"
+			+ "Jump _exit\n\n" +
+
+			"__checkZero:\n" + "Move b,Rc1\n" + "Compare 0,Rc1\n"
+			+ "JumpTrue __checkZero_err\n" + "Return 9999\n"
+			+ "__checkZero_err:\n"
+			+ "Library __println(zero_division_exception),Rdummy\n"
+			+ "Jump _exit\n\n";
 
 	@Override
 	public TranslationData visit(Program program, Integer context) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		//create all class layouts
+		for (ICClass A : program.getClasses()) {
+
+			if (A.isLibrary())
+				continue; // library methods are provided externally
+
+			ClassLayout classLayout = A.hasSuperClass() ? 
+					new ClassLayout(A,classLayouts.get(A.getSuperClassName())) : 
+						new ClassLayout(A);
+	
+			classLayouts.put(A.getName(), classLayout);
+	
+			dispatchVectors.add(classLayout.getDispatchVector());
+		}
+		
+		// call visitor on all classes recursively
+		for (ICClass A : program.getClasses()) {
+			if (!A.isLibrary()) A.accept(this, 0);
+		}
+
+		return new TranslationData(assembleLIRProgram(), null, LIREnum.LIR_CODE);
+	}
+
+	private String assembleLIRProgram() { //should be called exactly once!
+		//TODO: complete this
+		String lirProgram = runtimeErrMsgs + runtimeChecks;
+		return lirProgram;
 	}
 
 	@Override
@@ -198,6 +281,5 @@ public class TranslationVisitor implements PropagatingVisitor<Integer,Translatio
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

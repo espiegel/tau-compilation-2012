@@ -124,7 +124,7 @@ public class Compiler {
 		LibraryParser parser = new LibraryParser(scanner);
 		try {
 			ICClass root = (ICClass) parser.parse().value;
-			if (!root.getName().equals("Library")){
+			if (!root.isLibrary()){
 				exit(EXIT5+root.getName());
 			}
 			System.out.println("Parsed " + lib_path + " successfully!");
