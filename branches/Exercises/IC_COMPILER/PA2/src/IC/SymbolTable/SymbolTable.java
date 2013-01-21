@@ -103,7 +103,7 @@ public class SymbolTable {
 				|| (isStatic() && (parent instanceof ClassSymbolTable));
 	}
 
-	private boolean isStatic() {
+	public boolean isStatic() {
 		return isStaticScope;
 	}
 

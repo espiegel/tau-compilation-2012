@@ -20,12 +20,20 @@ public class TranslationVisitor implements
 															// dispatch tables
 
 	private List<String> methodsInstructions = new ArrayList<String>(); // List of methods'
-															// LIR-instructions-code
+																		// LIR-instruction-code
 
-	private String mainInstructions = ""; // main method LIR-instructions-code
-
-	private int whileLabelID = 0;
-
+	private List<String> stringLiterals = new ArrayList<String>();
+	
+	private int loopID = 0;
+	
+	//add string literal to list-of-literals and returns it's label.
+	private String addStringLiteral(String literal){ 
+		String label = "str_"+stringLiterals.size()+": ";
+		stringLiterals.add(label+'\"'+literal+'\"');
+		return label;
+	}
+	
+	
 	public TranslationVisitor(GlobalSymbolTable root) {
 		GST = root;
 	}
@@ -63,7 +71,7 @@ public class TranslationVisitor implements
 			+ "Jump _exit\n\n";
 
 	@Override
-	public TranslationData visit(Program program, Integer context) {
+	public TranslationData visit(Program program, Integer target) {
 		
 		//create all class layouts
 		for (ICClass A : program.getClasses()) {
@@ -89,195 +97,213 @@ public class TranslationVisitor implements
 	}
 
 	private String assembleLIRProgram() { //should be called exactly once!
-		//TODO: complete this
+		
 		String lirProgram = runtimeErrMsgs + runtimeChecks;
+		
+		lirProgram += "# string literals:\n";
+		for (String literal: stringLiterals){
+			lirProgram += literal+'\n';
+		}
+       
+		lirProgram += "# dispatch vectors:\n";
+        for (String classDV: this.dispatchVectors){
+        	lirProgram += classDV+'\n';
+        }
+        
+        //add all method instructions (including main)
+        lirProgram += "# method instructions\n";
+        for (String method: methodsInstructions){
+        	lirProgram += method+"\n";
+        }
+        
+        lirProgram += "\n_exit:\n";
 		return lirProgram;
 	}
 
 	@Override
-	public TranslationData visit(ICClass icClass, Integer context) {
+	public TranslationData visit(ICClass icClass, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Field field, Integer context) {
+	public TranslationData visit(Field field, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(VirtualMethod method, Integer context) {
+	public TranslationData visit(VirtualMethod method, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(StaticMethod method, Integer context) {
+	public TranslationData visit(StaticMethod method, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(LibraryMethod method, Integer context) {
+	public TranslationData visit(LibraryMethod method, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Formal formal, Integer context) {
+	public TranslationData visit(Formal formal, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(PrimitiveType type, Integer context) {
+	public TranslationData visit(PrimitiveType type, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(UserType type, Integer context) {
+	public TranslationData visit(UserType type, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Assignment assignment, Integer context) {
+	public TranslationData visit(Assignment assignment, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(CallStatement callStatement, Integer context) {
+	public TranslationData visit(CallStatement callStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Return returnStatement, Integer context) {
+	public TranslationData visit(Return returnStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(If ifStatement, Integer context) {
+	public TranslationData visit(If ifStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(While whileStatement, Integer context) {
+	public TranslationData visit(While whileStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Break breakStatement, Integer context) {
+	public TranslationData visit(Break breakStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Continue continueStatement, Integer context) {
+	public TranslationData visit(Continue continueStatement, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public TranslationData visit(StatementsBlock statementsBlock,
-			Integer context) {
+			Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(LocalVariable localVariable, Integer context) {
+	public TranslationData visit(LocalVariable localVariable, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(VariableLocation location, Integer context) {
+	public TranslationData visit(VariableLocation location, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(ArrayLocation location, Integer context) {
+	public TranslationData visit(ArrayLocation location, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(StaticCall call, Integer context) {
+	public TranslationData visit(StaticCall call, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(VirtualCall call, Integer context) {
+	public TranslationData visit(VirtualCall call, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(This thisExpression, Integer context) {
+	public TranslationData visit(This thisExpression, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(NewClass newClass, Integer context) {
+	public TranslationData visit(NewClass newClass, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(NewArray newArray, Integer context) {
+	public TranslationData visit(NewArray newArray, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Length length, Integer context) {
+	public TranslationData visit(Length length, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(MathBinaryOp binaryOp, Integer context) {
+	public TranslationData visit(MathBinaryOp binaryOp, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(LogicalBinaryOp binaryOp, Integer context) {
+	public TranslationData visit(LogicalBinaryOp binaryOp, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(MathUnaryOp unaryOp, Integer context) {
+	public TranslationData visit(MathUnaryOp unaryOp, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(LogicalUnaryOp unaryOp, Integer context) {
+	public TranslationData visit(LogicalUnaryOp unaryOp, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public TranslationData visit(Literal literal, Integer context) {
+	public TranslationData visit(Literal literal, Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public TranslationData visit(ExpressionBlock expressionBlock,
-			Integer context) {
+			Integer target) {
 		// TODO Auto-generated method stub
 		return null;
 	}

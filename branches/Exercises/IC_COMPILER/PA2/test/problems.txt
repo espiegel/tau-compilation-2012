@@ -14,10 +14,12 @@ int bar(){}
 class A extends C{
 	int y;
 	int z;
-         B foo() {}
+         B foo() {
+         	B test = new B();}
          int bar(){}
   }
-  class B { static void main (string[] args) {}}
+  class B { 
+  static void main (string[] args) {}}
 
 /*  doesn't work.... */
 
