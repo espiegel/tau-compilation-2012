@@ -21,6 +21,15 @@ public abstract class ASTNode {
 	 * @return A value propagated by the visitor.
 	 */
 	public abstract Object accept(Visitor visitor);
+	
+	/**
+	 * Double dispatch method, to allow a visitor to visit a specific subclass.
+	 * 
+	 * @param visitor
+	 *            The visitor. The context object
+	 * @return A value propagated by the visitor.
+	 */
+	public abstract Object accept(PropagatingVisitor visitor, Object context);
 
 	/**
 	 * Constructs an AST node corresponding to a line number in the original

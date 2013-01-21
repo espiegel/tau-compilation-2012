@@ -39,8 +39,7 @@ public class ArrayLocation extends Location {
 		return index;
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 }

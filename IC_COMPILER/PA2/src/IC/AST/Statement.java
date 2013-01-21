@@ -20,6 +20,4 @@ public abstract class Statement extends ASTNode {
 		super(line);
 	}
 
-	public abstract Object accept(
-			PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable context);
 }

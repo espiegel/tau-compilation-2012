@@ -39,8 +39,7 @@ public class NewArray extends New {
 		return size;
 	}
 
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 }

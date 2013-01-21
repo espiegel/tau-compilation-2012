@@ -30,8 +30,7 @@ public class LibraryMethod extends Method {
 		super(type, name, formals, new ArrayList<Statement>());
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 }

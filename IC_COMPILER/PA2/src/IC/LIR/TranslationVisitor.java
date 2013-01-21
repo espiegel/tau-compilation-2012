@@ -17,14 +17,18 @@ public class TranslationVisitor implements
 																						// layouts
 
 	private List<String> dispatchVectors = new ArrayList<String>(); // List of classes'
-															// dispatch tables
+																	// dispatch tables
 
 	private List<String> methodsInstructions = new ArrayList<String>(); // List of methods'
 																		// LIR-instruction-code
 
 	private List<String> stringLiterals = new ArrayList<String>();
 	
-	private int loopID = 0;
+	private int loopId = 0;
+	
+	private String getLoopLabel(){
+		return "_loop_"+(loopId++)+": ";
+	}
 	
 	//add string literal to list-of-literals and returns it's label.
 	private String addStringLiteral(String literal){ 
@@ -90,10 +94,10 @@ public class TranslationVisitor implements
 		
 		// call visitor on all classes recursively
 		for (ICClass A : program.getClasses()) {
-			if (!A.isLibrary()) A.accept(this, 0);
+			if (!A.isLibrary()) A.accept(this, -1);
 		}
 
-		return new TranslationData(assembleLIRProgram(), null, LIREnum.LIR_CODE);
+		return new TranslationData(assembleLIRProgram(), null, LIREnum.NONE);
 	}
 
 	private String assembleLIRProgram() { //should be called exactly once!
@@ -122,8 +126,16 @@ public class TranslationVisitor implements
 
 	@Override
 	public TranslationData visit(ICClass icClass, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+        // set current class name
+        //currClassName = icClass.getName();
+        
+        // recursive calls to methods
+        for(Method method: icClass.getMethods()){
+                method.accept(this,-1);
+                // each method will be responsible to insert its string rep. to the methods list
+        }
+
+        return new TranslationData(null, null,LIREnum.NONE);
 	}
 
 	@Override

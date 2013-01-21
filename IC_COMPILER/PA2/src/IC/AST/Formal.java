@@ -40,9 +40,9 @@ public class Formal extends ASTNode {
 	public String getName() {
 		return name;
 	}
-
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable scope) {
-		return visitor.visit(this,scope);
+	
+	public Object accept(PropagatingVisitor visitor,Object context) {
+		return visitor.visit(this, context);
 	}
 
 }

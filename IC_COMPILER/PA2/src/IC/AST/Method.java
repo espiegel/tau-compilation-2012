@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.LIR.TranslationData;
+import IC.LIR.TranslationVisitor;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -56,10 +58,7 @@ public abstract class Method extends ASTNode {
 		return statements;
 	}
 
-	public abstract Object accept(
-			PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable context);
-
 	public boolean isStatic() {
 		return (this instanceof VirtualMethod ? false : true);
-	}
+	}		
 }

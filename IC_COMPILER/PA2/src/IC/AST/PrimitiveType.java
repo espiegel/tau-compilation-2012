@@ -33,8 +33,7 @@ public class PrimitiveType extends Type {
 		return type.getDescription();
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 }
