@@ -4,7 +4,6 @@ import java.util.List;
 
 import IC.LIR.TranslationData;
 import IC.LIR.TranslationVisitor;
-import IC.SymbolTable.SymbolTable;
 
 /**
  * Class declaration AST node.
@@ -85,18 +84,12 @@ public class ICClass extends ASTNode {
 		return methods;
 	}
 
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 	
 	public boolean isLibrary(){
 		return getName().equals("Library");
-	}
-
-	public TranslationData accept(TranslationVisitor translationVisitor, int i) {
-		return translationVisitor.visit(this,i);
-		
 	}
 
 }

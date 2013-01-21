@@ -65,9 +65,7 @@ public class LocalVariable extends Statement {
 		return initValue;
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
-
 }

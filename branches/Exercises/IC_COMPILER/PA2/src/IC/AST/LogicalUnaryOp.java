@@ -26,8 +26,7 @@ public class LogicalUnaryOp extends UnaryOp {
 		super(operator, operand);
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
 

@@ -20,7 +20,4 @@ public abstract class Location extends Expression {
 		super(line);
 	}
 
-	public abstract Object accept(
-			PropagatingVisitor<SymbolTable, Object> visitor, SymbolTable context);
-
 }

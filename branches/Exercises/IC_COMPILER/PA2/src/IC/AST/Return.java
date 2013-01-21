@@ -46,9 +46,7 @@ public class Return extends Statement {
 		return value;
 	}
 	
-	public Object accept(PropagatingVisitor<SymbolTable, Object> visitor,
-			SymbolTable context) {
+	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
-
 }

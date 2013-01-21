@@ -6,6 +6,12 @@ public class TranslationData {
 	private String resultRegister;	//when translating composite expressions. stores intermediate values
 	private LIREnum translationType; //stores the type of translation performed
 	
+	public TranslationData(String instructions, int register,LIREnum type){
+		this.setLIRInstructions(instructions);
+		this.setTargetRegister("R"+register);
+		this.setTranslationType(type);
+	}
+	
 	public TranslationData(String instructions, String register,LIREnum type){
 		this.setLIRInstructions(instructions);
 		this.setTargetRegister(register);
