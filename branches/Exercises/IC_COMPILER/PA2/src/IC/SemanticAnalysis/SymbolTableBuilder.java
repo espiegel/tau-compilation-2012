@@ -12,7 +12,7 @@ public class SymbolTableBuilder implements
 
 	private Object handleSemanticError(SemanticError se, ASTNode node) {
 		se.setLine(node.getLine());
-		System.out.println(se);
+		System.err.println(se);
 		// se.printStackTrace();
 		return null;
 	}
@@ -46,7 +46,7 @@ public class SymbolTableBuilder implements
 			try {
 				TypeTable.addClassType(C);
 			} catch (SemanticError se) {
-				handleSemanticError(se,C);
+				return handleSemanticError(se,C);
 			}
 		}
 		for (ICClass C : program.getClasses()) {
@@ -263,7 +263,7 @@ public class SymbolTableBuilder implements
 				throw new SemanticError("symbol cannot be resolved",
 						location.getName());
 			} catch (SemanticError se) {
-				handleSemanticError(se, location);
+				return handleSemanticError(se, location);
 			}
 		}
 
