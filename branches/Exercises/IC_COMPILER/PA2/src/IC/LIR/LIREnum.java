@@ -1,6 +1,7 @@
 package IC.LIR;
 
-public enum LIREnum {
+public enum LIREnum { 
+	//defines the action required by the calling method
 	
 	NONE,
 	LITERAL,

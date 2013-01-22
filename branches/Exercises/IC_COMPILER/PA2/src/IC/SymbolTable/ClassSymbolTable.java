@@ -51,8 +51,9 @@ public class ClassSymbolTable extends SymbolTable {
 	 */
 	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
-		MethodSymbol MS = new MethodSymbol(method);
-
+		MethodSymbol ms = new MethodSymbol(method);
+		if (ms.isMain()) method.setMain();
+		
 		// already exist
 		if (sym != null) {
 			if (sym.getKind() != Kind.METHOD)
@@ -60,24 +61,24 @@ public class ClassSymbolTable extends SymbolTable {
 						"multiple definitions for symbol in class hierarchy",
 						method.getName(),method.getLine());
 
-			if (sym.getType() != MS.getType())
+			if (sym.getType() != ms.getType())
 				throw new SemanticError("Overloading is not allowed",
 						method.getName(),method.getLine());
 
 			boolean a = ((MethodSymbol) sym).isStatic();
-			boolean b = MS.isStatic();
+			boolean b = ms.isStatic();
 			if ((a && !b) || (!a && b))
 				throw new SemanticError(
 						"overriding mixing static and dynamic methods is not allowed",
 						method.getName(),method.getLine());
 
 		}
-		this.insert(MS); // will also update TypeTable
-		if (MS.isMain()) {
+		this.insert(ms); // will also update TypeTable
+		if (ms.isMain()) {
 			if (SymbolTableBuilder.GST.hasMain()) {
 				throw new SemanticError("program already has main()", getID());
 			} else {
-				SymbolTableBuilder.GST.setMain(MS);
+				SymbolTableBuilder.GST.setMain(ms);
 			}
 		}
 

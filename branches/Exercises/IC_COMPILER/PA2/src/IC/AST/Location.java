@@ -1,7 +1,5 @@
 package IC.AST;
 
-import IC.SymbolTable.SymbolTable;
-import IC.SemanticAnalysis.SymbolTableBuilder;
 
 /**
  * Abstract base class for variable reference AST nodes.
