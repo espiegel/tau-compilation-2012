@@ -9,17 +9,31 @@ int simple1(){
 	{int j; }}
 }
 static void simple2(){}
-int bar(){}
+string bar(){}
 }
 class A extends C{
 	int y;
 	int z;
          B foo() {
-         	B test = new B();}
-         int bar(){}
+         	B test = new B();
+         	return test;}
+         string bar(){
+         return "good";}
   }
   class B { 
-  static void main (string[] args) {}}
+  int z;
+  A bar (string s){
+  	return new A();
+  }
+ 
+  static void main (string[] args) {
+  int j;
+  B b = new B();
+  string s1 = "john";
+  string s = b.bar("Paul").bar();
+  
+  }
+  }
 
 /*  doesn't work.... */
 

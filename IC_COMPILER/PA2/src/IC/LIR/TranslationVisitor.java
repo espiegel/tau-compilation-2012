@@ -367,17 +367,15 @@ public class TranslationVisitor implements
 
 	@Override
 	public TranslationData visit(VariableLocation location, Integer target) {
-        String tr = "";
+        String lirCode = "";
         
         if (location.isExternal()){
-                // translate the location
-                LIRUpType loc = location.getLocation().accept(this, d);
-                // add code to translation
-                tr += loc.getLIRCode();
+        	//in case location is composite expression, obtain it's code recursively
+        	TranslationData locationCode = (TranslationData) location.getLocation().accept(this, target);
+            lirCode += locationCode.getLIRCode();
                 
-                // get the ClassLayout for the location
-                IC.TypeTable.Type locationClassType = 
-                        (IC.TypeTable.Type)location.getLocation().accept(new IC.Visitors.DefTypeSemanticChecker(global));
+                IC.TypeTable.Type classType = 
+                        (IC.TypeTable.Type)location.getLocation().accept(new IC.SemanticAnalysis.SemanticChecker(GST));
                 ClassLayout locationClassLayout = classLayouts.get(locationClassType.getName());
                 
                 // get the field offset for the variable
@@ -387,14 +385,14 @@ public class TranslationVisitor implements
                 int fieldOffset = locationClassLayout.getFieldOffset(f);
                 
                 // translate this step
-                tr += getMoveCommand(loc.getLIRInstType());
-                String locReg = "R"+d;
-                tr += loc.getTargetRegister()+","+locReg+"\n";
+                lirCode += getMoveCommand(loc.getLIRInstType());
+                String locReg = "R"+target;
+                lirCode += loc.getTargetRegister()+","+locReg+"\n";
                 
                 // check external location null reference
-                tr += "StaticCall __checkNullRef(a=R"+d+"),Rdummy\n";
+                lirCode += "StaticCall __checkNullRef(a=R"+target+"),Rdummy\n";
                 
-                return new LIRUpType(tr, LIRFlagEnum.EXT_VAR_LOCATION, locReg+"."+fieldOffset);
+                return new TranslationData(lirCode, LIRFlagEnum.EXT_VAR_LOCATION, locReg+"."+fieldOffset);
         }else{
                 // check if the variable is a field
                 if (((BlockSymbolTable)location.getEnclosingScope()).isVarField(location.getName())){
@@ -408,15 +406,15 @@ public class TranslationVisitor implements
                         // get the field offset
                         int fieldOffset = locationClassLayout.getFieldOffset(f);
                         
-                        tr += "Move this,R"+d+"\n";
-                        String tgtLoc = "R"+d+"."+fieldOffset;
+                        lirCode += "Move this,R"+target+"\n";
+                        String tgtLoc = "R"+target+"."+fieldOffset;
                         
                         // translate only the variable name
-                        return new LIRUpType(tr,LIRFlagEnum.EXT_VAR_LOCATION,tgtLoc);
+                        return new TranslationData(lirCode,LIRFlagEnum.EXT_VAR_LOCATION,tgtLoc);
 
                 } else {
                         // translate only the variable name
-                        return new LIRUpType("",LIRFlagEnum.LOC_VAR_LOCATION,location.getNameDepth());
+                        return new TranslationData("",LIRFlagEnum.LOC_VAR_LOCATION,location.getNameDepth());
                 }
         }
 	}
