@@ -1,6 +1,5 @@
 package IC.AST;
 
-import IC.SymbolTable.SymbolTable;
 
 /**
  * Abstract base class for expression AST nodes.
@@ -8,6 +7,8 @@ import IC.SymbolTable.SymbolTable;
  * @author Tovi Almozlino
  */
 public abstract class Expression extends ASTNode {
+	
+	protected IC.TypeTable.Type type;
 
 	/**
 	 * Constructs a new expression node. Used by subclasses.
@@ -17,6 +18,14 @@ public abstract class Expression extends ASTNode {
 	 */
 	protected Expression(int line) {
 		super(line);
+	}
+	
+	public IC.TypeTable.Type getExprType() {
+		return type;
+	}
+
+	public void resolveType(IC.TypeTable.Type type){
+		this.type = type;
 	}
 	
 }

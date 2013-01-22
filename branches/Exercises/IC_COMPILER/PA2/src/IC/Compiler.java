@@ -78,8 +78,7 @@ public class Compiler {
 
 		// Couldn't construct the GST
 		if (globalSymbolTable == null) {
-			System.err.println("Error constructing global symbol table!");
-			System.exit(-1);
+			exit("Error constructing global symbol table!");
 		}
 
 		// Print ast
@@ -114,7 +113,7 @@ public class Compiler {
 
 	private static void exit(String msg) {
 		System.out.println(msg);
-		System.exit(1);
+		System.exit(-1);
 	}
 
 	private static ICClass parseLibrary() throws IOException {

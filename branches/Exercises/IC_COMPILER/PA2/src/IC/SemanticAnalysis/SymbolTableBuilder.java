@@ -237,11 +237,12 @@ public class SymbolTableBuilder implements
 	public Object visit(LocalVariable localVariable, SymbolTable scope) {
 		localVariable.setEnclosingScope(scope);
 		try {
-			((BlockSymbolTable) scope).addLoclVar(localVariable);
 			if (localVariable.hasInitValue()) {
 				if (localVariable.getInitValue().accept(this, scope) == null)
 					return null;
 			}
+			// add local variable symbol only after visiting initValue.
+			((BlockSymbolTable) scope).addLoclVar(localVariable); 
 		} catch (SemanticError se) {
 			return handleSemanticError(se, localVariable);
 		}

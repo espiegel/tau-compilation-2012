@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TypeTable.*;
+
 
 /**
  * Abstract base class for variable reference AST nodes.
@@ -7,6 +9,7 @@ package IC.AST;
  * @author Tovi Almozlino
  */
 public abstract class Location extends Expression {
+	
 
 	/**
 	 * Constructs a new variable reference node. Used by subclasses.
@@ -17,5 +20,5 @@ public abstract class Location extends Expression {
 	protected Location(int line) {
 		super(line);
 	}
-
+	
 }
