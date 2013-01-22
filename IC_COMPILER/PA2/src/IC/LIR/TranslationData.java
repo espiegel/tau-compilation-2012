@@ -2,43 +2,40 @@ package IC.LIR;
 
 
 public class TranslationData {
-	private String LIRInstructions; //stores translated LIR instructions
+	private String LIRCode; //stores translated LIR instructions
 	private String resultRegister;	//when translating composite expressions. stores intermediate values
-	private LIREnum translationType; //stores the type of translation performed
 	
-	public TranslationData(String instructions, int register,LIREnum type){
-		this.setLIRInstructions(instructions);
-		this.setTargetRegister("R"+register);
-		this.setTranslationType(type);
+	public TranslationData(){
+		this(null,null);
+	} 
+	
+	public TranslationData(String LIRcode) {
+		this(LIRcode,null);
 	}
 	
-	public TranslationData(String instructions, String register,LIREnum type){
-		this.setLIRInstructions(instructions);
-		this.setTargetRegister(register);
-		this.setTranslationType(type);
+	public TranslationData(String instructions, int register){
+		this(instructions,"R"+register);
+	}
+	
+	public TranslationData(String instructions, String register){
+		this.setLIRCode(instructions);
+		this.setResultRegister(register);
 	}
 
-	public String getLIRInstructions() {
-		return LIRInstructions;
+	public String getLIRCode() {
+		return LIRCode;
 	}
 
-	public void setLIRInstructions(String instructions) {
-		LIRInstructions = instructions;
+	public void setLIRCode(String instructions) {
+		LIRCode = instructions;
 	}
 
-	public String getTargetRegister() {
+	public String getResultRegister() {
 		return resultRegister;
 	}
 
-	public void setTargetRegister(String register) {
+	public void setResultRegister(String register) {
 		this.resultRegister = register;
 	}
 
-	public LIREnum getTranslationType() {
-		return translationType;
-	}
-
-	public void setTranslationType(LIREnum translationType) {
-		this.translationType = translationType;
-	}
 }

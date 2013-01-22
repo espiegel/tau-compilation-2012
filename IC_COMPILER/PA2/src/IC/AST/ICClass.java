@@ -2,9 +2,6 @@ package IC.AST;
 
 import java.util.List;
 
-import IC.LIR.TranslationData;
-import IC.LIR.TranslationVisitor;
-
 /**
  * Class declaration AST node.
  * 

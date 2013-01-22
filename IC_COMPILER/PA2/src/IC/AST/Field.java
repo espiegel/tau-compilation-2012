@@ -1,8 +1,5 @@
 package IC.AST;
 
-import IC.SymbolTable.ClassSymbolTable;
-import IC.SymbolTable.SymbolTable;
-
 /**
  * Class field AST node.
  * 

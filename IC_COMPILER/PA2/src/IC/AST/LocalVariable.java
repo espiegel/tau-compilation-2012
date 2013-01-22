@@ -68,4 +68,8 @@ public class LocalVariable extends Statement {
 	public Object accept(PropagatingVisitor visitor,Object context) {
 		return visitor.visit(this, context);
 	}
+	
+	public String getUniqueName(){
+		return getName()+getEnclosingScope().getDepth();
+	}
 }

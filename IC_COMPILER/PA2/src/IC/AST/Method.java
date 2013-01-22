@@ -2,9 +2,6 @@ package IC.AST;
 
 import java.util.List;
 
-import IC.LIR.TranslationData;
-import IC.LIR.TranslationVisitor;
-import IC.SymbolTable.SymbolTable;
 
 /**
  * Abstract base class for method AST nodes.
@@ -20,6 +17,9 @@ public abstract class Method extends ASTNode {
 	protected List<Formal> formals;
 
 	protected List<Statement> statements;
+	
+	private boolean isMain = false;
+
 
 	/**
 	 * Constructs a new method node. Used by subclasses.
@@ -60,5 +60,13 @@ public abstract class Method extends ASTNode {
 
 	public boolean isStatic() {
 		return (this instanceof VirtualMethod ? false : true);
-	}		
+	}	
+	
+	public boolean isMain(){
+		return this.isMain;
+	}
+	
+	public void setMain(){
+		isMain = true;
+	}
 }

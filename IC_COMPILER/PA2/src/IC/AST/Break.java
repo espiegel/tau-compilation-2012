@@ -1,7 +1,5 @@
 package IC.AST;
 
-import IC.SymbolTable.SymbolTable;
-
 /**
  * Break statement AST node.
  * 

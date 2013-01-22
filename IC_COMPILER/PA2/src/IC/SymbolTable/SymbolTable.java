@@ -21,15 +21,8 @@ public class SymbolTable {
 		this.depth = (parent == null ? 0 : parent.depth + 1);
 		this.parent = parent;
 		this.entries = new LinkedHashMap<String, Symbol>();
-		this.isStaticScope = (parent == null ? false : parent.isStatic()); // global
-																			// scope
-																			// is
-																			// false
-																			// to
-																			// prevent
-																			// static
-																			// from
-																			// propagating.
+		this.isStaticScope = (parent == null ? false : parent.isStatic()); 
+							//must not be static==true (will propagate down to all levels)
 	}
 
 	public SymbolTable getParent() {
@@ -107,7 +100,6 @@ public class SymbolTable {
 		return isStaticScope;
 	}
 
-	// TODO: complete this
 	public String toString() {
 		String str = "";
 

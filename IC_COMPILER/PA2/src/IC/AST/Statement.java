@@ -1,8 +1,5 @@
 package IC.AST;
 
-import IC.SymbolTable.MethodSymbolTable;
-import IC.SymbolTable.SymbolTable;
-
 /**
  * Abstract base class for statement AST nodes.
  * 
