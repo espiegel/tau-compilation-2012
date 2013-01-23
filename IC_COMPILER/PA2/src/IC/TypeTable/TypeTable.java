@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import IC.DataTypes;
 import IC.AST.Formal;
 import IC.AST.ICClass;
 import IC.AST.Method;
@@ -160,6 +161,24 @@ public class TypeTable {
 					+ "\n";
 
 		return str;
+	}
+
+	public static Type getPrimitiveType(DataTypes T) {
+		switch(T){
+		case INT:
+			return intType;
+		case STRING:
+			return stringType;	
+		case NULL:
+			return nullType;
+		case BOOLEAN:
+			return boolType;
+		case VOID:
+			return voidType;
+		default:
+			return null;
+		}
+		
 	}
 
 }
