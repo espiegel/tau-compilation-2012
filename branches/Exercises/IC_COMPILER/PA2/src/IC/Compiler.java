@@ -3,6 +3,8 @@ package IC;
 import java.io.*;
 import IC.AST.*;
 import IC.LIR.ClassLayout;
+import IC.LIR.TranslationData;
+import IC.LIR.TranslationVisitor;
 import IC.Parser.*;
 import IC.SemanticAnalysis.SemanticChecker;
 import IC.SemanticAnalysis.SymbolTableBuilder;
@@ -103,11 +105,15 @@ public class Compiler {
 		} else
 			System.out.println("Semantic check passed sucessfully");
 		
+		
 		/*begin tests for PA4 */
-		ClassLayout C = new ClassLayout(program.getClasses().get(1));
+		/*ClassLayout C = new ClassLayout(program.getClasses().get(1));
 		ClassLayout A = new ClassLayout(program.getClasses().get(2),C);
 		System.out.println(C);
-		System.out.println(A);
+		System.out.println(A);*/
+		
+		TranslationVisitor tv = new TranslationVisitor(program_path);
+		System.out.println(((TranslationData)program.accept(tv,1)).getLIRCode());
 		/*end tests for PA4 */
 	}
 

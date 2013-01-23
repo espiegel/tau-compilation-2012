@@ -7,7 +7,7 @@ public class TranslationData {
 	private MoveInstEnum moveInstruction; // to determine which LIR move instruction to use
 	
 	public TranslationData(){
-		this(null,null,MoveInstEnum.DEFAULT);
+		this("","",MoveInstEnum.DEFAULT);
 	} 
 	
 	public TranslationData(String LIRcode, String register) {
@@ -15,7 +15,7 @@ public class TranslationData {
 	}
 	
 	public TranslationData(String LIRcode) {
-		this(LIRcode,null,MoveInstEnum.DEFAULT);
+		this(LIRcode,"",MoveInstEnum.DEFAULT);
 	}
 	
 	/*public TranslationData(String instructions, int register, MoveInstEnum moveInst){
