@@ -5,14 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import IC.BinaryOps;
 import IC.AST.*;
+import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.ClassSymbolTable;
-import IC.SymbolTable.GlobalSymbolTable;
 
-public class TranslationVisitor implements
-		PropagatingVisitor<Integer, TranslationData> {
-
-	private GlobalSymbolTable GST; // pointer to the global symbol table
+public class TranslationVisitor implements PropagatingVisitor<Integer, TranslationData> {
 
 	private Map<String, ClassLayout> classLayouts = new HashMap<String, ClassLayout>(); // class
 																						// layouts
@@ -28,24 +26,20 @@ public class TranslationVisitor implements
 
 	private List<String> stringLiterals = new ArrayList<String>();
 
-	private String _continue_jump_label;
-	private String _break_jump_label;
+	private String continue_jump_label;
+	private String break_jump_label;
 
 	private int labelId = 0;
 
 	private String getUniqueLabel() {
-		return "_label_" + (labelId++);
+		return "_" + (labelId++);
 	}
 
 	// add string literal to list-of-literals and returns it's label.
 	private String addStringLiteral(String literal) {
-		String label = "str_" + stringLiterals.size() + ": ";
-		stringLiterals.add(label + '\"' + literal + '\"');
+		String label = "str_" + stringLiterals.size();
+		stringLiterals.add(label + ": " + '\"' + literal + '\"');
 		return label;
-	}
-
-	public TranslationVisitor(GlobalSymbolTable root) {
-		GST = root;
 	}
 
 	private String runtimeErrMsgs = "null_ptr_exception: \"Runtime Error: Null pointer dereference!\"\n"
@@ -206,16 +200,8 @@ public class TranslationVisitor implements
 		return null;
 	}
 
-	private String getMoveInst(ASTNode node) {
-		if (node instanceof ArrayLocation) {
-			return "MoveArray ";
-		} else if (node instanceof VariableLocation) {
-			VariableLocation var = (VariableLocation) node;
-			if (var.isExternal()) {
-				return "MoveField ";
-			}
-		}
-		return "Move ";
+	private String getMoveInst(TranslationData data) {
+		return data.getMoveInst().getCode();
 	}
 
 	private String register(int i) {
@@ -226,19 +212,19 @@ public class TranslationVisitor implements
 	public TranslationData visit(Assignment assignment, Integer target) {
 		String lirCode = "";
 
-		TranslationData val = (TranslationData) assignment.getAssignment()
+		TranslationData valData = (TranslationData) assignment.getAssignment()
 				.accept(this, target);
-		lirCode += val.getLIRCode();
+		lirCode += valData.getLIRCode();
 
-		lirCode += getMoveInst(assignment.getAssignment());
-		lirCode += val.getResultRegister() + "," + register(target) + "\n";
+		lirCode += getMoveInst(valData);
+		lirCode += valData.getResultRegister() + "," + register(target) + "\n";
 
-		TranslationData var = (TranslationData) assignment.getVariable()
+		TranslationData varData = (TranslationData) assignment.getVariable()
 				.accept(this, target + 1);
-		lirCode += var.getLIRCode();
+		lirCode += varData.getLIRCode();
 
-		lirCode += getMoveInst(assignment.getVariable());
-		lirCode += register(target) + "," + var.getResultRegister() + "\n";
+		lirCode += getMoveInst(varData);
+		lirCode += register(target) + "," + varData.getResultRegister() + "\n";
 
 		return new TranslationData(lirCode);
 	}
@@ -266,53 +252,54 @@ public class TranslationVisitor implements
 	@Override
 	public TranslationData visit(If ifStatement, Integer target) {
 		String lirCode = "";
-		String _false_label = getUniqueLabel();
-		String _end_label = getUniqueLabel();
+		String false_label = "_false_label"+getUniqueLabel();
+		String end_label = "_end_label"+getUniqueLabel();
 
 		// obtain the condition expression LIR Code recursively
-		TranslationData condition = (TranslationData) ifStatement
+		TranslationData conditionData = (TranslationData) ifStatement
 				.getCondition().accept(this, target);
-		lirCode += condition.getLIRCode();
-		lirCode += getMoveInst(ifStatement.getCondition());
-		lirCode += condition.getResultRegister() + "," + register(target)
+		lirCode += conditionData.getLIRCode();
+		lirCode += getMoveInst(conditionData);
+		lirCode += conditionData.getResultRegister() + "," + register(target)
 				+ "\n";
 
 		lirCode += "Compare 0," + register(target) + "\n"; // check if condition
 															// is false
-		if (ifStatement.hasElse())
-			lirCode += "JumpTrue " + _false_label + "\n";
-		else
-			lirCode += "JumpTrue " + _end_label + "\n";
+		if (ifStatement.hasElse()) {
+			lirCode += "JumpTrue " + false_label + "\n";
+		} else {
+			lirCode += "JumpTrue " + end_label + "\n";
+		}
 
 		TranslationData thenBlock = (TranslationData) ifStatement
 				.getOperation().accept(this, target);
 		lirCode += thenBlock.getLIRCode();
 
 		if (ifStatement.hasElse()) {
-			lirCode += "Jump " + _end_label + "\n";
+			lirCode += "Jump " + end_label + "\n";
 
-			lirCode += _false_label + ":\n";
+			lirCode += false_label + ":\n";
 			TranslationData elseBlock = (TranslationData) ifStatement
 					.getElseOperation().accept(this, target);
 			lirCode += elseBlock.getLIRCode();
 		}
 
-		lirCode += _end_label + ":\n";
+		lirCode += end_label + ":\n";
 		return new TranslationData(lirCode);
 	}
 
 	@Override
 	public TranslationData visit(While whileStatement, Integer target) {
 		String lirCode = "";
-		String _while_cond_label = _continue_jump_label = getUniqueLabel();
-		String _end_label = _break_jump_label = getUniqueLabel();
+		String _while_cond_label = continue_jump_label = "_continue_jump_label"+getUniqueLabel();
+		String _end_label = break_jump_label = "_break_jump_label"+getUniqueLabel();
 
 		lirCode += _while_cond_label + ":\n";
-		TranslationData condition = (TranslationData) whileStatement
+		TranslationData conditionData = (TranslationData) whileStatement
 				.getCondition().accept(this, target);
-		lirCode += condition.getLIRCode();
-		lirCode += getMoveInst(whileStatement.getCondition());
-		lirCode += condition.getResultRegister() + "," + register(target)
+		lirCode += conditionData.getLIRCode();
+		lirCode += getMoveInst(conditionData);
+		lirCode += conditionData.getResultRegister() + "," + register(target)
 				+ "\n";
 
 		lirCode += "Compare 0," + register(target) + "\n";
@@ -328,12 +315,12 @@ public class TranslationVisitor implements
 
 	@Override
 	public TranslationData visit(Break breakStatement, Integer target) {
-		return new TranslationData("Jump " + _break_jump_label + '\n');
+		return new TranslationData("Jump " + break_jump_label + '\n');
 	}
 
 	@Override
 	public TranslationData visit(Continue continueStatement, Integer target) {
-		return new TranslationData("Jump " + _continue_jump_label + '\n');
+		return new TranslationData("Jump " + continue_jump_label + '\n');
 	}
 
 	@Override
@@ -353,13 +340,15 @@ public class TranslationVisitor implements
 		String lirCode = "";
 
 		if (localVariable.hasInitValue()) {
-			TranslationData init = (TranslationData) localVariable
+			TranslationData initData = (TranslationData) localVariable
 					.getInitValue().accept(this, target);
-			lirCode += init.getLIRCode();
-			lirCode += getMoveInst(localVariable.getInitValue());
-			lirCode += init.getResultRegister() + "," + register(target) + "\n";
+			lirCode += initData.getLIRCode();
+			lirCode += getMoveInst(initData);
+			lirCode += initData.getResultRegister() + "," + register(target)
+					+ "\n";
 			lirCode += "Move " + register(target) + ","
-					+ localVariable.getUniqueName() + "\n";
+					+ getUniqueName(localVariable, localVariable.getName())
+					+ "\n";
 		}
 
 		return new TranslationData(lirCode);
@@ -367,134 +356,422 @@ public class TranslationVisitor implements
 
 	@Override
 	public TranslationData visit(VariableLocation location, Integer target) {
-        String lirCode = "";
-        
-        if (location.isExternal()){
-        	//in case location is composite expression, obtain it's code recursively
-        	TranslationData locationCode = (TranslationData) location.getLocation().accept(this, target);
-            lirCode += locationCode.getLIRCode();
-                
-                IC.TypeTable.Type classType = 
-                        (IC.TypeTable.Type)location.getLocation().accept(new IC.SemanticAnalysis.SemanticChecker(GST));
-                ClassLayout locationClassLayout = classLayouts.get(locationClassType.getName());
-                
-                // get the field offset for the variable
-                Field f = getFieldASTNodeRec(locationClassLayout.getICClass(), location.getName());
-                
-                // get the field offset
-                int fieldOffset = locationClassLayout.getFieldOffset(f);
-                
-                // translate this step
-                lirCode += getMoveCommand(loc.getLIRInstType());
-                String locReg = "R"+target;
-                lirCode += loc.getTargetRegister()+","+locReg+"\n";
-                
-                // check external location null reference
-                lirCode += "StaticCall __checkNullRef(a=R"+target+"),Rdummy\n";
-                
-                return new TranslationData(lirCode, LIRFlagEnum.EXT_VAR_LOCATION, locReg+"."+fieldOffset);
-        }else{
-                // check if the variable is a field
-                if (((BlockSymbolTable)location.getEnclosingScope()).isVarField(location.getName())){
-                        String thisClassName = ((BlockSymbolTable)location.getEnclosingScope()).getEnclosingClassSymbolTable().getMySymbol().getName();
-                        
-                        ClassLayout locationClassLayout = classLayouts.get(thisClassName);
-                        
-                        // get the field offset for the variable
-                        Field f = getFieldASTNodeRec(locationClassLayout.getICClass(), location.getName());
-                        
-                        // get the field offset
-                        int fieldOffset = locationClassLayout.getFieldOffset(f);
-                        
-                        lirCode += "Move this,R"+target+"\n";
-                        String tgtLoc = "R"+target+"."+fieldOffset;
-                        
-                        // translate only the variable name
-                        return new TranslationData(lirCode,LIRFlagEnum.EXT_VAR_LOCATION,tgtLoc);
+		String lirCode = "";
 
-                } else {
-                        // translate only the variable name
-                        return new TranslationData("",LIRFlagEnum.LOC_VAR_LOCATION,location.getNameDepth());
-                }
-        }
+		if (location.isExternal()) {
+			// in case location is composite expression, obtain it's code
+			// recursively
+			TranslationData locationData = (TranslationData) location
+					.getLocation().accept(this, target);
+			lirCode += locationData.getLIRCode();
+
+			String className = location.getLocation().getExprType().getName();
+			ClassLayout classLayout = classLayouts.get(className);
+
+			int offset = classLayout.getFieldOffset(location.getName());
+
+			lirCode += getMoveInst(locationData);
+			lirCode += locationData.getResultRegister() + ","
+					+ register(target) + "\n";
+
+			lirCode += "StaticCall __checkNullRef(a=" + register(target)
+					+ "),Rdummy\n";
+
+			return new TranslationData(lirCode,
+					register(target) + "." + offset, MoveInstEnum.MOVE_FIELD);
+		} else {
+			BlockSymbolTable bst = (BlockSymbolTable) location
+					.getEnclosingScope();
+
+			if (bst.isField(location.getName())) {
+				String className = bst.getEnclosingCST().getThis().getID();
+				ClassLayout classLayout = classLayouts.get(className);
+
+				int offset = classLayout.getFieldOffset(location.getName());
+
+				lirCode += "Move this," + register(target) + "\n";
+
+				return new TranslationData(lirCode, register(target) + "."
+						+ offset, MoveInstEnum.MOVE_FIELD);
+
+			} else {
+				// translate variable name to unique memory location identifier
+				return new TranslationData(getUniqueName(location,
+						location.getName()));
+			}
+		}
 	}
 
 	@Override
 	public TranslationData visit(ArrayLocation location, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = "";
+
+		TranslationData arrayData = (TranslationData) location.getArray()
+				.accept(this, target);
+		lirCode += arrayData.getLIRCode();
+
+		lirCode += getMoveInst(arrayData);
+		lirCode += arrayData.getResultRegister() + "," + register(target)
+				+ "\n";
+
+		lirCode += "StaticCall __checkNullRef(a=" + register(target)
+				+ "),Rdummy\n";
+
+		TranslationData indexData = (TranslationData) location.getIndex()
+				.accept(this, target + 1);
+		lirCode += indexData.getLIRCode();
+
+		lirCode += getMoveInst(indexData);
+		lirCode += indexData.getResultRegister() + "," + register(target + 1)
+				+ "\n";
+
+		lirCode += "StaticCall __checkArrayAccess(a=" + register(target)
+				+ ",i=" + register(target + 1) + "),Rdummy\n";
+
+		return new TranslationData(lirCode, register(target) + "["
+				+ register(target + 1) + "]", MoveInstEnum.MOVE_ARRAY);
+	}
+
+	private String translateArgs(Call call, int target) {
+		String lirCode = "";
+
+		// obtain arguments LIR translation recursively
+		int i = 0;
+		for (Expression arg : call.getArguments()) {
+			TranslationData argData = (TranslationData) arg.accept(this, i);
+			lirCode += "# argument #" + i + ":\n";
+			lirCode += argData.getLIRCode();
+			lirCode += getMoveInst(argData);
+			lirCode += argData.getResultRegister() + "," + register(target + i)
+					+ "\n";
+			i++;
+		}
+		return lirCode;
+	}
+
+	private TranslationData callLibraryMethod(String argsLirCode,
+			StaticCall call, Integer target) {
+
+		// will call library method with appropriate registers
+		String lirCode = argsLirCode;
+		lirCode += "Library __" + call.getName() + "(";
+		for (int i = 0; i < call.getArguments().size(); i++) {
+			lirCode += register(target + i) + ",";
+		}
+		lirCode = ClassLayout.removeComma(lirCode);
+		lirCode += ")," + register(target) + "\n";
+
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(StaticCall call, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = translateArgs(call, target);
+
+		if (call.getClassName().equals("Library")) {
+			return callLibraryMethod(lirCode, call, target);
+		}
+
+		ClassLayout thisClassLayout = classLayouts.get(call.getClassName());
+		Method method = thisClassLayout.getMethod(call.getName());
+		lirCode += "# call statement:\n";
+
+		// build method label
+		String methodLabel = "_"
+				+ ((ClassSymbolTable) method.getEnclosingScope()).getThis()
+						.getID() + "_" + call.getName();
+		lirCode += "StaticCall " + methodLabel + "(";
+
+		for (int i = 0; i < call.getArguments().size(); i++) {
+			Formal formal = method.getFormals().get(i);
+			lirCode += getUniqueName(formal, formal.getName()) + "="
+					+ register(target + i) + ",";
+		}
+		lirCode = ClassLayout.removeComma(lirCode);
+		lirCode += ")," + register(target) + "\n";
+
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(VirtualCall call, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = "# virtual call location:\n";
+
+		if (call.isExternal()) {
+			TranslationData locationData = (TranslationData) call.getLocation()
+					.accept(this, target);
+			lirCode += locationData.getLIRCode();
+			lirCode += getMoveInst(locationData);
+			lirCode += locationData.getResultRegister() + ","
+					+ register(target) + "\n";
+
+			// check null pointer dereference
+			lirCode += "StaticCall __checkNullRef(a=" + register(target)
+					+ "),Rdummy\n";
+		} else { // obviously this isn't null
+			lirCode += "Move this," + register(target) + "\n";
+		}
+
+		int i = 1;
+		for (Expression arg : call.getArguments()) {
+			TranslationData argData = (TranslationData) arg.accept(this, target
+					+ i);
+			lirCode += "# argument #" + (i - 1) + ":\n";
+			lirCode += argData.getLIRCode();
+			lirCode += getMoveInst(argData);
+			lirCode += argData.getResultRegister() + "," + register(target + i)
+					+ "\n";
+			i++;
+		}
+
+		lirCode += "VirtualCall " + register(target) + ".";
+		BlockSymbolTable bst = (BlockSymbolTable) call.getEnclosingScope();
+		String className = call.isExternal() ? call.getLocation().getExprType()
+				.getName() : bst.getEnclosingCST().getThis().getID();
+		ClassLayout classLayout = classLayouts.get(className);
+		int offset = classLayout.getMethodOffset(call.getName());
+		Method method = classLayout.getMethod(call.getName());
+
+		lirCode += offset + "(";
+		for (i = 0; i < call.getArguments().size(); i++) {
+			Formal formal = method.getFormals().get(i);
+			lirCode += getUniqueName(formal, call.getName()) + "="
+					+ register(target + i + 1) + ",";
+		}
+		lirCode = ClassLayout.removeComma(lirCode);
+
+		lirCode += ")," + register(target) + "\n";
+
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(This thisExpression, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = "Move this," + register(target) + "\n";
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(NewClass newClass, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		ClassLayout classLayout = classLayouts.get(newClass.getName());
+		String lirCode = "Library __allocateObject(" + classLayout.sizeof()
+				+ ")," + register(target) + "\n";
+		lirCode += "MoveField _DV_" + newClass.getName() + ","
+				+ register(target) + ".0\n";
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(NewArray newArray, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = "";
+		TranslationData sizeData = (TranslationData) newArray.getSize().accept(
+				this, target);
+		lirCode += sizeData.getLIRCode();
+		lirCode += getMoveInst(sizeData);
+		lirCode += sizeData.getResultRegister() + "," + register(target) + "\n";
+		lirCode += "Mul 4," + register(target) + "\n";
+		lirCode += "StaticCall __checkSize(n=" + register(target)
+				+ "),Rdummy\n";
+		lirCode += "Library __allocateArray(" + register(target) + "),"
+				+ register(target) + "\n";
+		return new TranslationData(lirCode, register(target));
 	}
 
 	@Override
 	public TranslationData visit(Length length, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String lirCode = "";
+		TranslationData arrayData = (TranslationData) length.getArray().accept(
+				this, target);
+		lirCode += arrayData.getLIRCode();
+		lirCode += getMoveInst(arrayData);
+		lirCode += arrayData.getResultRegister() + "," + register(target)
+				+ "\n";
+		lirCode += "StaticCall __checkNullRef(a=" + register(target)
+				+ "),Rdummy\n";
+		lirCode += "ArrayLength " + register(target) + "," + register(target)
+				+ "\n";
+		return new TranslationData(lirCode, register(target));
 	}
 
-	@Override
+	@Override //TODO: might be buggy
 	public TranslationData visit(MathBinaryOp binaryOp, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+        String lirCode = "";
+        
+        TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
+        lirCode += operand1.getLIRCode();
+        lirCode += getMoveInst(operand1);
+        lirCode += operand1.getResultRegister()+","+register(target)+"\n";
+        
+        TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
+        lirCode += operand2.getLIRCode();
+        lirCode += getMoveInst(operand2);
+        lirCode += operand2.getResultRegister()+","+register(target+1)+"\n";
+
+        switch (binaryOp.getOperator()){
+        case PLUS:
+                IC.TypeTable.Type operandsType =  binaryOp.getFirstOperand().getExprType();
+                if (operandsType.isSubtype(new IC.TypeTable.IntType())){
+                        lirCode += "Add "+register(target+1)+","+register(target)+"\n"; //addition
+                } 
+                else { // concatenation
+                	lirCode += "Library __stringCat("+register(target)+","+register(target+1)+"),"+register(target)+"\n";
+                }
+                break;
+        case MINUS:
+                lirCode += "Sub "+register(target+1)+","+register(target)+"\n";
+                break;
+        case MULTIPLY:
+                lirCode += "Mul "+register(target+1)+","+register(target)+"\n";
+                break;
+        case DIVIDE:
+                // check for zero division error
+                lirCode += "StaticCall __checkZero(b="+register(target+1)+"),Rdummy\n";
+                
+                lirCode += "Div "+register(target+1)+","+register(target)+"\n";
+                break;
+        case MOD:
+                lirCode += "Mod "+register(target+1)+","+register(target)+"\n";
+                break;
+        default:
+                System.err.println("*** BUG1: shouldn't get here ***");
+        }
+        
+        return new TranslationData(lirCode,register(target));
 	}
 
-	@Override
+	@Override //TODO: might be buggy
 	public TranslationData visit(LogicalBinaryOp binaryOp, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+        String true_label = "_true_label"+getUniqueLabel();
+        String false_label = "_false_label"+getUniqueLabel();
+        String end_label = "_end_label"+getUniqueLabel();
+        String lirCode = "";
+        
+        // recursive call to operands
+        TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
+        lirCode += operand1.getLIRCode();
+        lirCode += getMoveInst(operand1);
+        lirCode += operand1.getResultRegister()+","+register(target)+"\n";
+        
+        TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
+        lirCode += operand2.getLIRCode();
+        lirCode += getMoveInst(operand2);
+        lirCode += operand2.getResultRegister()+","+register(target+1)+"\n";
+        
+        // operation
+        if (binaryOp.getOperator() != BinaryOps.LAND && binaryOp.getOperator() != BinaryOps.LOR){
+                lirCode += "Compare "+register(target+1)+","+register(target)+"\n";
+        }
+        switch (binaryOp.getOperator()){
+        case EQUAL:
+                lirCode += "JumpTrue "+true_label+"\n";
+                break;
+        case NEQUAL:
+                lirCode += "JumpFalse "+true_label+"\n";
+                break;
+        case GT:
+                lirCode += "JumpG "+true_label+"\n";
+                break;
+        case GTE:
+                lirCode += "JumpGE "+true_label+"\n";
+                break;
+        case LT:
+                lirCode += "JumpL "+true_label+"\n";
+                break;
+        case LTE:
+                lirCode += "JumpLE "+true_label+"\n";
+                break;
+        case LAND:
+                lirCode += "Compare 0,"+register(target)+"\n";
+                lirCode += "JumpTrue "+false_label+"\n";
+                lirCode += "Compare 0,"+register(target+1)+"\n";
+                lirCode += "JumpTrue "+false_label+"\n";
+                lirCode += "Jump "+true_label+"\n";
+                lirCode += false_label+":\n"; 
+                break;
+        case LOR:
+                lirCode += "Compare 0,"+register(target)+"\n";
+                lirCode += "JumpFalse "+true_label+"\n";
+                lirCode += "Compare 0,"+register(target+1)+"\n";
+                lirCode += "JumpFalse "+true_label+"\n"; 
+                break;
+        default:
+                System.err.println("*** YOUR PARSER SUCKS ***");        
+        }
+        lirCode += "Move 0,"+register(target)+"\n";
+        lirCode += "Jump "+end_label+"\n";
+        lirCode += true_label+":\n";
+        lirCode += "Move 1,"+register(target)+"\n";
+        lirCode += end_label+":\n";
+        
+        return new TranslationData(lirCode,register(target));
 	}
 
 	@Override
 	public TranslationData visit(MathUnaryOp unaryOp, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+        String lirCode = "";
+        TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
+        lirCode += operandData.getLIRCode();
+        lirCode += getMoveInst(operandData);
+        lirCode += operandData.getResultRegister()+","+register(target)+"\n"; 
+        lirCode += "Neg "+register(target)+"\n";
+        return new TranslationData(lirCode,register(target));
 	}
 
 	@Override
 	public TranslationData visit(LogicalUnaryOp unaryOp, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+        String lirCode = "";
+        String true_label = "_true_label"+getUniqueLabel();
+        String end_label = "_end_label"+getUniqueLabel();       
+        TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
+        lirCode += operandData.getLIRCode();
+        lirCode += getMoveInst(operandData);
+        lirCode += operandData.getResultRegister()+","+register(target)+"\n";        
+        lirCode += "Compare 0,"+register(target)+"\n";
+        lirCode += "JumpTrue "+true_label+"\n";
+        lirCode += "Move 0,"+register(target)+"\n";
+        lirCode += "Jump "+end_label+"\n";
+        lirCode += true_label+":\n";
+        lirCode += "Move 1,"+register(target)+"\n";
+        lirCode += end_label+":\n";        
+        return new TranslationData(lirCode,register(target));
 	}
 
 	@Override
 	public TranslationData visit(Literal literal, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		String literalId = "";
+
+		switch (literal.getType()) {
+		case STRING:
+			String strval = ((String) literal.getValue()).replaceAll("\n","\\\\n");
+			literalId = addStringLiteral(strval);
+			break;
+		case INTEGER:
+			literalId = literal.getValue().toString();
+			break;
+		case NULL:
+			literalId = "0";
+			break;
+		case FALSE:
+			literalId = "0";
+			break;
+		case TRUE:
+			literalId = "1";
+		}
+		// propagate up the literal identifier (immediate/label)
+		return new TranslationData(null, literalId);
 	}
 
 	@Override
 	public TranslationData visit(ExpressionBlock expressionBlock, Integer target) {
-		// TODO Auto-generated method stub
-		return null;
+		return (TranslationData) expressionBlock.getExpression().accept(this,
+				target);
+	}
+
+	private String getUniqueName(ASTNode node, String name) {
+		BlockSymbolTable bst = (BlockSymbolTable) node.getEnclosingScope();
+		String className = bst.getEnclosingCST().getThis().getID() + "_";
+		String methodName = bst.getEnclosingMST().getID() + "_";
+		return className + methodName + name + bst.getDepth();
 	}
 
 }

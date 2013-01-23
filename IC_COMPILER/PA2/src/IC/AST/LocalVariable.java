@@ -1,5 +1,6 @@
 package IC.AST;
 
+import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.SymbolTable;
 
 /**
@@ -69,7 +70,5 @@ public class LocalVariable extends Statement {
 		return visitor.visit(this, context);
 	}
 	
-	public String getUniqueName(){
-		return getName()+getEnclosingScope().getDepth();
-	}
+
 }

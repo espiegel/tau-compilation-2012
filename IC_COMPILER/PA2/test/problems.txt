@@ -8,7 +8,7 @@ int simple1(){
 	{ int i; {}
 	{int j; }}
 }
-static void simple2(){}
+ void simple2(){}
 string bar(){}
 }
 class A extends C{
@@ -19,6 +19,7 @@ class A extends C{
          	return test;}
          string bar(){
          return "good";}
+         void foobar(){}
   }
   class B { 
   int z;
@@ -30,7 +31,8 @@ class A extends C{
   int j;
   B b = new B();
   string s1 = "john";
-  string s = b.bar("Paul").bar();
+  string s2 = "tom";
+  string s = b.bar("pool").bar();
   
   }
   }

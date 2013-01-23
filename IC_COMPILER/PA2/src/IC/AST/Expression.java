@@ -8,7 +8,7 @@ package IC.AST;
  */
 public abstract class Expression extends ASTNode {
 	
-	protected IC.TypeTable.Type type;
+	protected IC.TypeTable.Type exprType;
 
 	/**
 	 * Constructs a new expression node. Used by subclasses.
@@ -21,11 +21,11 @@ public abstract class Expression extends ASTNode {
 	}
 	
 	public IC.TypeTable.Type getExprType() {
-		return type;
+		return exprType;
 	}
 
-	public void resolveType(IC.TypeTable.Type type){
-		this.type = type;
+	public void resolveExprType(IC.TypeTable.Type type){
+		this.exprType = type;
 	}
 	
 }

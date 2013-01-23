@@ -412,7 +412,7 @@ public class SemanticChecker implements Visitor
             	}
             	
                 IC.TypeTable.Type thisLocationType =  bst.lookupVariable(location.getName()).getType();
-                location.resolveType(thisLocationType);
+                location.resolveExprType(thisLocationType);
                 return thisLocationType;
             } catch(SemanticError se) {
                     se.setLine(location.getLine());
@@ -451,7 +451,7 @@ public class SemanticChecker implements Visitor
         catch(SemanticError se) { System.err.println("Error in ArrayLocation visitor of SemanticChecker"); }
         
         IC.TypeTable.Type type = arrayType.getElemType();
-        location.resolveType(type);
+        location.resolveExprType(type);
         return  type;// Return the type of the array
 	}
 
@@ -517,7 +517,7 @@ public class SemanticChecker implements Visitor
                 
                 //Return the method's return type
                 Type type = ((IC.TypeTable.MethodType) method.getType()).getReturnType();
-                call.resolveType(type);
+                call.resolveExprType(type);
                 return type;
         }
         catch (SemanticError se)  // We didn't find this method in the hierarchy
@@ -634,7 +634,7 @@ public class SemanticChecker implements Visitor
         
         // Return the method's return type
         Type type = ((IC.TypeTable.MethodType) ms.getType()).getReturnType();
-        call.resolveType(type);
+        call.resolveExprType(type);
         return type; 
 	}
 
@@ -652,7 +652,7 @@ public class SemanticChecker implements Visitor
 	    }
 	    
 	    Type type = ((BlockSymbolTable) thisExpression.getEnclosingScope()).getEnclosingCST().getThis().getType();
-	    thisExpression.resolveType(type);
+	    thisExpression.resolveExprType(type);
 	    return type;
 	}
 
@@ -670,7 +670,7 @@ public class SemanticChecker implements Visitor
                  System.err.println(se);
                  return null;
          }
-         newClass.resolveType(ct);
+         newClass.resolveExprType(ct);
          return ct;
 	}
 
@@ -712,7 +712,7 @@ public class SemanticChecker implements Visitor
         
         try { 
         	Type type =  IC.TypeTable.TypeTable.getType(elemType.getName()+"[]"); 
-        	newArray.resolveType(type);
+        	newArray.resolveExprType(type);
         	return type;
         	}
         catch (SemanticError se) { System.err.println("Error in newArray visitor of SemanticChecker"); }
@@ -741,7 +741,7 @@ public class SemanticChecker implements Visitor
                          
          try { 
         	 Type type = IC.TypeTable.TypeTable.getType("int"); 
-        	 length.resolveType(type);
+        	 length.resolveExprType(type);
         	 return type;
         	 }
          catch (SemanticError se) { System.err.println("Error in length visitor of SemanticChecker"); }
@@ -796,7 +796,7 @@ public class SemanticChecker implements Visitor
             catch (SemanticError se) { System.err.println("Error in MathBinaryOP visitor of SemanticChecker"); }
         }
         
-        binaryOp.resolveType(op1Type);
+        binaryOp.resolveExprType(op1Type);
         // Return the type, in this case its legal
         return op1Type;
 	}
@@ -877,7 +877,7 @@ public class SemanticChecker implements Visitor
           try { ret = IC.TypeTable.TypeTable.getType("boolean"); }
           catch (SemanticError se){ System.err.println("Error in LogicalBinaryOP visitor of SemanticChecker"); }
           
-          binaryOp.resolveType(ret);
+          binaryOp.resolveExprType(ret);
           return ret;
 	}
 
@@ -902,7 +902,7 @@ public class SemanticChecker implements Visitor
             }
         }
         catch  (SemanticError se){ System.err.println("Error in MathUnaryOp visitor of SemanticChecker"); }
-        unaryOp.resolveType(opType);
+        unaryOp.resolveExprType(opType);
         return opType; 
 	}
 
@@ -926,7 +926,7 @@ public class SemanticChecker implements Visitor
             }
         }
         catch  (SemanticError se) { System.err.println("Error in LogicalUnaryOp visitor of SemanticChecker"); } 
-        unaryOp.resolveType(opType);
+        unaryOp.resolveExprType(opType);
         return opType;
 	}
 
@@ -958,7 +958,7 @@ public class SemanticChecker implements Visitor
 		            	type = TypeTable.getType("null");
 		            	break;
             }
-          	literal.resolveType(type);
+          	literal.resolveExprType(type);
         	return type;
         }
         catch(SemanticError se) { System.err.println("Error in Literal visitor of SemanticChecker"); }

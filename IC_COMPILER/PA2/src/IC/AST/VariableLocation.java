@@ -1,5 +1,6 @@
 package IC.AST;
 
+import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.SymbolTable;
 
 /**

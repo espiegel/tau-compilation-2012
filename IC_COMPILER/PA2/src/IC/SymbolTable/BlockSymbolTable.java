@@ -8,15 +8,21 @@ public class BlockSymbolTable extends SymbolTable {
 	
 	protected Type retType;
 	protected ClassSymbolTable enclosingCST;
+	protected MethodSymbolTable enclosingMST;
 	
 	public BlockSymbolTable(String name, SymbolTable parentscope) {
 		super(name, parentscope);
 		if (parentscope instanceof BlockSymbolTable){
 			retType = ((BlockSymbolTable)parentscope).getReturnType(); //propagate the return type
 			enclosingCST = ((BlockSymbolTable)parentscope).getEnclosingCST(); //propagate the CST
+			enclosingMST = ((BlockSymbolTable)parentscope).getEnclosingMST(); //propagate the MST
 		}
 	}
 	
+	public MethodSymbolTable getEnclosingMST() {
+		return enclosingMST;
+	}
+
 	/**
 	 * returns the block's enclosing class
 	 * 
@@ -42,5 +48,9 @@ public class BlockSymbolTable extends SymbolTable {
 	
 	public Type getReturnType(){
 		return retType;
+	}
+	
+	public boolean isField(String name){
+		return (lookup(name).getKind() == Kind.FIELD);
 	}
 }

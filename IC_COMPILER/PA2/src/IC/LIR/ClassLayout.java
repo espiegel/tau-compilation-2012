@@ -8,10 +8,9 @@ import IC.AST.Method;
 
 public class ClassLayout {
 	ICClass self;
-	private Map<Field,Integer> fieldToOffsetMap = new HashMap<Field,Integer>(); //stores fields offset
-	private Map<Method,Integer> methodToOffsetMap = new HashMap<Method,Integer>(); //stores virtual methods offset
-	
-	private Map<String,Method> nameToMethodMap = new HashMap<String,Method>(); //to handle method overriding
+	private Map<String,Integer> fieldToOffsetMap = new HashMap<String,Integer>(); //stores fields offset
+	private Map<String,Integer> methodToOffsetMap = new HashMap<String,Integer>(); //stores virtual methods offset
+	private Map<String,Method> nameToMethodMap = new HashMap<String,Method>();
 	
 	public ClassLayout(ICClass A, ClassLayout B){ // "A extends B"
 		
@@ -32,12 +31,16 @@ public class ClassLayout {
 		}
 	}
 	
+	public String getClassName(){
+		return self.getName();
+	}
+	
 	public ClassLayout(ICClass A){
 		this(A,null);
 	}
 	
 	private void addField(Field field) {
-		fieldToOffsetMap.put(field, getTableOffset());
+		fieldToOffsetMap.put(field.getName(), getTableOffset());
 	}
 	
 	public int sizeof(){
@@ -48,34 +51,21 @@ public class ClassLayout {
 		if (method.isStatic()){ 
 			return; //static methods are handled separately!
 		}
-		if (isOverriding(method)){
-			String key = method.getName();
+		String key = method.getName();
+		if (!isOverriding(method)){ // for overriding methods, offset stays the same.
 			
-			//retrieve overridden method
-			Method oldMethod = nameToMethodMap.get(key); 
-			
-			//put new method in map with old method offset
-			methodToOffsetMap.put(method, methodToOffsetMap.remove(oldMethod));
-			
-			nameToMethodMap.remove(key); //update nameToMethodMap
-			nameToMethodMap.put(key, method);
+			methodToOffsetMap.put(method.getName(),getDispatchVectorOffset());
+			nameToMethodMap.remove(key);
 		}
-		else{
-			methodToOffsetMap.put(method,getDispatchVectorOffset());
-			nameToMethodMap.put(method.getName(), method);
-		}
+		nameToMethodMap.put(key, method);
+	}
+	
+	public Method getMethod(String name){
+		return nameToMethodMap.get(name);
 	}
 
 	private boolean isOverriding(Method method){
-		return nameToMethodMap.containsKey(method.getName());
-	}
-
-	public Map<Field,Integer> getFieldToOffsetMap(){
-		return fieldToOffsetMap;
-	}
-	
-	public Map<Method,Integer> getMethodToOffsetMap(){
-		return methodToOffsetMap;
+		return methodToOffsetMap.containsKey(method.getName());
 	}
 	
 	public int getTableOffset(){
@@ -91,12 +81,9 @@ public class ClassLayout {
 		String myName = self.getName();
 		String DV = getDispatchVectorLabel()+": [";
 		for (int i=0; i<getDispatchVectorOffset(); i++){
-			for (Method method: methodToOffsetMap.keySet()){
-				
-				if (method.isStatic()) continue;
-				
-				if (i == methodToOffsetMap.get(method)) {
-					DV+='_'+myName+'_'+method.getName()+',';
+			for (String methodname: methodToOffsetMap.keySet()){
+				if (i == methodToOffsetMap.get(methodname)) {
+					DV+='_'+myName+'_'+methodname+',';
 					break;
 				}
 			}
@@ -113,9 +100,9 @@ public class ClassLayout {
 		String table = "# fields offsets:\n";
 		table += "# "+getDispatchVectorLabel()+": "+0+'\n';
         for(int i = 1; i < getTableOffset(); i++){
-            for (Field f: fieldToOffsetMap.keySet()){
-                    if (fieldToOffsetMap.get(f) == i){
-                    	table += "# "+f.getName()+": ";
+            for (String fieldname: fieldToOffsetMap.keySet()){
+                    if (fieldToOffsetMap.get(fieldname) == i){
+                    	table += "# "+fieldname+": ";
                     	table += i+"\n";
                         break;
                     }
@@ -135,5 +122,13 @@ public class ClassLayout {
 	
 	public String toString(){
 		return tableToString()+getDispatchVector();
+	}
+
+	public int getFieldOffset(String name) {
+		return fieldToOffsetMap.get(name);
+	}
+	
+	public int getMethodOffset(String name) {
+		return methodToOffsetMap.get(name);
 	}
 }
