@@ -4,38 +4,41 @@ package IC.LIR;
 public class TranslationData {
 	private String LIRCode; //stores translated LIR instructions
 	private String resultRegister;	//when translating composite expressions. stores intermediate values
+	private MoveInstEnum moveInstruction; // to determine which LIR move instruction to use
 	
 	public TranslationData(){
-		this(null,null);
+		this(null,null,MoveInstEnum.DEFAULT);
 	} 
 	
+	public TranslationData(String LIRcode, String register) {
+		this(LIRcode,register,MoveInstEnum.DEFAULT);
+	}
+	
 	public TranslationData(String LIRcode) {
-		this(LIRcode,null);
+		this(LIRcode,null,MoveInstEnum.DEFAULT);
 	}
 	
-	public TranslationData(String instructions, int register){
-		this(instructions,"R"+register);
-	}
+	/*public TranslationData(String instructions, int register, MoveInstEnum moveInst){
+		this(instructions,"R"+register,moveInst);
+	}*/
 	
-	public TranslationData(String instructions, String register){
-		this.setLIRCode(instructions);
-		this.setResultRegister(register);
+	public TranslationData(String instructions, String register, MoveInstEnum moveInst){
+		this.LIRCode = instructions;
+		this.resultRegister = register;
+		this.moveInstruction = moveInst;
 	}
 
 	public String getLIRCode() {
 		return LIRCode;
 	}
 
-	public void setLIRCode(String instructions) {
-		LIRCode = instructions;
-	}
-
 	public String getResultRegister() {
 		return resultRegister;
 	}
 
-	public void setResultRegister(String register) {
-		this.resultRegister = register;
+
+	public MoveInstEnum getMoveInst() {
+		return moveInstruction;
 	}
 
 }

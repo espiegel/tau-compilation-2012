@@ -17,7 +17,9 @@ public class MethodSymbolTable extends BlockSymbolTable {
 		}
 		retType = TypeTable.getMethodReturnType(method); // return type to be
 															// propagated
+		
 		enclosingCST = (ClassSymbolTable) parent; // CST to be propagated
+		enclosingMST = this; // MST to be propagated
 	}
 
 	private void addLoclVar(Formal formal) throws SemanticError {
