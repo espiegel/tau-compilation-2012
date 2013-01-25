@@ -26,6 +26,7 @@ public class Compiler {
 	private static boolean bParse_lib = false;
 	private static boolean bPrint_ast = false;
 	private static boolean bDump_symtab = false;
+	private static boolean bPrint_lir = false;
 
 	private static String lib_path = "libic.sig";
 	private static String program_path = null;
@@ -36,6 +37,7 @@ public class Compiler {
 	private static final String EXIT4 = "SYSTEM EXIT! REASON: failed to parse library.";
 	private static final String EXIT5 = "library class should be named \"Library\". was named: ";
 
+	private static final String PRINT_LIR = "-print-lir";
 	private static final String PRINT_AST = "-print-ast";
 	private static final String LIB_FLAG = "-L";
 	private static final String DUMP_SYMTAB = "-dump-symtab";
@@ -56,7 +58,10 @@ public class Compiler {
 				bPrint_ast = true;
 			} else if (s.equals(DUMP_SYMTAB)) {
 				bDump_symtab = true;
-			} else {
+			} else if (s.equals(PRINT_LIR)){
+				bPrint_lir = true;
+			}
+			else {
 				if (program_path == null)
 					program_path = args[i];
 				else
@@ -106,15 +111,16 @@ public class Compiler {
 			System.out.println("Semantic check passed sucessfully");
 		
 		
-		/*begin tests for PA4 */
-		/*ClassLayout C = new ClassLayout(program.getClasses().get(1));
-		ClassLayout A = new ClassLayout(program.getClasses().get(2),C);
-		System.out.println(C);
-		System.out.println(A);*/
-		
-		TranslationVisitor tv = new TranslationVisitor(program_path);
-		System.out.println(((TranslationData)program.accept(tv,1)).getLIRCode());
-		/*end tests for PA4 */
+
+		if(bPrint_lir){
+			TranslationVisitor tv = new TranslationVisitor(program_path);
+			String lirProgram = ((TranslationData)program.accept(tv,1)).getLIRCode();
+			String lir_program_path = (program_path.split("[.]"))[0]+".lir";
+			FileWriter writer = new FileWriter(lir_program_path,false);
+			writer.write(lirProgram);
+			writer.close();
+		}
+
 	}
 
 	private static void exit(String msg) {

@@ -18,6 +18,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	}
 	
 	private String icfile;
+	
+	private String programMain;
 
 	private Map<String, ClassLayout> classLayouts = new HashMap<String, ClassLayout>(); // class
 																						// layouts
@@ -81,6 +83,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			+ "Library __println(zero_division_exception),Rdummy\n"
 			+ "Jump _exit\n\n";
 
+	
+
 	@Override
 	public TranslationData visit(Program program, Integer target) {
 
@@ -110,23 +114,29 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 	private String assembleLIRProgram() { // should be called exactly once!
 
-		String lirProgram =  "\n# "+icfile+":\n"+runtimeErrMsgs + runtimeChecks;
+		String lirProgram =  "# "+icfile+":\n";
 
-		lirProgram += "# string literals:\n";
+		lirProgram += "\n# ***string literals***\n";
+		lirProgram += runtimeErrMsgs;
 		for (String literal : stringLiterals) {
 			lirProgram += literal + '\n';
 		}
-
-		lirProgram += "# dispatch vectors:\n";
+		
+		lirProgram += "\n# ***dispatch vectors***\n";
 		for (String classDV : this.dispatchVectors) {
 			lirProgram += classDV + '\n';
 		}
-
+		
+		lirProgram += "\n# ***instructions***\n";
+		lirProgram += runtimeChecks;
+		
+		lirProgram += "# method instructions:\n";
 		// add all method instructions (including main)
-		lirProgram += "# method instructions\n";
 		for (String method : translatedMethods) {
 			lirProgram += method + "\n";
 		}
+		
+		lirProgram += programMain;
 
 		lirProgram += "\n_exit:\n";
 		return lirProgram;
@@ -186,7 +196,12 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			lirCode += "Return 9999\n";
 		}
 
-		translatedMethods.add(lirCode);
+		if (!method.isMain()){
+			translatedMethods.add(lirCode);
+		}
+		else{
+			programMain = lirCode;
+		}
 	}
 
 	@Override
@@ -448,7 +463,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		int i = 0;
 		for (Expression arg : call.getArguments()) {
 			TranslationData argData = (TranslationData) arg.accept(this,target+i);
-			lirCode += "# argument #" + i + ":\n";
+			//lirCode += "# argument #" + i + ":\n";
 			lirCode += argData.getLIRCode();
 			lirCode += getMoveInst(argData);
 			lirCode += argData.getResultRegister() + "," + register(target + i)
@@ -528,7 +543,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		for (Expression arg : call.getArguments()) {
 			TranslationData argData = (TranslationData) arg.accept(this, target
 					+ i);
-			lirCode += "# argument #" + (i - 1) + ":\n";
+			//lirCode += "# argument #" + (i - 1) + ":\n";
 			lirCode += argData.getLIRCode();
 			lirCode += getMoveInst(argData);
 			lirCode += argData.getResultRegister() + "," + register(target + i)
@@ -783,7 +798,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		BlockSymbolTable bst = (BlockSymbolTable) node.getEnclosingScope();
 		String className = bst.getEnclosingCST().getThis().getID() + "_";
 		String methodName = bst.getEnclosingMST().getID() + "_";
-		return /*className + methodName +*/name + bst.getDepth();
+		return /*className + methodName +*/name /*+ bst.getDepth()*/;
 	}
 
 }
