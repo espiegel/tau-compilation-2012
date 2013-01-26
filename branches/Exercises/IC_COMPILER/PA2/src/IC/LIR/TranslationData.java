@@ -3,7 +3,7 @@ package IC.LIR;
 
 public class TranslationData {
 	private String LIRCode; //stores translated LIR instructions
-	private String resultRegister;	//when translating composite expressions. stores intermediate values
+	private String result;	//stores intermediate values/references.
 	private MoveInstEnum moveInstruction; // to determine which LIR move instruction to use
 	
 	public TranslationData(){
@@ -24,7 +24,7 @@ public class TranslationData {
 	
 	public TranslationData(String instructions, String register, MoveInstEnum moveInst){
 		this.LIRCode = instructions;
-		this.resultRegister = register;
+		this.result = register;
 		this.moveInstruction = moveInst;
 	}
 
@@ -32,8 +32,8 @@ public class TranslationData {
 		return LIRCode;
 	}
 
-	public String getResultRegister() {
-		return resultRegister;
+	public String getResult() {
+		return result;
 	}
 
 
