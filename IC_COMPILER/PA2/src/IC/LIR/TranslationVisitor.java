@@ -13,6 +13,12 @@ import IC.SymbolTable.ClassSymbolTable;
 
 public class TranslationVisitor implements PropagatingVisitor<Integer, TranslationData> {
 	
+	static final String CONT_LABEL = "_continue_label_";
+	static final String BREAK_LABEL = "_break_label_";
+	static final String END_LABEL = "_end_label_";
+	static final String TRUE_LABEL = "_true_label_";
+	static final String FALSE_LABEL = "_false_label_";
+	
 	public TranslationVisitor(String icfile){
 		this.icfile = icfile;
 	}
@@ -34,15 +40,15 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 																		// LIR-instruction-code
 
 	private List<String> stringLiterals = new ArrayList<String>();
+	
+	private int currWhileId = 0; //will be used in break/continue visit methods
 
-	private String continue_jump_label;
-	private String break_jump_label;
+	private int labelId = -1;
 
-	private int labelId = 0;
-
-	private String getUniqueLabel() {
-		return "_" + (labelId++);
+	private int getUniqueLabelId() {
+		return ++labelId;
 	}
+
 
 	// add string literal to list-of-literals and returns it's label.
 	private String addStringLiteral(String literal) {
@@ -83,7 +89,6 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			+ "Library __println(zero_division_exception),Rdummy\n"
 			+ "Jump _exit\n\n";
 
-	
 
 	@Override
 	public TranslationData visit(Program program, Integer target) {
@@ -239,14 +244,14 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		lirCode += valData.getLIRCode();
 
 		lirCode += getMoveInst(valData);
-		lirCode += valData.getResultRegister() + "," + register(target) + "\n";
+		lirCode += valData.getResult() + "," + register(target) + "\n";
 
 		TranslationData varData = (TranslationData) assignment.getVariable()
 				.accept(this, target + 1);
 		lirCode += varData.getLIRCode();
 
 		lirCode += getMoveInst(varData);
-		lirCode += register(target) + "," + varData.getResultRegister() + "\n";
+		lirCode += register(target) + "," + varData.getResult() + "\n";
 
 		return new TranslationData(lirCode);
 	}
@@ -262,8 +267,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		if (returnStatement.hasValue()) {
 			TranslationData returnValue = (TranslationData) returnStatement
 					.getValue().accept(this, target);
-			lirCode += returnValue.getLIRCode()+'\n';
-			lirCode += "Return " + returnValue.getResultRegister() + '\n';
+			lirCode += returnValue.getLIRCode();
+			lirCode += "Return " + returnValue.getResult() + '\n';
 		} 
 		else {
 			lirCode += "Return 9999\n"; // return void
@@ -275,15 +280,16 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	@Override
 	public TranslationData visit(If ifStatement, Integer target) {
 		String lirCode = "";
-		String false_label = "_false_label"+getUniqueLabel();
-		String end_label = "_end_label"+getUniqueLabel();
+		int id = getUniqueLabelId();
+		String false_label = FALSE_LABEL+id;
+		String end_label = END_LABEL+id;
 
 		// obtain the condition expression LIR Code recursively
 		TranslationData conditionData = (TranslationData) ifStatement
 				.getCondition().accept(this, target);
 		lirCode += conditionData.getLIRCode();
 		lirCode += getMoveInst(conditionData);
-		lirCode += conditionData.getResultRegister() + "," + register(target)
+		lirCode += conditionData.getResult() + "," + register(target)
 				+ "\n";
 
 		lirCode += "Compare 0," + register(target) + "\n"; // check if condition
@@ -314,15 +320,19 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	@Override
 	public TranslationData visit(While whileStatement, Integer target) {
 		String lirCode = "";
-		String _while_cond_label = continue_jump_label = "_continue_jump_label"+getUniqueLabel();
-		String _end_label = break_jump_label = "_break_jump_label"+getUniqueLabel();
+		
+		int prevWhileId = currWhileId; //store previous while label Id
+		currWhileId= getUniqueLabelId();
+		
+		String _while_cond_label = CONT_LABEL+currWhileId;
+		String _end_label = BREAK_LABEL+currWhileId;
 
 		lirCode += _while_cond_label + ":\n";
 		TranslationData conditionData = (TranslationData) whileStatement
 				.getCondition().accept(this, target);
 		lirCode += conditionData.getLIRCode();
 		lirCode += getMoveInst(conditionData);
-		lirCode += conditionData.getResultRegister() + "," + register(target)
+		lirCode += conditionData.getResult() + "," + register(target)
 				+ "\n";
 
 		lirCode += "Compare 0," + register(target) + "\n";
@@ -333,17 +343,18 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		lirCode += "Jump " + _while_cond_label + "\n";
 		lirCode += _end_label + ":\n";
 
+		currWhileId = prevWhileId; //restore previous while label Id
 		return new TranslationData(lirCode);
 	}
 
 	@Override
 	public TranslationData visit(Break breakStatement, Integer target) {
-		return new TranslationData("Jump " + break_jump_label + '\n');
+		return new TranslationData("Jump " + BREAK_LABEL + currWhileId+ '\n');
 	}
 
 	@Override
 	public TranslationData visit(Continue continueStatement, Integer target) {
-		return new TranslationData("Jump " + continue_jump_label + '\n');
+		return new TranslationData("Jump " + CONT_LABEL + currWhileId +'\n');
 	}
 
 	@Override
@@ -367,7 +378,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 					.getInitValue().accept(this, target);
 			lirCode += initData.getLIRCode();
 			lirCode += getMoveInst(initData);
-			lirCode += initData.getResultRegister() + "," + register(target)
+			lirCode += initData.getResult() + "," + register(target)
 					+ "\n";
 			lirCode += "Move " + register(target) + ","
 					+ getUniqueName(localVariable, localVariable.getName())
@@ -394,7 +405,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			int offset = classLayout.getFieldOffset(location.getName());
 
 			lirCode += getMoveInst(locationData);
-			lirCode += locationData.getResultRegister() + ","
+			lirCode += locationData.getResult() + ","
 					+ register(target) + "\n";
 
 			lirCode += "StaticCall __checkNullRef(a=" + register(target)
@@ -435,7 +446,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		lirCode += arrayData.getLIRCode();
 
 		lirCode += getMoveInst(arrayData);
-		lirCode += arrayData.getResultRegister() + "," + register(target)
+		lirCode += arrayData.getResult() + "," + register(target)
 				+ "\n";
 
 		lirCode += "StaticCall __checkNullRef(a=" + register(target)
@@ -446,7 +457,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		lirCode += indexData.getLIRCode();
 
 		lirCode += getMoveInst(indexData);
-		lirCode += indexData.getResultRegister() + "," + register(target + 1)
+		lirCode += indexData.getResult() + "," + register(target + 1)
 				+ "\n";
 
 		lirCode += "StaticCall __checkArrayAccess(a=" + register(target)
@@ -466,7 +477,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			//lirCode += "# argument #" + i + ":\n";
 			lirCode += argData.getLIRCode();
 			lirCode += getMoveInst(argData);
-			lirCode += argData.getResultRegister() + "," + register(target + i)
+			lirCode += argData.getResult() + "," + register(target + i)
 					+ "\n";
 			i++;
 		}
@@ -490,8 +501,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 	@Override
 	public TranslationData visit(StaticCall call, Integer target) {
-		String lirCode = "# static call to "+call.getName()+":\n";
-		lirCode += translateArgs(call, target);
+		//String lirCode = "# static call to "+call.getName()+":\n";
+		String lirCode = translateArgs(call, target);
 
 		if (call.getClassName().equals("Library")) {
 			return callLibraryMethod(lirCode, call, target);
@@ -520,15 +531,15 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 	@Override
 	public TranslationData visit(VirtualCall call, Integer target) {
-		String lirCode = "# virtual call to "+call.getName()+":\n";
-		lirCode += translateArgs(call, target);
+		//String lirCode = "# virtual call to "+call.getName()+":\n";
+		String lirCode = translateArgs(call, target);
 
 		if (call.isExternal()) {
 			TranslationData locationData = (TranslationData) call.getLocation()
 					.accept(this, target);
 			lirCode += locationData.getLIRCode();
 			lirCode += getMoveInst(locationData);
-			lirCode += locationData.getResultRegister() + ","
+			lirCode += locationData.getResult() + ","
 					+ register(target) + "\n";
 
 			// check null pointer dereference
@@ -546,7 +557,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			//lirCode += "# argument #" + (i - 1) + ":\n";
 			lirCode += argData.getLIRCode();
 			lirCode += getMoveInst(argData);
-			lirCode += argData.getResultRegister() + "," + register(target + i)
+			lirCode += argData.getResult() + "," + register(target + i)
 					+ "\n";
 			i++;
 		}
@@ -595,7 +606,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 				this, target);
 		lirCode += sizeData.getLIRCode();
 		lirCode += getMoveInst(sizeData);
-		lirCode += sizeData.getResultRegister() + "," + register(target) + "\n";
+		lirCode += sizeData.getResult() + "," + register(target) + "\n";
 		lirCode += "Mul 4," + register(target) + "\n";
 		lirCode += "StaticCall __checkSize(n=" + register(target)
 				+ "),Rdummy\n";
@@ -611,7 +622,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 				this, target);
 		lirCode += arrayData.getLIRCode();
 		lirCode += getMoveInst(arrayData);
-		lirCode += arrayData.getResultRegister() + "," + register(target)
+		lirCode += arrayData.getResult() + "," + register(target)
 				+ "\n";
 		lirCode += "StaticCall __checkNullRef(a=" + register(target)
 				+ "),Rdummy\n";
@@ -620,19 +631,19 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		return new TranslationData(lirCode, register(target));
 	}
 
-	@Override //TODO: might be buggy
+	@Override 
 	public TranslationData visit(MathBinaryOp binaryOp, Integer target) {
         String lirCode = "";
         
         TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
         lirCode += operand1.getLIRCode();
         lirCode += getMoveInst(operand1);
-        lirCode += operand1.getResultRegister()+","+register(target)+"\n";
+        lirCode += operand1.getResult()+","+register(target)+"\n";
         
         TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
         lirCode += operand2.getLIRCode();
         lirCode += getMoveInst(operand2);
-        lirCode += operand2.getResultRegister()+","+register(target+1)+"\n";
+        lirCode += operand2.getResult()+","+register(target+1)+"\n";
 
         switch (binaryOp.getOperator()){
         case PLUS:
@@ -666,23 +677,24 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         return new TranslationData(lirCode,register(target));
 	}
 
-	@Override //TODO: might be buggy
+	@Override 
 	public TranslationData visit(LogicalBinaryOp binaryOp, Integer target) {
-        String true_label = "_true_label"+getUniqueLabel();
-        String false_label = "_false_label"+getUniqueLabel();
-        String end_label = "_end_label"+getUniqueLabel();
+		int id = getUniqueLabelId();
+        String true_label = TRUE_LABEL+id;
+        String false_label = FALSE_LABEL+id;
+        String end_label = END_LABEL+id;
         String lirCode = "";
         
         // recursive call to operands
         TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
         lirCode += operand1.getLIRCode();
         lirCode += getMoveInst(operand1);
-        lirCode += operand1.getResultRegister()+","+register(target)+"\n";
+        lirCode += operand1.getResult()+","+register(target)+"\n";
         
         TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
         lirCode += operand2.getLIRCode();
         lirCode += getMoveInst(operand2);
-        lirCode += operand2.getResultRegister()+","+register(target+1)+"\n";
+        lirCode += operand2.getResult()+","+register(target+1)+"\n";
         
         // operation
         if (binaryOp.getOperator() != BinaryOps.LAND && binaryOp.getOperator() != BinaryOps.LOR){
@@ -733,26 +745,27 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         return new TranslationData(lirCode,register(target));
 	}
 
-	@Override //TODO: might be buggy
+	@Override 
 	public TranslationData visit(MathUnaryOp unaryOp, Integer target) {
         String lirCode = "";
         TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
         lirCode += operandData.getLIRCode();
         lirCode += getMoveInst(operandData);
-        lirCode += operandData.getResultRegister()+","+register(target)+"\n"; 
+        lirCode += operandData.getResult()+","+register(target)+"\n"; 
         lirCode += "Neg "+register(target)+"\n";
         return new TranslationData(lirCode,register(target));
 	}
 
-	@Override //TODO: might be buggy
+	@Override 
 	public TranslationData visit(LogicalUnaryOp unaryOp, Integer target) {
         String lirCode = "";
-        String true_label = "_true_label"+getUniqueLabel();
-        String end_label = "_end_label"+getUniqueLabel();       
+        int id = getUniqueLabelId();
+        String true_label = TRUE_LABEL+id;
+        String end_label = END_LABEL+id;       
         TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
         lirCode += operandData.getLIRCode();
         lirCode += getMoveInst(operandData);
-        lirCode += operandData.getResultRegister()+","+register(target)+"\n";        
+        lirCode += operandData.getResult()+","+register(target)+"\n";        
         lirCode += "Compare 0,"+register(target)+"\n";
         lirCode += "JumpTrue "+true_label+"\n";
         lirCode += "Move 0,"+register(target)+"\n";
@@ -765,27 +778,27 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 	@Override
 	public TranslationData visit(Literal literal, Integer target) {
-		String literalId = "";
+		String literalValue = "";
 
 		switch (literal.getType()) {
 		case STRING:
 			String strval = ((String) literal.getValue()).replaceAll("\n","\\\\n");
-			literalId = addStringLiteral(strval);
+			literalValue = addStringLiteral(strval);
 			break;
 		case INTEGER:
-			literalId = literal.getValue().toString();
+			literalValue = literal.getValue().toString();
 			break;
 		case NULL:
-			literalId = "0";
+			literalValue = "0";
 			break;
 		case FALSE:
-			literalId = "0";
+			literalValue = "0";
 			break;
 		case TRUE:
-			literalId = "1";
+			literalValue = "1";
 		}
 		// propagate up the literal identifier (immediate/label)
-		return new TranslationData("", literalId);
+		return new TranslationData("", literalValue);
 	}
 
 	@Override
