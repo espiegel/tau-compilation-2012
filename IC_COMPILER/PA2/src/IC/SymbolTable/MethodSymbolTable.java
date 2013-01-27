@@ -23,7 +23,7 @@ public class MethodSymbolTable extends BlockSymbolTable {
 	}
 
 	private void addLoclVar(Formal formal) throws SemanticError {
-		this.insert(new VarSymbol(formal));
+		this.insert(new VarSymbol(formal,this));
 	}
 
 //	public Symbol lookupVariable(String name) throws SemanticError {
@@ -35,6 +35,6 @@ public class MethodSymbolTable extends BlockSymbolTable {
 
 		String str = super.toString();
 		str = str.substring(str.indexOf('\n') + 1);
-		return "Method Symbol Table" + ": " + getID() + "\n" + str;
+		return "Method Symbol Table" + ": " + getStringId() + "\n" + str;
 	}
 }

@@ -5,18 +5,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import IC.SemanticAnalysis.SymbolTableBuilder;
 import IC.TypeTable.SemanticError;
 
 public class SymbolTable {
 	private int depth;
-	protected String id;
+	protected int uniqueId;
+	protected String stringId;
 	protected SymbolTable parent;
 	protected Map<String, Symbol> entries;
 	protected boolean isStaticScope;
 	private List<SymbolTable> children;
 
 	public SymbolTable(String id, SymbolTable parent) {
-		this.id = id;
+		this.stringId = id;
+		uniqueId = GlobalSymbolTable.computeUniqueId();
 		this.children = new ArrayList<SymbolTable>();
 		this.depth = (parent == null ? 0 : parent.depth + 1);
 		this.parent = parent;
@@ -109,7 +112,7 @@ public class SymbolTable {
 		if (!children.isEmpty()) {
 			str += "Children tables:";
 			for (SymbolTable e : children)
-				str += " " + e.getID() + ",";
+				str += " " + e.getStringId() + ",";
 			str = str.substring(0, str.length() - 1) + '\n';
 			str += "\n";
 
@@ -120,8 +123,8 @@ public class SymbolTable {
 		return str;
 	}
 
-	public String getID() {
-		return id;
+	public String getStringId() {
+		return stringId;
 	}
 
 	public void addChild(SymbolTable ST) {
@@ -130,5 +133,29 @@ public class SymbolTable {
 
 	public List<SymbolTable> getChildren() {
 		return this.children;
+	}
+	
+	public int getUniqueId(){
+		return this.uniqueId;
+	}
+	
+	public boolean hasChild(String name){
+		for (SymbolTable child : children){
+			if (child.getStringId().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//should be used to find the lowest class in hierarchy defining a certain method.
+	public int getBaseDefiningScopeId(String childName){
+		if (this.parent == SymbolTableBuilder.GST || 
+				!this.parent.hasChild(childName)){
+			return this.getUniqueId();
+		}
+		else{
+			return ((ClassSymbolTable)parent).getBaseDefiningScopeId(childName);
+		}
 	}
 }

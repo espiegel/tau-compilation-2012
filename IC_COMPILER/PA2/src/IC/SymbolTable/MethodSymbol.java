@@ -12,9 +12,9 @@ public class MethodSymbol extends Symbol {
 
 	/* private ClassSymbolTable CST; */
 
-	public MethodSymbol(Method method) throws SemanticError {
+	public MethodSymbol(Method method, ClassSymbolTable cst) throws SemanticError {
 		super(method.getLine(), method.getName(), TypeTable
-				.getMethodType(method), Kind.METHOD);
+				.getMethodType(method), Kind.METHOD, cst);
 		this.type = TypeTable.getMethodType(method); // updates TypeTable (if
 														// necessary).
 		this.isStatic = method.isStatic();

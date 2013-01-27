@@ -7,12 +7,14 @@ public abstract class Symbol {
 	private String id = null;
 	protected Type type = null;
 	private Kind kind = null;
-
-	public Symbol(int line, String id, Type type, Kind kind) {
+	protected SymbolTable scope = null;
+	
+	public Symbol(int line, String id, Type type, Kind kind, SymbolTable scope) {
 		this.line = line;
 		this.kind = kind;
 		this.id = id;
 		this.type = type;
+		this.scope = scope;
 	}
 
 	public String getID() {
@@ -25,6 +27,14 @@ public abstract class Symbol {
 
 	public Type getType() {
 		return type;
+	}
+	
+	public SymbolTable getScope(){
+		return scope;
+	}
+	
+	public int getLine(){
+		return line;
 	}
 
 	public String toString() {

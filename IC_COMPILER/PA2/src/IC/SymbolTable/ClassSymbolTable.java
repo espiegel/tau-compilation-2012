@@ -38,7 +38,7 @@ public class ClassSymbolTable extends SymbolTable {
 					"multiple definitions for symbol in class hierarchy",
 					field.getName(),field.getLine());
 		else {
-			this.insert(new FieldSymbol(field)); // will also update TypeTable
+			this.insert(new FieldSymbol(field,this)); // will also update TypeTable
 		}
 
 	}
@@ -51,7 +51,7 @@ public class ClassSymbolTable extends SymbolTable {
 	 */
 	private void addMethod(Method method) throws SemanticError {
 		Symbol sym = lookup(method.getName());
-		MethodSymbol ms = new MethodSymbol(method);
+		MethodSymbol ms = new MethodSymbol(method,this);
 		if (ms.isMain()) method.setMain();
 		
 		// already exist
@@ -76,7 +76,7 @@ public class ClassSymbolTable extends SymbolTable {
 		this.insert(ms); // will also update TypeTable
 		if (ms.isMain()) {
 			if (SymbolTableBuilder.GST.hasMain()) {
-				throw new SemanticError("program already has main()", getID());
+				throw new SemanticError("program already has main()", getStringId());
 			} else {
 				SymbolTableBuilder.GST.setMain(ms);
 			}
@@ -93,7 +93,7 @@ public class ClassSymbolTable extends SymbolTable {
 	}
 
 	public String toString() {
-		String str = "Class Symbol Table" + ": " + getID() + "\n"
+		String str = "Class Symbol Table" + ": " + getStringId() + "\n"
 				+ super.toString();
 		return str;
 	}
@@ -101,4 +101,5 @@ public class ClassSymbolTable extends SymbolTable {
 	public ClassSymbol getThis() {
 		return self;
 	}
+	
 }
