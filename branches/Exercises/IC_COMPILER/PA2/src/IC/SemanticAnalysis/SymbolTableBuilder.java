@@ -27,7 +27,7 @@ public class SymbolTableBuilder implements
 		if(program.getClasses() == null || program.getClasses().isEmpty())
 		{
 			try {
-				throw new SemanticError("No classes in the program",GST.getID());
+				throw new SemanticError("No classes in the program",GST.getStringId());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;
@@ -36,7 +36,7 @@ public class SymbolTableBuilder implements
 		if(!program.getClasses().get(0).isLibrary())
 		{
 			try {
-				throw new SemanticError("No Library found",GST.getID());
+				throw new SemanticError("No Library found",GST.getStringId());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;
@@ -128,7 +128,6 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Formal formal, SymbolTable scope) {
-
 		formal.setEnclosingScope(scope);
 		return true;
 	}
@@ -223,7 +222,7 @@ public class SymbolTableBuilder implements
 	public Object visit(StatementsBlock statementsBlock, SymbolTable scope) {
 		statementsBlock.setEnclosingScope(scope);
 		BlockSymbolTable BST = new BlockSymbolTable("statement block in "
-				+ scope.getID(), scope);
+				+ scope.getStringId(), scope);
 		scope.addChild(BST);
 		for (Statement statement : statementsBlock.getStatements()) {
 			if (statement.accept(this, BST) == null)
@@ -405,6 +404,7 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Literal literal, SymbolTable scope) {
+		literal.setEnclosingScope(scope);
 		try {
 			if (literal.getType() == LiteralTypes.INTEGER) {
 				try {
@@ -418,7 +418,6 @@ public class SymbolTableBuilder implements
 			System.out.println(e.toString());
 			return null;
 		}
-		literal.setEnclosingScope(scope);
 		return true;
 	}
 

@@ -2,11 +2,11 @@ package IC.SymbolTable;
 
 import IC.AST.ICClass;
 import IC.TypeTable.SemanticError;
-import IC.TypeTable.TypeTable;
 
 public class GlobalSymbolTable extends SymbolTable {
 
 	private MethodSymbol main = null;
+	private static int globalUniqueId = -1;
 
 	public GlobalSymbolTable() {
 		super(null, null);
@@ -32,11 +32,11 @@ public class GlobalSymbolTable extends SymbolTable {
 	}
 
 	public void setID(String icfile) {
-		this.id = icfile;
+		this.stringId = icfile;
 	}
 
 	public String toString() {
-		String str = "Global Symbol Table" + ": " + getID() + "\n"
+		String str = "Global Symbol Table" + ": " + getStringId() + "\n"
 				+ super.toString();
 		return str;
 	}
@@ -51,5 +51,9 @@ public class GlobalSymbolTable extends SymbolTable {
 
 	public MethodSymbol getMain() {
 		return main;
+	}
+
+	protected static int computeUniqueId() {
+		return ++globalUniqueId;
 	}
 }

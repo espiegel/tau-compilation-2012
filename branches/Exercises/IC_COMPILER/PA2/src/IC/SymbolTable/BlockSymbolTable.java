@@ -33,7 +33,7 @@ public class BlockSymbolTable extends SymbolTable {
 	}
 
 	public void addLoclVar(LocalVariable var) throws SemanticError {
-		this.insert(new VarSymbol(var));
+		this.insert(new VarSymbol(var,this));
 	}
 
 	public Symbol lookupVariable(String name) throws SemanticError {
@@ -42,7 +42,7 @@ public class BlockSymbolTable extends SymbolTable {
 
 	public String toString() {
 		String str = "Statement Block Symbol Table ( located in "
-				+ parent.getID() + " )\n" + super.toString();
+				+ parent.getStringId() + " )\n" + super.toString();
 		return str;
 	}
 	
@@ -51,6 +51,8 @@ public class BlockSymbolTable extends SymbolTable {
 	}
 	
 	public boolean isField(String name){
-		return (lookup(name).getKind() == Kind.FIELD);
+		Symbol sym = lookup(name);
+		if (sym==null) return false;
+		return (sym.getKind() == Kind.FIELD);
 	}
 }

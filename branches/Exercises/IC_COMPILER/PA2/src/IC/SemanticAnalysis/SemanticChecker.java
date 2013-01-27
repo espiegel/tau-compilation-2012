@@ -43,7 +43,7 @@ public class SemanticChecker implements Visitor
 		
 		if(!this.GST.hasMain())
 			try {
-				throw new SemanticError("Program does not have a main method",GST.getID(),-1);
+				throw new SemanticError("Program does not have a main method",GST.getStringId(),-1);
 			} catch (SemanticError e) {
 				// TODO Auto-generated catch block
 				System.out.println(e.toString());

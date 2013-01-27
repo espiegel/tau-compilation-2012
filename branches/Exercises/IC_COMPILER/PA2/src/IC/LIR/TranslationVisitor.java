@@ -10,9 +10,14 @@ import IC.DataTypes;
 import IC.AST.*;
 import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.ClassSymbolTable;
+import IC.SymbolTable.Kind;
+import IC.SymbolTable.MethodSymbolTable;
+import IC.SymbolTable.Symbol;
+import IC.SymbolTable.SymbolTable;
 
 public class TranslationVisitor implements PropagatingVisitor<Integer, TranslationData> {
 	
+	static final String EXIT = "Library __exit(0),Rdummy\n\n";
 	static final String CONT_LABEL = "_continue_label_";
 	static final String BREAK_LABEL = "_break_label_";
 	static final String END_LABEL = "_end_label_";
@@ -24,9 +29,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	}
 	
 	private String icfile;
+		
 	
-	private String programMain;
-
 	private Map<String, ClassLayout> classLayouts = new HashMap<String, ClassLayout>(); // class
 																						// layouts
 
@@ -60,14 +64,14 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	private String runtimeErrMsgs = "null_ptr_exception: \"Runtime Error: Null pointer dereference!\"\n"
 			+ "out_of_bounds_exception: \"Runtime Error: Array index out of bounds!\"\n"
 			+ "negative_alloc_exception: \"Runtime Error: Array allocation with negative array size!\"\n"
-			+ "zero_division_exception: \"Runtime Error: Division by zero!\"\n\n";
+			+ "zero_division_exception: \"Runtime Error: Zero Division Error!\"\n\n";
 
 	private String runtimeChecks = "# Runtime checks:\n" + "__checkNullRef:\n"
 			+ "Move a,Rc1\n" + "Compare 0,Rc1\n"
 			+ "JumpTrue __checkNullRef_err\n" + "Return 9999\n"
 			+ "__checkNullRef_err:\n"
 			+ "Library __println(null_ptr_exception),Rdummy\n"
-			+ "Jump _exit\n\n" +
+			+ EXIT +
 
 			"__checkArrayAccess:\n" + "Move a,Rc1\n" + "Move i,Rc2\n"
 			+ "ArrayLength Rc1,Rc1\n" + "Compare Rc1,Rc2\n"
@@ -75,19 +79,19 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			+ "JumpL __checkArrayAccess_err\n" + "Return 9999\n"
 			+ "__checkArrayAccess_err:\n"
 			+ "Library __println(out_of_bounds_exception),Rdummy\n"
-			+ "Jump _exit\n\n" +
+			+ EXIT +
 
 			"__checkSize:\n" + "Move n,Rc1\n" + "Compare 0,Rc1\n"
 			+ "JumpL __checkSize_err\n" + "Return 9999\n"
 			+ "__checkSize_err:\n"
 			+ "Library __println(negative_alloc_exception),Rdummy\n"
-			+ "Jump _exit\n\n" +
+			+ EXIT +
 
 			"__checkZero:\n" + "Move b,Rc1\n" + "Compare 0,Rc1\n"
 			+ "JumpTrue __checkZero_err\n" + "Return 9999\n"
 			+ "__checkZero_err:\n"
 			+ "Library __println(zero_division_exception),Rdummy\n"
-			+ "Jump _exit\n\n";
+			+ EXIT;
 
 
 	@Override
@@ -141,9 +145,6 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			lirProgram += method + "\n";
 		}
 		
-		lirProgram += programMain;
-
-		lirProgram += "\n_exit:\n";
 		return lirProgram;
 	}
 
@@ -201,12 +202,11 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			lirCode += "Return 9999\n";
 		}
 
-		if (!method.isMain()){
-			translatedMethods.add(lirCode);
+		if (method.isMain()){
+			lirCode += EXIT;
 		}
-		else{
-			programMain = lirCode;
-		}
+
+		translatedMethods.add(lirCode);
 	}
 
 	@Override
@@ -381,7 +381,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			lirCode += initData.getResult() + "," + register(target)
 					+ "\n";
 			lirCode += "Move " + register(target) + ","
-					+ getUniqueName(localVariable, localVariable.getName())
+					+ getUniqueName(localVariable.getEnclosingScope(), localVariable.getName())
 					+ "\n";
 		}
 
@@ -432,7 +432,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			} 
 			else {
 				// translate variable name to unique memory location identifier
-				return new TranslationData("",getUniqueName(location,location.getName()));
+				return new TranslationData("",getUniqueName(location.getEnclosingScope(),location.getName()));
 			}
 		}
 	}
@@ -520,7 +520,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 		for (int i = 0; i < call.getArguments().size(); i++) {
 			Formal formal = method.getFormals().get(i);
-			lirCode += getUniqueName(formal, formal.getName()) + "="
+			lirCode += getUniqueName(formal.getEnclosingScope(), formal.getName()) + "="
 					+ register(target + i) + ",";
 		}
 		lirCode = ClassLayout.removeComma(lirCode);
@@ -573,7 +573,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		lirCode += offset + "(";
 		for (i = 0; i < call.getArguments().size(); i++) {
 			Formal formal = method.getFormals().get(i);
-			lirCode += getUniqueName(formal, formal.getName()) + "="
+			lirCode += getUniqueName(formal.getEnclosingScope(), formal.getName()) + "="
 					+ register(target + i + 1) + ",";
 		}
 		lirCode = ClassLayout.removeComma(lirCode);
@@ -782,8 +782,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 		switch (literal.getType()) {
 		case STRING:
-			String strval = ((String) literal.getValue()).replaceAll("\n","\\\\n");
-			literalValue = addStringLiteral(strval);
+			// TODO: handle special chars
+			literalValue = addStringLiteral((String) literal.getValue());
 			break;
 		case INTEGER:
 			literalValue = literal.getValue().toString();
@@ -807,11 +807,23 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 				target);
 	}
 
-	private String getUniqueName(ASTNode node, String name) {
-		BlockSymbolTable bst = (BlockSymbolTable) node.getEnclosingScope();
-		String className = bst.getEnclosingCST().getThis().getID() + "_";
-		String methodName = bst.getEnclosingMST().getID() + "_";
-		return /*className + methodName +*/name /*+ bst.getDepth()*/;
+	private String getUniqueName(SymbolTable scope, String name) {
+		Symbol sym = scope.lookup(name);
+		SymbolTable definitionScope = sym.getScope();
+		int ID = definitionScope.getUniqueId();
+		switch(sym.getKind()){
+		case FIELD:
+			return "f"+ID+name;
+		case PARAM:
+			ID = definitionScope.getBaseDefiningScopeId(definitionScope.getStringId());
+			return "p"+ID+name;
+		case VAR:
+			return "v"+ID+name;
+        default:
+            System.err.println("*** BUG2: shouldn't get here ***");
+            return null;
+		}
+		
 	}
 
 }

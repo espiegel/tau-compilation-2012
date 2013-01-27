@@ -11,7 +11,7 @@ public class ClassSymbol extends Symbol {
 
 	public ClassSymbol(ICClass A) throws SemanticError {
 		super(A.getLine(), A.getName(), TypeTable.getType(A.getName()),
-				Kind.CLASS);
+				Kind.CLASS,SymbolTableBuilder.GST);
 		initCST(A);
 		A.setEnclosingScope(CST.getParent());
 	}
