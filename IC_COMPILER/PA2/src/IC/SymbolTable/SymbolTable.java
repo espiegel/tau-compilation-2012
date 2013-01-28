@@ -148,14 +148,23 @@ public class SymbolTable {
 		return false;
 	}
 	
-	//should be used to find the lowest class in hierarchy defining a certain method.
-	public int getBaseDefiningScopeId(String childName){
+	protected SymbolTable getChild(String name){
+		for (SymbolTable child : children){
+			if (child.getStringId().equals(name)){
+				return child;
+			}
+		}
+		return null;
+	}
+	
+	//should be used to find the id of an overridden method.
+	public int getOverriddenScopeId(String childName){
 		if (this.parent == SymbolTableBuilder.GST || 
 				!this.parent.hasChild(childName)){
-			return this.getUniqueId();
+			return this.getChild(childName).getUniqueId();
 		}
 		else{
-			return ((ClassSymbolTable)parent).getBaseDefiningScopeId(childName);
+			return ((ClassSymbolTable)parent).getOverriddenScopeId(childName);
 		}
 	}
 }

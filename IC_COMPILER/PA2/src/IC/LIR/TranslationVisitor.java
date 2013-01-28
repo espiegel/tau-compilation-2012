@@ -815,8 +815,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		case FIELD:
 			return "f"+ID+name;
 		case PARAM:
-			ID = definitionScope.getBaseDefiningScopeId(definitionScope.getStringId());
-			return "p"+ID+name; //TODO - make ID MethodSymbolTable id (instead of ClassSymbolTAble Id)
+			ID = definitionScope.getOverriddenScopeId(definitionScope.getStringId());
+			return "p"+ID+name; 
 		case VAR:
 			return "v"+ID+name;
         default:
