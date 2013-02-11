@@ -734,7 +734,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
                 lirCode += "JumpFalse "+true_label+"\n"; 
                 break;
         default:
-                System.err.println("*** YOUR PARSER SUCKS ***");        
+                System.err.println("*** BUG3: shouldn't get here ***");        
         }
         lirCode += "Move 0,"+register(target)+"\n";
         lirCode += "Jump "+end_label+"\n";
