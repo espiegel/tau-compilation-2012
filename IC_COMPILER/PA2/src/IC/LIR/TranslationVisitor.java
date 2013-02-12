@@ -227,8 +227,11 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		return new TranslationData();
 	}
 
-	private String getMoveInst(TranslationData data) {
-		return data.getMoveInst().getCode();
+	private String getMoveInst(TranslationData data, String R1, String R2) {
+		if (R1.equals(R2))
+			return "";
+		else 
+			return data.getMoveInst().getCode()+R1+","+R2+"\n";
 	}
 
 	private String register(int i) {
@@ -242,16 +245,14 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		TranslationData valData = (TranslationData) assignment.getAssignment()
 				.accept(this, target);
 		lirCode += valData.getLIRCode();
-
-		lirCode += getMoveInst(valData);
-		lirCode += valData.getResult() + "," + register(target) + "\n";
+		// do this in case result is stored in memory/field
+		lirCode += getMoveInst(valData,valData.getResult(),register(target));
 
 		TranslationData varData = (TranslationData) assignment.getVariable()
 				.accept(this, target + 1);
 		lirCode += varData.getLIRCode();
 
-		lirCode += getMoveInst(varData);
-		lirCode += register(target) + "," + varData.getResult() + "\n";
+		lirCode += getMoveInst(varData,register(target),varData.getResult());
 
 		return new TranslationData(lirCode);
 	}
@@ -288,9 +289,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		TranslationData conditionData = (TranslationData) ifStatement
 				.getCondition().accept(this, target);
 		lirCode += conditionData.getLIRCode();
-		lirCode += getMoveInst(conditionData);
-		lirCode += conditionData.getResult() + "," + register(target)
-				+ "\n";
+		lirCode += getMoveInst(conditionData,conditionData.getResult(),register(target));
 
 		lirCode += "Compare 0," + register(target) + "\n"; // check if condition
 															// is false
@@ -331,9 +330,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		TranslationData conditionData = (TranslationData) whileStatement
 				.getCondition().accept(this, target);
 		lirCode += conditionData.getLIRCode();
-		lirCode += getMoveInst(conditionData);
-		lirCode += conditionData.getResult() + "," + register(target)
-				+ "\n";
+		lirCode += getMoveInst(conditionData,conditionData.getResult(),register(target));
 
 		lirCode += "Compare 0," + register(target) + "\n";
 		lirCode += "JumpTrue " + _end_label + "\n";
@@ -377,9 +374,8 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			TranslationData initData = (TranslationData) localVariable
 					.getInitValue().accept(this, target);
 			lirCode += initData.getLIRCode();
-			lirCode += getMoveInst(initData);
-			lirCode += initData.getResult() + "," + register(target)
-					+ "\n";
+			lirCode += getMoveInst(initData,initData.getResult(),register(target));
+
 			lirCode += "Move " + register(target) + ","
 					+ getUniqueName(localVariable.getEnclosingScope(), localVariable.getName())
 					+ "\n";
@@ -404,9 +400,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 			int offset = classLayout.getFieldOffset(location.getName());
 
-			lirCode += getMoveInst(locationData);
-			lirCode += locationData.getResult() + ","
-					+ register(target) + "\n";
+			lirCode += getMoveInst(locationData,locationData.getResult(),register(target));
 
 			lirCode += "StaticCall __checkNullRef(a=" + register(target)
 					+ "),Rdummy\n";
@@ -445,9 +439,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 				.accept(this, target);
 		lirCode += arrayData.getLIRCode();
 
-		lirCode += getMoveInst(arrayData);
-		lirCode += arrayData.getResult() + "," + register(target)
-				+ "\n";
+		lirCode += getMoveInst(arrayData,arrayData.getResult(),register(target));
 
 		lirCode += "StaticCall __checkNullRef(a=" + register(target)
 				+ "),Rdummy\n";
@@ -456,9 +448,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 				.accept(this, target + 1);
 		lirCode += indexData.getLIRCode();
 
-		lirCode += getMoveInst(indexData);
-		lirCode += indexData.getResult() + "," + register(target + 1)
-				+ "\n";
+		lirCode += getMoveInst(indexData,indexData.getResult(),register(target + 1));
 
 		lirCode += "StaticCall __checkArrayAccess(a=" + register(target)
 				+ ",i=" + register(target + 1) + "),Rdummy\n";
@@ -476,9 +466,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			TranslationData argData = (TranslationData) arg.accept(this,target+i);
 			//lirCode += "# argument #" + i + ":\n";
 			lirCode += argData.getLIRCode();
-			lirCode += getMoveInst(argData);
-			lirCode += argData.getResult() + "," + register(target + i)
-					+ "\n";
+			lirCode += getMoveInst(argData,argData.getResult(),register(target + i));
 			i++;
 		}
 		return lirCode;
@@ -538,9 +526,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 			TranslationData locationData = (TranslationData) call.getLocation()
 					.accept(this, target);
 			lirCode += locationData.getLIRCode();
-			lirCode += getMoveInst(locationData);
-			lirCode += locationData.getResult() + ","
-					+ register(target) + "\n";
+			lirCode += getMoveInst(locationData,locationData.getResult(),register(target));
 
 			// check null pointer dereference
 			lirCode += "StaticCall __checkNullRef(a=" + register(target)
@@ -556,9 +542,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 					+ i);
 			//lirCode += "# argument #" + (i - 1) + ":\n";
 			lirCode += argData.getLIRCode();
-			lirCode += getMoveInst(argData);
-			lirCode += argData.getResult() + "," + register(target + i)
-					+ "\n";
+			lirCode += getMoveInst(argData,argData.getResult(),register(target + i));
 			i++;
 		}
 
@@ -605,8 +589,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		TranslationData sizeData = (TranslationData) newArray.getSize().accept(
 				this, target);
 		lirCode += sizeData.getLIRCode();
-		lirCode += getMoveInst(sizeData);
-		lirCode += sizeData.getResult() + "," + register(target) + "\n";
+		lirCode += getMoveInst(sizeData,sizeData.getResult(),register(target));
 		lirCode += "Mul 4," + register(target) + "\n";
 		lirCode += "StaticCall __checkSize(n=" + register(target)
 				+ "),Rdummy\n";
@@ -621,9 +604,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 		TranslationData arrayData = (TranslationData) length.getArray().accept(
 				this, target);
 		lirCode += arrayData.getLIRCode();
-		lirCode += getMoveInst(arrayData);
-		lirCode += arrayData.getResult() + "," + register(target)
-				+ "\n";
+		lirCode += getMoveInst(arrayData,arrayData.getResult(),register(target));
 		lirCode += "StaticCall __checkNullRef(a=" + register(target)
 				+ "),Rdummy\n";
 		lirCode += "ArrayLength " + register(target) + "," + register(target)
@@ -637,13 +618,11 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         
         TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
         lirCode += operand1.getLIRCode();
-        lirCode += getMoveInst(operand1);
-        lirCode += operand1.getResult()+","+register(target)+"\n";
+        lirCode += getMoveInst(operand1,operand1.getResult(),register(target));
         
         TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
         lirCode += operand2.getLIRCode();
-        lirCode += getMoveInst(operand2);
-        lirCode += operand2.getResult()+","+register(target+1)+"\n";
+        lirCode += getMoveInst(operand2,operand2.getResult(),register(target+1));
 
         switch (binaryOp.getOperator()){
         case PLUS:
@@ -688,13 +667,11 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         // recursive call to operands
         TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
         lirCode += operand1.getLIRCode();
-        lirCode += getMoveInst(operand1);
-        lirCode += operand1.getResult()+","+register(target)+"\n";
+        lirCode += getMoveInst(operand1,operand1.getResult(),register(target));
         
         TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
         lirCode += operand2.getLIRCode();
-        lirCode += getMoveInst(operand2);
-        lirCode += operand2.getResult()+","+register(target+1)+"\n";
+        lirCode += getMoveInst(operand2,operand2.getResult(),register(target+1));
         
         // operation
         if (binaryOp.getOperator() != BinaryOps.LAND && binaryOp.getOperator() != BinaryOps.LOR){
@@ -750,8 +727,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         String lirCode = "";
         TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
         lirCode += operandData.getLIRCode();
-        lirCode += getMoveInst(operandData);
-        lirCode += operandData.getResult()+","+register(target)+"\n"; 
+        lirCode += getMoveInst(operandData,operandData.getResult(),register(target));
         lirCode += "Neg "+register(target)+"\n";
         return new TranslationData(lirCode,register(target));
 	}
@@ -764,8 +740,7 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
         String end_label = END_LABEL+id;       
         TranslationData operandData = (TranslationData) unaryOp.getOperand().accept(this, target);
         lirCode += operandData.getLIRCode();
-        lirCode += getMoveInst(operandData);
-        lirCode += operandData.getResult()+","+register(target)+"\n";        
+        lirCode += getMoveInst(operandData,operandData.getResult(),register(target));
         lirCode += "Compare 0,"+register(target)+"\n";
         lirCode += "JumpTrue "+true_label+"\n";
         lirCode += "Move 0,"+register(target)+"\n";
