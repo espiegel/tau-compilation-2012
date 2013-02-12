@@ -10,8 +10,6 @@ import IC.DataTypes;
 import IC.AST.*;
 import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.ClassSymbolTable;
-import IC.SymbolTable.Kind;
-import IC.SymbolTable.MethodSymbolTable;
 import IC.SymbolTable.Symbol;
 import IC.SymbolTable.SymbolTable;
 
