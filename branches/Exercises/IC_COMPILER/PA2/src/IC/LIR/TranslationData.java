@@ -40,5 +40,9 @@ public class TranslationData {
 	public MoveInstEnum getMoveInst() {
 		return moveInstruction;
 	}
+	
+	public boolean isMemStored(){
+		return moveInstruction!=MoveInstEnum.DEFAULT;
+	}
 
 }
