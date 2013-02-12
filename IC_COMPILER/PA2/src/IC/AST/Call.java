@@ -24,7 +24,7 @@ public abstract class Call extends Expression {
 	 *            List of all method arguments.
 	 */
 	protected Call(int line, String name, List<Expression> arguments) {
-		super(line);
+		super(line,arguments.toArray());
 		this.name = name;
 		this.arguments = arguments;
 	}

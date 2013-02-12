@@ -22,7 +22,7 @@ public class Length extends Expression {
 	 *            Expression representing an array.
 	 */
 	public Length(Expression array) {
-		super(array.getLine());
+		super(array.getLine(),array);
 		this.array = array;
 	}
 

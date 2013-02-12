@@ -26,7 +26,7 @@ public class NewArray extends New {
 	 *            Size of new array.
 	 */
 	public NewArray(Type type, Expression size) {
-		super(type.getLine());
+		super(type.getLine(),size);
 		this.type = type;
 		this.size = size;
 	}
