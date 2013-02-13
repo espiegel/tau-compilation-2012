@@ -12,6 +12,7 @@ import IC.SymbolTable.BlockSymbolTable;
 import IC.SymbolTable.ClassSymbolTable;
 import IC.SymbolTable.Symbol;
 import IC.SymbolTable.SymbolTable;
+import IC.TypeTable.TypeTable;
 
 public class TranslationVisitor implements PropagatingVisitor<Integer, TranslationData> {
 	
@@ -614,22 +615,25 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 	public TranslationData visit(MathBinaryOp binaryOp, Integer target) {
         String lirCode = "";
         
-        TranslationData operand1 = (TranslationData) binaryOp.getFirstOperand().accept(this, target);
+        TranslationData operand1 = (TranslationData) binaryOp.getHeavyOperand().accept(this, target);
         lirCode += operand1.getLIRCode();
         lirCode += getMoveInst(operand1,operand1.getResult(),register(target));
         
-        TranslationData operand2 = (TranslationData) binaryOp.getSecondOperand().accept(this, target+1);
+        TranslationData operand2 = (TranslationData) binaryOp.getLightOperand().accept(this, target+1);
         lirCode += operand2.getLIRCode();
         lirCode += getMoveInst(operand2,operand2.getResult(),register(target+1));
 
         switch (binaryOp.getOperator()){
         case PLUS:
                 IC.TypeTable.Type operandsType =  binaryOp.getFirstOperand().getExprType();
-                if (operandsType.isSubtype(IC.TypeTable.TypeTable.getPrimitiveType(DataTypes.INT))){
+                if (operandsType.isSubtype(TypeTable.getPrimitiveType(DataTypes.INT))){
                         lirCode += "Add "+register(target+1)+","+register(target)+"\n"; //addition
                 } 
-                else { // concatenation
+                else if (operandsType.isSubtype(TypeTable.getPrimitiveType(DataTypes.STRING))){ // concatenation
                 	lirCode += "Library __stringCat("+register(target)+","+register(target+1)+"),"+register(target)+"\n";
+                }
+                else {
+                	System.err.println("*** BUG4: shouldn't get here ***");
                 }
                 break;
         case MINUS:

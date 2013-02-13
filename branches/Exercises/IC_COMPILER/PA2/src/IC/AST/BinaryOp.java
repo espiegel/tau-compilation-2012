@@ -1,6 +1,8 @@
 package IC.AST;
 
 import IC.BinaryOps;
+import IC.DataTypes;
+import IC.TypeTable.TypeTable;
 
 /**
  * Abstract base class for binary operation AST nodes.
@@ -38,11 +40,43 @@ public abstract class BinaryOp extends Expression {
 	}
 
 	public Expression getFirstOperand() {
+			
 		return operand1;
 	}
 
 	public Expression getSecondOperand() {
+
 		return operand2;
 	}
+	
+	public boolean isCommutative(){
 
+		switch (this.operator){
+			case PLUS:
+				return operand1.getExprType().isSubtype(TypeTable.getPrimitiveType(DataTypes.STRING));
+			case MULTIPLY:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	public Expression getLightOperand(){
+		if (isCommutative()){
+			return (operand2.compareTo(operand1)==1)?  operand1 : operand2;
+		}
+		else{
+			return operand2;
+		}
+	}
+	
+	public Expression getHeavyOperand(){
+		if (isCommutative()){
+			return (operand2.compareTo(operand1)==1)?  operand2 : operand1;
+		}
+		else{
+			return operand1;
+		}
+		
+	}
 }
