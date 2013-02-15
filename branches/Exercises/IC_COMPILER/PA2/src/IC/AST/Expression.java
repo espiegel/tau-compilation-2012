@@ -26,17 +26,16 @@ public abstract class Expression extends ASTNode implements Comparable<Expressio
 		weight = calculateWeight();
 	}
 	
-	private int calculateWeight() {
-		int len = sortedSubExprs.length;
-		if (len == 0) return 1;
-		if (len == 1)
-			return ((Expression) sortedSubExprs[0]).getWeight();
-		int w1 = ((Expression) sortedSubExprs[len-1]).getWeight();
-		int w2 = ((Expression) sortedSubExprs[len-2]).getWeight();
-		if (w1 >= w2+len-1)
-			return w1;
-		else 
-			return w1+len-1;
+	//general formula for bottom-up weight calculation
+	private int calculateWeight() { 
+		int max = 1;
+		for (int i = 0; i < sortedSubExprs.length; i++){
+			int can = ((Expression)sortedSubExprs[i]).getWeight()+i;
+			if (max < can){
+				max = can;
+			}	
+		}
+		return max;
 	}
 
 	public int getWeight() {
