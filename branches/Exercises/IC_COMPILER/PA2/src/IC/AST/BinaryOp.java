@@ -55,12 +55,22 @@ public abstract class BinaryOp extends Expression {
 			case PLUS:
 				return operand1.getExprType().isSubtype(TypeTable.getPrimitiveType(DataTypes.STRING));
 			case MULTIPLY:
+				return true;	
+			case EQUAL:
+				return true;
+			case NEQUAL:
 				return true;
 			default:
 				return false;
 		}
 	}
 	
+	/**
+	 * 
+	 * @return 
+	 * heavier operand (if expression is commutative)
+	 * left operand (otherwise)
+	 */
 	public Expression getLightOperand(){
 		if (isCommutative()){
 			return (operand2.compareTo(operand1)==1)?  operand1 : operand2;
@@ -70,6 +80,12 @@ public abstract class BinaryOp extends Expression {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * lighter operand (if expression is commutative)
+	 * right operand (otherwise)
+	 */
 	public Expression getHeavyOperand(){
 		if (isCommutative()){
 			return (operand2.compareTo(operand1)==1)?  operand2 : operand1;
