@@ -1,0 +1,137 @@
+# test\test.ic:
+
+# ***string literals***
+null_ptr_exception: "Runtime Error: Null pointer dereference!"
+out_of_bounds_exception: "Runtime Error: Array index out of bounds!"
+negative_alloc_exception: "Runtime Error: Array allocation with negative array size!"
+zero_division_exception: "Runtime Error: Zero Division Error!"
+
+str_0: "*"
+str_1: ""
+
+# ***dispatch vectors***
+_DV_Test: []
+
+# ***instructions***
+# Runtime checks:
+__checkNullRef:
+Move a,Rc1
+Compare 0,Rc1
+JumpTrue __checkNullRef_err
+Return 9999
+__checkNullRef_err:
+Library __println(null_ptr_exception),Rdummy
+Library __exit(0),Rdummy
+
+__checkArrayAccess:
+Move a,Rc1
+Move i,Rc2
+ArrayLength Rc1,Rc1
+Compare Rc1,Rc2
+JumpGE __checkArrayAccess_err
+Compare 0,Rc2
+JumpL __checkArrayAccess_err
+Return 9999
+__checkArrayAccess_err:
+Library __println(out_of_bounds_exception),Rdummy
+Library __exit(0),Rdummy
+
+__checkSize:
+Move n,Rc1
+Compare 0,Rc1
+JumpL __checkSize_err
+Return 9999
+__checkSize_err:
+Library __println(negative_alloc_exception),Rdummy
+Library __exit(0),Rdummy
+
+__checkZero:
+Move b,Rc1
+Compare 0,Rc1
+JumpTrue __checkZero_err
+Return 9999
+__checkZero_err:
+Library __println(zero_division_exception),Rdummy
+Library __exit(0),Rdummy
+
+# method instructions:
+_ic_main:
+Move 1,R1
+Move R1,v17i
+Move 5,R1
+Move R1,v17j
+_continue_label_0:
+Move v17i,R1
+Move 2,R2
+Move v17j,R3
+Mul R3,R2
+Compare R2,R1
+JumpLE _true_label_1
+Move 0,R1
+Jump _end_label_1
+_true_label_1:
+Move 1,R1
+_end_label_1:
+Compare 0,R1
+JumpTrue _break_label_0
+Move 0,R1
+Move R1,v18k
+Move 5,R1
+Move R1,v18l
+Move v17i,R1
+Move 5,R2
+Compare R2,R1
+JumpLE _true_label_3
+Move 0,R1
+Jump _end_label_3
+_true_label_3:
+Move 1,R1
+_end_label_3:
+Compare 0,R1
+JumpTrue _false_label_2
+Move v18l,R1
+Move 5,R2
+Move v17i,R3
+Sub R3,R2
+Sub R2,R1
+Move R1,v18l
+Jump _end_label_2
+_false_label_2:
+Move v18l,R1
+Move v17i,R2
+Move 5,R3
+Sub R3,R2
+Sub R2,R1
+Move R1,v18l
+_end_label_2:
+_continue_label_4:
+Move v18k,R1
+Move v18l,R2
+Compare R2,R1
+JumpL _true_label_5
+Move 0,R1
+Jump _end_label_5
+_true_label_5:
+Move 1,R1
+_end_label_5:
+Compare 0,R1
+JumpTrue _break_label_4
+Move str_0,R1
+Library __print(R1),R1
+Move v18k,R1
+Move 1,R2
+Add R2,R1
+Move R1,v18k
+Jump _continue_label_4
+_break_label_4:
+Move str_1,R1
+Library __println(R1),R1
+Move v17i,R1
+Move 1,R2
+Add R2,R1
+Move R1,v17i
+Jump _continue_label_0
+_break_label_0:
+Library __exit(0),Rdummy
+
+

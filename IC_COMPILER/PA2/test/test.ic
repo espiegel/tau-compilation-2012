@@ -1,0 +1,27 @@
+class Test
+{
+	static void main(string[] args)
+	{
+		int i = 1;
+		int j = 5;
+		
+		while(i <= 2*j)
+		{
+			int k=0;
+			int l = 5;
+			if(i <= 5)
+				l = l-(5-i);
+			else
+				l = l-(i-5);
+				
+			while(k<l)
+			{
+				Library.print("*");
+				k=k+1;
+			}
+			Library.println("");
+			i=i+1;
+		}
+		
+	}
+}
