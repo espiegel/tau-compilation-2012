@@ -53,7 +53,7 @@ public abstract class BinaryOp extends Expression {
 
 		switch (this.operator){
 			case PLUS:
-				return operand1.getExprType().isSubtype(TypeTable.getPrimitiveType(DataTypes.STRING));
+				return operand1.getExprType().isSubtype(TypeTable.getPrimitiveType(DataTypes.INT));
 			case MULTIPLY:
 				return true;	
 			case EQUAL:
