@@ -1,6 +1,7 @@
 package IC.SemanticAnalysis;
 
 import IC.LiteralTypes;
+import IC.UnaryOps;
 import IC.AST.*;
 import IC.SymbolTable.*;
 import IC.TypeTable.SemanticError;
@@ -24,29 +25,28 @@ public class SymbolTableBuilder implements
 
 	@Override
 	public Object visit(Program program, SymbolTable context /* null */) {
-		if(program.getClasses() == null || program.getClasses().isEmpty())
-		{
+		if (program.getClasses() == null || program.getClasses().isEmpty()) {
 			try {
-				throw new SemanticError("No classes in the program",GST.getStringId());
+				throw new SemanticError("No classes in the program",
+						GST.getStringId());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;
 			}
 		}
-		if(!program.getClasses().get(0).isLibrary())
-		{
+		if (!program.getClasses().get(0).isLibrary()) {
 			try {
-				throw new SemanticError("No Library found",GST.getStringId());
+				throw new SemanticError("No Library found", GST.getStringId());
 			} catch (SemanticError e) {
 				System.out.println(e);
 				return null;
 			}
-		}		
-		for (ICClass C : program.getClasses()){
+		}
+		for (ICClass C : program.getClasses()) {
 			try {
 				TypeTable.addClassType(C);
 			} catch (SemanticError se) {
-				return handleSemanticError(se,C);
+				return handleSemanticError(se, C);
 			}
 		}
 		for (ICClass C : program.getClasses()) {
@@ -177,7 +177,6 @@ public class SymbolTableBuilder implements
 		return true;
 	}
 
-
 	@Override
 	public Object visit(If ifStatement, SymbolTable scope) {
 
@@ -241,7 +240,7 @@ public class SymbolTableBuilder implements
 					return null;
 			}
 			// add local variable symbol only after visiting initValue.
-			((BlockSymbolTable) scope).addLoclVar(localVariable); 
+			((BlockSymbolTable) scope).addLoclVar(localVariable);
 		} catch (SemanticError se) {
 			return handleSemanticError(se, localVariable);
 		}
@@ -386,9 +385,24 @@ public class SymbolTableBuilder implements
 	public Object visit(MathUnaryOp unaryOp, SymbolTable scope) {
 		try {
 			if (unaryOp.getOperand() instanceof MathUnaryOp)
-				throw new SemanticError("illegal unary operator usage",
-						unaryOp.getOperator().toString(), unaryOp.getLine());
-
+				throw new SemanticError("illegal unary operator usage", unaryOp
+						.getOperator().toString(), unaryOp.getLine());
+			else if ((unaryOp.getOperand() instanceof Literal)
+					&& (unaryOp.getOperator() == UnaryOps.UMINUS)) {
+				Literal lit = (Literal) unaryOp.getOperand();
+				if (lit.getType() == LiteralTypes.INTEGER) {
+					try {
+						Integer.parseInt(UnaryOps.UMINUS.getOperatorString()
+								+ lit.getValue().toString());
+					} catch (NumberFormatException e) {
+						throw new SemanticError("illegal integer",
+								UnaryOps.UMINUS.getOperatorString()
+										+ lit.getValue().toString(),
+								lit.getLine());
+					}
+					return true;
+				}
+			}
 		} catch (SemanticError e) {
 			System.out.println(e.toString());
 			return null;
