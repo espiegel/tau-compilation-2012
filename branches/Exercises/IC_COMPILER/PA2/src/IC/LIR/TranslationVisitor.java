@@ -497,7 +497,6 @@ public class TranslationVisitor implements PropagatingVisitor<Integer, Translati
 
 		ClassLayout thisClassLayout = classLayouts.get(call.getClassName());
 		Method method = thisClassLayout.getMethod(call.getName());
-		lirCode += "# call statement:\n";
 
 		// build method label
 		String methodLabel = "_"
