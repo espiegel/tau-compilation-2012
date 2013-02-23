@@ -74,7 +74,8 @@ Class VarSymbol: Extends Symbol and represents a local variable entry in a Metho
 Class FieldSymbol: Extends VarSymbol and represents a field entry in a ClassSymbolTable.
 
 Package IC.TypeTable:
-Class TypeTable: This class holds static fields for every type in the program: Primitive types, Array types, Method types and user defined class types. It has methods for adding and getting types, used by the SymbolTableBuilder when building the symbol tables, the SemanticChecker and the compiler for the type table dumping option.
+Class TypeTable: This class holds static fields for every type in the program: Primitive types, Array types, Method types and user defined class types.
+It has methods for adding and getting types, used by the SymbolTableBuilder when building the symbol tables, the SemanticChecker and the compiler for the type table dumping option.
 Class Type: Abstract class upon which all other types extend.
 Class ArrayType: Extends Type and represents an array type.
 Class ClassType: Extends Type and represents a user defined class type.
@@ -88,16 +89,25 @@ Class SemanticChecker: Implements Visitor. Does all the semantic checks as detai
 
 Package IC.LIR:
 Class ClassLayout.java: Implements the class layout for the LIR translation. Creates the dispatch vector containing all fields and methods.
-Class MoveInstEnum.java: Used to store the enumerated types used by the visitors.
+Class MoveInstEnum.java: An enum used by the TranslationVisitor to decide which move instruction to use in order to obtain the translated expression's result.
 Class TranslationData.java: This class is used to store the translated LIR instructions, intermediate values/references and which LIR move instruction.
 Class TranslationVisitor.java: extends PropagatingVisitor<Integer, TranslationData> This class is in charge of translating our code into LIR.
 
 
-// TODO: Add more to the LIR implementation....
 LIR Translation Implementation:
-The LIR Translation takes place after we built the AST, constructed all symbol tables and performed all semantic checks. During the construction of the AST we check the amount of registers needed to compute each Expression using calculateWeight(). We then use the TranslationVisitor to output the LIR translation
+The translation from AST to LIR code is implemented using the Visitor design pattern. The class TranslationVisitor implements the PropagatingVisitor interface.
+It's visit methods receive an Integer parameter ("target") which signifies numeric id of the symbolic register in which to store the result of the 
+translated AST node computation. The return type of the visit methods, "TranslationData", stores the translated LIR code along with the location
+of the to-be-computed result and the desired move instruction (Move/MoveField/MoveArray) to use on the result when storing it to a register. 
+After translating an AST node, we call the accept methods of all of it's children with reference to "this" thus invoking the appropriate visit method via double-dispatch. 
+By doing so again and again we translate the whole AST via top-down recursion. We assemble the final LIR program using the "assembleLIRProgram()" method.
 
-
+Bonus III:
+We use the sethi-ullman algorithm for commutative operators with no side affects to optimize the number of symbolic registers which are used to compute
+these kind of expressions. The botttom-up phase of the algorithm is implemented using dymnamic programming technique during the construction of the AST.
+The AST is being created in a bottom-up mannner because of our parsing technique so upon the creation of a new AST node we can compute it's weight for 
+the sethi-ullman algorithm from the weights of it's children using the "calculateWeight()" method. During code generation we implement the top-down phase
+of the algorithm generatig the LIR code for the heavier operand first. We do not perform this phase for operators which are not commutative.
 
 Feedback:
 This assignment took us around 20-25 hours to complete. The  difficulty was moderate and we don't have any suggestions.
