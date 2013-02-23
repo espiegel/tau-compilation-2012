@@ -75,12 +75,13 @@ public class ClassLayout {
 	}
 	
 	public String getDispatchVector(){
-		String myName = self.getName();
 		String DV = getDispatchVectorLabel()+": [";
 		for (int i=0; i<getDispatchVectorOffset(); i++){
 			for (String methodname: methodToOffsetMap.keySet()){
+				Method method = nameToMethodMap.get(methodname);
+				String className = method.getEnclosingScope().getStringId();
 				if (i == methodToOffsetMap.get(methodname)) {
-					DV+='_'+myName+'_'+methodname+',';
+					DV+='_'+className+'_'+methodname+',';
 					break;
 				}
 			}
@@ -89,8 +90,7 @@ public class ClassLayout {
 	}
 	
 	public String getDispatchVectorLabel(){
-		String myName = self.getName();
-		return "_DV_"+myName;
+		return "_DV_"+self.getName();
 	}
 	
 	public String tableToString(){

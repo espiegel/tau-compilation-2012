@@ -388,6 +388,7 @@ public class SemanticChecker implements Visitor
                 try
                 {
                     IC.SymbolTable.FieldSymbol fs = (FieldSymbol)cst.lookupField(location.getName());  
+                    location.resolveExprType(fs.getType());
                     return fs.getType(); // Return the type of this field
                 } catch(SemanticError se) {
                         se.setLine(location.getLine());
