@@ -48,14 +48,11 @@ public class ClassLayout {
 	}
 	
 	private void addMethod(Method method) {
-		if (method.isStatic()){ 
-			return; //static methods are handled separately!
-		}
+
 		String key = method.getName();
-		if (!isOverriding(method)){ // for overriding methods, offset stays the same.
+		if (!isOverriding(method) && !method.isStatic()){ // for overriding methods, offset stays the same.
 			
 			methodToOffsetMap.put(method.getName(),getDispatchVectorOffset());
-			nameToMethodMap.remove(key);
 		}
 		nameToMethodMap.put(key, method);
 	}
