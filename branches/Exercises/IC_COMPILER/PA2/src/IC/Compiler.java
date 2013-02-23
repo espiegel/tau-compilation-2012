@@ -2,7 +2,7 @@ package IC;
 
 import java.io.*;
 import IC.AST.*;
-import IC.LIR.ClassLayout;
+//import IC.LIR.ClassLayout;
 import IC.LIR.TranslationData;
 import IC.LIR.TranslationVisitor;
 import IC.Parser.*;
