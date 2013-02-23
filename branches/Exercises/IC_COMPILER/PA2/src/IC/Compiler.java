@@ -113,7 +113,7 @@ public class Compiler {
 			TranslationVisitor tv = new TranslationVisitor(program_path);
 			String lirProgram = ((TranslationData) program.accept(tv, 1))
 					.getLIRCode();
-			String lir_program_path = (program_path.split("[.]"))[0] + ".lir";
+			String lir_program_path = program_path.substring(0, program_path.lastIndexOf(".")) + ".lir";
 			FileWriter writer = new FileWriter(lir_program_path, false);
 			writer.write(lirProgram);
 			writer.close();
