@@ -42,7 +42,6 @@ public class Compiler {
 	private static final String PRINT_AST = "-print-ast";
 	private static final String LIB_FLAG = "-L";
 	private static final String DUMP_SYMTAB = "-dump-symtab";
-	
 
 	public static void main(String[] args) throws IOException {
 
@@ -59,10 +58,9 @@ public class Compiler {
 				bPrint_ast = true;
 			} else if (s.equals(DUMP_SYMTAB)) {
 				bDump_symtab = true;
-			} else if (s.equals(PRINT_LIR)){
+			} else if (s.equals(PRINT_LIR)) {
 				bPrint_lir = true;
-			}
-			else {
+			} else {
 				if (program_path == null)
 					program_path = args[i];
 				else
@@ -110,14 +108,13 @@ public class Compiler {
 			System.exit(-1); // in case of a semantic error
 		} else
 			System.out.println("Semantic check passed sucessfully");
-		
-		
 
-		if(bPrint_lir){
+		if (bPrint_lir) {
 			TranslationVisitor tv = new TranslationVisitor(program_path);
-			String lirProgram = ((TranslationData)program.accept(tv,1)).getLIRCode();
-			String lir_program_path = (program_path.split("[.]"))[0]+".lir";
-			FileWriter writer = new FileWriter(lir_program_path,false);
+			String lirProgram = ((TranslationData) program.accept(tv, 1))
+					.getLIRCode();
+			String lir_program_path = (program_path.split("[.]"))[0] + ".lir";
+			FileWriter writer = new FileWriter(lir_program_path, false);
 			writer.write(lirProgram);
 			writer.close();
 		}
@@ -131,13 +128,13 @@ public class Compiler {
 
 	private static ICClass parseLibrary() throws IOException {
 
-		FileReader reader = new FileReader(lib_path);
-		Lexer scanner = new Lexer(reader);
-		LibraryParser parser = new LibraryParser(scanner);
 		try {
+			FileReader reader = new FileReader(lib_path);
+			Lexer scanner = new Lexer(reader);
+			LibraryParser parser = new LibraryParser(scanner);
 			ICClass root = (ICClass) parser.parse().value;
-			if (!root.isLibrary()){
-				exit(EXIT5+root.getName());
+			if (!root.isLibrary()) {
+				exit(EXIT5 + root.getName());
 			}
 			System.out.println("Parsed " + lib_path + " successfully!");
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(lib_path);
