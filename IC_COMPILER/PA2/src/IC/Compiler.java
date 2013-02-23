@@ -36,6 +36,7 @@ public class Compiler {
 	private static final String EXIT3 = "SYSTEM EXIT! REASON: failed to parse program.";
 	private static final String EXIT4 = "SYSTEM EXIT! REASON: failed to parse library.";
 	private static final String EXIT5 = "library class should be named \"Library\". was named: ";
+	private static final String EXIT6 = "SYSTEM EXIT! REASON: file not found.";
 
 	private static final String PRINT_LIR = "-print-lir";
 	private static final String PRINT_AST = "-print-ast";
@@ -143,6 +144,10 @@ public class Compiler {
 			if (bPrint_ast)
 				System.out.println(root.accept(printer));
 			return root;
+		} catch (IOException e) {
+			System.out.println(e);
+			exit(EXIT6);
+			return null;
 		} catch (Exception e) {
 			System.out.println(e);
 			exit(EXIT4);
@@ -152,11 +157,11 @@ public class Compiler {
 
 	private static Program parseProgram() throws IOException {
 
-		FileReader reader = new FileReader(program_path);
-		Lexer scanner = new Lexer(reader);
-		Parser parser = new Parser(scanner);
-
 		try {
+			FileReader reader = new FileReader(program_path);
+			Lexer scanner = new Lexer(reader);
+			Parser parser = new Parser(scanner);
+
 			Program root = (Program) parser.parse().value;
 			System.out.println("Parsed " + program_path + " successfully!");
 			IC.AST.PrettyPrinter printer = new IC.AST.PrettyPrinter(
@@ -164,6 +169,10 @@ public class Compiler {
 			if (bPrint_ast)
 				System.out.println(root.accept(printer));
 			return root;
+		} catch (IOException e) {
+			System.out.println(e);
+			exit(EXIT6);
+			return null;
 		} catch (Exception e) {
 			System.out.println(e);
 			exit(EXIT3);
